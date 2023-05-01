@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use Symfony\Component\HttpFoundation\Response;
+
 class TestController
 {
     public function index()
@@ -9,9 +11,9 @@ class TestController
         dd("TestController");
     }
 
-    public function test()
+    public function test() : Response
     {
         $age = $_GET['age'];
-        dd("test, vous avez $age ans");
+        return new Response("Vous avez $age ans");
     }
 }
