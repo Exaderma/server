@@ -18,7 +18,7 @@ class TestController
     public function test() : Response
     {
         $age = $_GET['age'];
-        return new Response("Vous avez $age ans");
+        return new Response("Vous avez $age ansaaaaaa");
     }
 
     public function insert(ManagerRegistry $doctrine, Request $request)
