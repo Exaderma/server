@@ -5,3 +5,11 @@ index:
 test:
     path: /test
     controller: App\Controller\TestController::test
+
+insert:
+    path: /insert
+    controller: App\Controller\TestController::insert
+
+get:
+    path: /get
+    controller: App\Controller\TestController::get
