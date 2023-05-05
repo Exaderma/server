@@ -6,10 +6,18 @@ test:
     path: /test
     controller: App\Controller\TestController::test
 
-insert:
-    path: /insert
-    controller: App\Controller\TestController::insert
+insertPatient:
+    path: /insertPatient
+    controller: App\Controller\TestController::insertPatient
 
-get:
-    path: /get
-    controller: App\Controller\TestController::get
+getPatient:
+    path: /getPatient
+    controller: App\Controller\TestController::getPatient
+
+insertDoctor:
+    path: /insertDoctor
+    controller: App\Controller\TestController::insertDoctor
+
+getDoctor:
+    path: /getDoctor
+    controller: App\Controller\TestController::getDoctor
