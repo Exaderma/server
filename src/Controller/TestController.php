@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use Doctrine\ORM\EntityManager;
-use Entity\PatientTableEntity;
+use App\Entity\PatientTableEntity;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -23,7 +23,7 @@ class TestController
 
     public function insert(ManagerRegistry $doctrine, Request $request)
     {
-        $entityManager = $doctrine.getManager();
+        $entityManager = $doctrine->getManager();
         $db = new PatientTableEntity();
         $db->setFirstName("test");
         $db->setLastName("test");
@@ -38,7 +38,7 @@ class TestController
     
     public function get(ManagerRegistry $doctrine, Request $request)
     {
-        $entityManager = $doctrine.getManager();
+        $entityManager = $doctrine->getManager();
         $db = $entityManager->getRepository(PatientTableEntity::class)->findAll();
         dd($db);
     }

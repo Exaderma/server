@@ -3,10 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\ConnectPatientTable;
 
 /**
- * @ORM\Entity(repositoryClass=PatientTableRepository::class)
+ * @ORM\Entity
  * @ORM\Table(name="patient")
  */
 class PatientTableEntity
