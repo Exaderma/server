@@ -6,6 +6,7 @@ use Doctrine\ORM\EntityManager;
 use Entity\PatientTableEntity;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class TestController
 {
@@ -14,11 +15,10 @@ class TestController
         dd("TestController");
     }
 
-    public function test()
+    public function test() : Response
     {
         $age = $_GET['age'];
-        
-        dd("test, vous avez $age ans");
+        return new Response("Vous avez $age ans");
     }
 
     public function insert(ManagerRegistry $doctrine, Request $request)
