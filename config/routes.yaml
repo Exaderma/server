@@ -21,3 +21,8 @@ insertDoctor:
 getDoctor:
     path: /getDoctor
     controller: App\Controller\TestController::getDoctor
+
+registerPatient:
+    path: /patient/register
+    controller: App\Controller\PatientAuthentification\Register::register
+    methods: [POST]

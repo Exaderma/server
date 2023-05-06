@@ -58,7 +58,9 @@
     "autoload": {
         "psr-4": {
             "App\\": "src/",
-            "Entity\\" : "src/Entity/"
+            "Entity\\" : "src/Entity/",
+            "Repository\\" : "src/Repository/",
+            "Controller\\" : "src/Controller/"
         }
     },
     "autoload-dev": {
