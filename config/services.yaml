@@ -26,3 +26,14 @@ services:
     App\Controller\:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
+
+    App\Entity\PatientTableEntity:
+        public: true
+        class: App\Entity\PatientTableEntity
+        arguments: []
+
+    App\Controller\PatientAuthentification\Register:
+        class: App\Controller\PatientAuthentification\Register\Register
+        arguments:
+            $doctrine: '@doctrine'
+            $database: '@App\Entity\PatientTableEntity'
