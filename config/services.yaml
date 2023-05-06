@@ -33,6 +33,7 @@ services:
         arguments: []
 
     App\Controller\PatientAuthentification\Register:
+        public: true
         class: App\Controller\PatientAuthentification\Register\Register
         arguments:
             $doctrine: '@doctrine'

@@ -20,24 +20,24 @@ class Register
         $this->database = $database;
     }
 
-    function requestParametersValid($body): Response
+    function requestParametersValid($body): void
     {
         if (!is_array($body)) {
-            return new Response("Invalid JSON");
+            throw new \Exception("Invalid JSON");
         }
 
         $expectedParams = ['firstName', 'lastName', 'email', 'password'];
 
         foreach ($expectedParams as $param) {
             if (!isset($body[$param])) {
-                return new Response("Missing parameter: $param");
+                throw new \Exception("Missing parameter: $param");
             }
         }
     }
 
     function userAlreadyExists(string $email): bool
     {
-        $userData = $this->entityManager->getRepository(PatientTableEntity::class)->findBy(['email' => $email['email']]);
+        $userData = $this->entityManager->getRepository(PatientTableEntity::class)->findBy(['email' => $email]);
         if ($userData) {
             return true;
         }
@@ -48,20 +48,30 @@ class Register
     {
         $body = json_decode($request->getContent(), true);
 
-        $this->requestParametersValid($body);
-
-        if ($this->userAlreadyExists($body['email'])) {
-            return new Response("User already exists");
+        try {
+            $this->requestParametersValid($body);
+        } catch (\Exception $e) {
+            if ($e->getMessage() === "Invalid JSON")
+                return new Response("Invalid JSON", Response::HTTP_BAD_REQUEST);
+            if (preg_match('/Missing parameter: (\w+)/', $e->getMessage(), $matches)) {
+                $parameterName = $matches[1];
+                return new Response("Missing parameter: $parameterName", Response::HTTP_BAD_REQUEST);
+            }
+            return new Response($e->getMessage());
         }
 
-        $this->database->setFirstName($request->get('firstName'));
-        $this->database->setLastName($request->get('lastName'));
-        $this->database->setEmail($request->get('email'));
-        $this->database->setPassword($request->get('password'));
+        if ($this->userAlreadyExists($body['email'])) {
+            return new Response("User already exists", Response::HTTP_CONFLICT);
+        }
+
+        $this->database->setFirstName($body['firstName']);
+        $this->database->setLastName($body['lastName']);
+        $this->database->setEmail($body['email']);
+        $this->database->setPassword($body['password']);
         $this->database->setAdmin(false);
         $this->database->setCreatedAt(new \DateTime());
         $this->entityManager->persist($this->database);
         $this->entityManager->flush();
-        return new Response("Patient created");
+        return new Response("Patient created", Response::HTTP_CREATED);
     }
 }
