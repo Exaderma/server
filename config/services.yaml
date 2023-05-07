@@ -38,3 +38,7 @@ services:
         arguments:
             $doctrine: '@doctrine'
             $database: '@App\Entity\PatientTableEntity'
+    
+    App\Utils\Authentication\PasswordHash:
+        public: true
+        class: App\Utils\Authentication\hashPassword

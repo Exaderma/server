@@ -60,7 +60,8 @@
             "App\\": "src/",
             "Entity\\" : "src/Entity/",
             "Repository\\" : "src/Repository/",
-            "Controller\\" : "src/Controller/"
+            "Controller\\" : "src/Controller/",
+            "Utils\\" : "src/Utils/"
         }
     },
     "autoload-dev": {

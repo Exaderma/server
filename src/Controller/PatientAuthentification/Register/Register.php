@@ -3,6 +3,7 @@
 namespace App\Controller\PatientAuthentification\Register;
 
 use App\Entity\PatientTableEntity;
+use App\Utils\Authentification\hashPassword\hashPassword;
 
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -13,11 +14,13 @@ class Register
 {
     private $entityManager;
     private $database;
+    private $hashPassword;
 
     public function __construct(ManagerRegistry $doctrine, PatientTableEntity $database)
     {
         $this->entityManager = $doctrine->getManager();
         $this->database = $database;
+        $this->hashPassword = new hashPassword();
     }
 
     function requestParametersValid($body): void
@@ -67,7 +70,7 @@ class Register
         $this->database->setFirstName($body['firstName']);
         $this->database->setLastName($body['lastName']);
         $this->database->setEmail($body['email']);
-        $this->database->setPassword($body['password']);
+        $this->database->setPassword($this->hashPassword->hashPassword($body['password']));
         $this->database->setAdmin(false);
         $this->database->setCreatedAt(new \DateTime());
         $this->entityManager->persist($this->database);
