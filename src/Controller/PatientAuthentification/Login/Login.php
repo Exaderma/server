@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\PatientAuthentification\Register;
+namespace App\Controller\PatientAuthentification\Login;
 
 use App\Entity\PatientTableEntity;
 use App\Utils\Authentification\hashPassword\hashPassword;
@@ -10,16 +10,15 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class Register
+class Login
 {
+
     private $entityManager;
-    private $database;
     private $hashPassword;
 
-    public function __construct(ManagerRegistry $doctrine, PatientTableEntity $database)
+    public function __construct(ManagerRegistry $doctrine)
     {
         $this->entityManager = $doctrine->getManager();
-        $this->database = $database;
         $this->hashPassword = new hashPassword();
     }
 
@@ -29,7 +28,7 @@ class Register
             throw new \Exception("Invalid JSON");
         }
 
-        $expectedParams = ['firstName', 'lastName', 'email', 'password'];
+        $expectedParams = ['email', 'password'];
 
         foreach ($expectedParams as $param) {
             if (!isset($body[$param])) {
@@ -38,16 +37,20 @@ class Register
         }
     }
 
-    function userAlreadyExists(string $email): bool
+    function validateAuthentification(string $email, string $password): bool
     {
         $userData = $this->entityManager->getRepository(PatientTableEntity::class)->findBy(['email' => $email]);
+
         if ($userData) {
-            return true;
+            $hashedPassword = $userData[0]->getPassword();
+            if ($this->hashPassword->verifyPassword($password, $hashedPassword)) {
+                return true;
+            }
         }
         return false;
     }
 
-    public function register(Request $request)
+    function login(Request $request)
     {
         $body = json_decode($request->getContent(), true);
 
@@ -63,18 +66,13 @@ class Register
             return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        if ($this->userAlreadyExists($body['email'])) {
-            return new Response("User already exists", Response::HTTP_CONFLICT);
-        }
+        $email = $body['email'];
+        $password = $body['password'];
 
-        $this->database->setFirstName($body['firstName']);
-        $this->database->setLastName($body['lastName']);
-        $this->database->setEmail($body['email']);
-        $this->database->setPassword($this->hashPassword->hashPassword($body['password']));
-        $this->database->setAdmin(false);
-        $this->database->setCreatedAt(new \DateTime());
-        $this->entityManager->persist($this->database);
-        $this->entityManager->flush();
-        return new Response("Patient created", Response::HTTP_CREATED);
+        if ($this->validateAuthentification($email, $password)) {
+            return new Response("Login successful", Response::HTTP_OK);
+        } else {
+            return new Response("Login failed", Response::HTTP_UNAUTHORIZED);
+        }
     }
 }

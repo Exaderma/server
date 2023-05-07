@@ -26,3 +26,8 @@ registerPatient:
     path: /patient/register
     controller: App\Controller\PatientAuthentification\Register::register
     methods: [POST]
+
+loginPatient:
+    path: /patient/login
+    controller: App\Controller\PatientAuthentification\Login::login
+    methods: [POST]

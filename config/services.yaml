@@ -38,6 +38,12 @@ services:
         arguments:
             $doctrine: '@doctrine'
             $database: '@App\Entity\PatientTableEntity'
+
+    App\Controller\PatientAuthentification\Login:
+        public: true
+        class: App\Controller\PatientAuthentification\Login\Login
+        arguments:
+            $doctrine: '@doctrine'
     
     App\Utils\Authentication\PasswordHash:
         public: true
