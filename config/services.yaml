@@ -32,6 +32,11 @@ services:
         class: App\Entity\PatientTableEntity
         arguments: []
 
+    App\Repository\PatientTableRepository:
+        public: true
+        class: App\Repository\PatientTableRepository
+        arguments: []
+
     App\Controller\PatientAuthentification\Register:
         public: true
         class: App\Controller\PatientAuthentification\Register\Register
