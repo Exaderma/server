@@ -1,0 +1,9 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: Exaderma Symfony backend
+            description: Exaderma backend, made with Symfony in a RESTful way
+            version: 1.0.0
+    areas:
+        path_patterns:
+            - ^/patient/

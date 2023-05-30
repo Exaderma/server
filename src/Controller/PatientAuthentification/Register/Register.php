@@ -7,8 +7,68 @@ use App\Utils\Authentification\hashPassword\hashPassword;
 
 use Doctrine\Persistence\ManagerRegistry;
 
+use OpenApi\Annotations as OA;
+use Symfony\Component\Routing\Annotation\Route;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+
+/** 
+ * @Route("/patient/register", name="register", methods={"POST"})
+ * 
+ * @OA\Post(
+ *      summary="Register route to register the user's account",
+ *      description="Verify the parameters, the validity of the user credentials and makes sure the user doesn't already exist",
+ * )
+ * 
+ * @OA\Response(
+ *      response=201,
+ *      description="Register successful",
+ * )
+ * @OA\Response(
+ *      response=400,
+ *     description="Register failed: invalid JSON or missing parameters in the body"
+ * )
+ * @OA\Response(
+ *      response=409,
+ *      description="Register failed: the user already exists"
+ * )
+ * @OA\Response(
+ *      response=500,
+ *      description="Register failed: internal server error"
+ * )
+ * 
+ * @OA\RequestBody(
+ *      required=true,
+ *      description="JSON containing the user credentials",
+ *      @OA\JsonContent(
+ *          type="object",   
+ *          @OA\Property(
+ *              property="firstName",
+ *              type="string",
+ *              description="User first name"
+ *          ),
+ *          @OA\Property(
+ *              property="lastName",
+ *              type="string",
+ *              description="User last name"
+ *          ),
+ *          @OA\Property(
+ *              property="email",
+ *              type="string",
+ *              description="User email"
+ *          ),
+ *          @OA\Property(
+ *              property="password",
+ *              type="string",
+ *              description="User password"
+ *         )
+ *    )
+ * )
+ * 
+ * @OA\Tag(name="Patient")
+ * 
+ */
 
 class Register
 {

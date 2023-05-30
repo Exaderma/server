@@ -31,3 +31,13 @@ loginPatient:
     path: /patient/login
     controller: App\Controller\PatientAuthentification\Login::login
     methods: [POST]
+
+app.swagger.ui:
+    path: /api/doc
+    methods: [GET]
+    defaults: { _controller: nelmio_api_doc.controller.swagger_ui }
+
+app.swagger:
+    path: /api/doc.json
+    methods: [GET]
+    defaults: { _controller: nelmio_api_doc.controller.swagger }

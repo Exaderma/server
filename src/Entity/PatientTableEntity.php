@@ -44,6 +44,7 @@ class PatientTableEntity
 
     /**
      * @ORM\Column(type="datetime", name="created_at")
+     * @var \DateTime
      */
     protected $created_at;
 
