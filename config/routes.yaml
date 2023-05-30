@@ -14,13 +14,13 @@ getPatient:
     path: /getPatient
     controller: App\Controller\TestController::getPatient
 
-insertDoctor:
-    path: /insertDoctor
-    controller: App\Controller\TestController::insertDoctor
+insertProfessional:
+    path: /insertProfessional
+    controller: App\Controller\TestController::insertProfessional
 
-getDoctor:
-    path: /getDoctor
-    controller: App\Controller\TestController::getDoctor
+getProfessional:
+    path: /getProfessional
+    controller: App\Controller\TestController::getProfessional
 
 registerPatient:
     path: /patient/register
@@ -30,6 +30,16 @@ registerPatient:
 loginPatient:
     path: /patient/login
     controller: App\Controller\PatientAuthentification\Login::login
+    methods: [POST]
+
+registerProfessional:
+    path: /professional/register
+    controller: App\Controller\ProfessionalAuthentification\Register::register
+    methods: [POST]
+
+loginProfessional:
+    path: /professional/login
+    controller: App\Controller\ProfessionalAuthentification\Login::login
     methods: [POST]
 
 app.swagger.ui:

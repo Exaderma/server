@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use Doctrine\ORM\EntityManager;
 use App\Entity\PatientTableEntity;
-use App\Entity\DoctorTableEntity;
+use App\Entity\ProfessionalTableEntity;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -44,10 +44,10 @@ class TestController
         dd($db);
     }
 
-    public function insertDoctor(ManagerRegistry $doctrine, Request $request)
+    public function insertProfessional(ManagerRegistry $doctrine, Request $request)
     {
         $entityManager = $doctrine->getManager();
-        $db = new DoctorTableEntity();
+        $db = new ProfessionalTableEntity();
         $db->setFirstName("test");
         $db->setLastName("test");
         $db->setEmail("toto@toto");
@@ -60,10 +60,10 @@ class TestController
         dd("insert");
     }
 
-    public function getDoctor(ManagerRegistry $doctrine, Request $request)
+    public function getProfessional(ManagerRegistry $doctrine, Request $request)
     {
         $entityManager = $doctrine->getManager();
-        $db = $entityManager->getRepository(DoctorTableEntity::class)->findAll();
+        $db = $entityManager->getRepository(ProfessionalTableEntity::class)->findAll();
         dd($db);
     }
 }

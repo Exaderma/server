@@ -32,9 +32,19 @@ services:
         class: App\Entity\PatientTableEntity
         arguments: []
 
+    App\Entity\ProfessionalTableEntity:
+        public: true
+        class: App\Entity\ProfessionalTableEntity
+        arguments: []
+
     App\Repository\PatientTableRepository:
         public: true
         class: App\Repository\PatientTableRepository
+        arguments: []
+
+    App\Repository\ProfessionalTableRepository:
+        public: true
+        class: App\Repository\ProfessionalTableRepository
         arguments: []
 
     App\Controller\PatientAuthentification\Register:
@@ -47,6 +57,19 @@ services:
     App\Controller\PatientAuthentification\Login:
         public: true
         class: App\Controller\PatientAuthentification\Login\Login
+        arguments:
+            $doctrine: '@doctrine'
+
+    App\Controller\ProfessionalAuthentification\Register:
+        public: true
+        class: App\Controller\ProfessionalAuthentification\Register\Register
+        arguments:
+            $doctrine: '@doctrine'
+            $database: '@App\Entity\ProfessionalTableEntity'
+
+    App\Controller\ProfessionalAuthentification\Login:
+        public: true
+        class: App\Controller\ProfessionalAuthentification\Login\Login
         arguments:
             $doctrine: '@doctrine'
     

@@ -52,7 +52,7 @@ To run this project, you will need to add the following environment variables to
 | `null` | `string` | root test |
 
 ```http
-  GET /getDoctor
+  GET /getProfessional
 ```
 
 | Parameter | Type     | Description                |
@@ -69,7 +69,7 @@ To run this project, you will need to add the following environment variables to
 
 
 ```http
-  GET /insertDoctor
+  GET /insertProfessional
 ```
 
 | Parameter | Type     | Description                |
