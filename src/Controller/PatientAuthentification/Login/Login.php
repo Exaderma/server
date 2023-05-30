@@ -7,8 +7,54 @@ use App\Utils\Authentification\hashPassword\hashPassword;
 
 use Doctrine\Persistence\ManagerRegistry;
 
+use OpenApi\Annotations as OA;
+use Symfony\Component\Routing\Annotation\Route;
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+
+/** 
+ * @Route("/patient/login", name="patient_login", methods={"POST"})
+ * 
+ * @OA\Post(
+ *      summary="Login route to access the application",
+ *      description="Verify the parameters and the validity of the user credentials",
+ * )
+ * 
+ * @OA\Response(
+ *      response=200,
+ *      description="Login successful",
+ * )
+ * @OA\Response(
+ *      response=400,
+ *      description="Login failed: invalid JSON or missing parameters in the body"
+ * )
+ * @OA\Response(
+ *      response=401,
+ *      description="Login failed: the user credentials are invalid"
+ * )
+ * 
+ * @OA\RequestBody(
+ *      required=true,
+ *      description="JSON containing the user credentials",
+ *      @OA\JsonContent(
+ *          type="object",   
+ *          @OA\Property(
+ *              property="email",
+ *              type="string",
+ *              description="User email"
+ *          ),
+ *          @OA\Property(
+ *              property="password",
+ *              type="string",
+ *              description="User password"
+ *         )
+ *    )
+ * )
+ * 
+ * @OA\Tag(name="Patient")
+ * 
+ */
 
 class Login
 {
