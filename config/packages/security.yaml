@@ -9,6 +9,29 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+        paient_login:
+            pattern: ^/patient/login
+            stateless: true
+            json_login:
+                check_path: /patient/login
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        professional_login:
+            pattern: ^/professional/login
+            stateless: true
+            json_login:
+                check_path: /professional/login
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        api:
+            pattern: ^/
+            stateless: true
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
+            jwt: ~
         main:
             lazy: true
             provider: users_in_memory
@@ -22,6 +45,11 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        - { path: ^/patient/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/patient/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/professional/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/professional/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 
