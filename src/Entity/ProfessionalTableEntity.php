@@ -38,11 +38,6 @@ class ProfessionalTableEntity
     protected $password;
 
     /**
-     * @ORM\Column(type="string", length=255, name="role")
-     */
-    protected $role;
-
-    /**
      * @ORM\Column(type="boolean", name="admin")
      */
     protected $admin;
@@ -93,14 +88,6 @@ class ProfessionalTableEntity
 
     public function getPassword() {
         return $this->password;
-    }
-
-    public function setRole($role) {
-        $this->role = $role;
-    }
-
-    public function getRole() {
-        return $this->role;
     }
 
     public function setAdmin($admin) {
