@@ -90,6 +90,13 @@ class ProfessionalTableEntity implements UserInterface, PasswordAuthenticatedUse
         return $this->email;
     }
 
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
     public function setAdmin($admin) {
         $this->admin = $admin;
     }
@@ -106,15 +113,17 @@ class ProfessionalTableEntity implements UserInterface, PasswordAuthenticatedUse
         return $this->created_at;
     }
 
+    # UserInterface methods
+
     public function getUserIdentifier(): string
     {
         return $this->email;
     }
 
-    public function getUsername()
-    {
-        return $this->email;
-    }
+    // public function getUsername()
+    // {
+    //     return $this->email;
+    // }
 
     public function getRoles(): array
     {
@@ -135,13 +144,6 @@ class ProfessionalTableEntity implements UserInterface, PasswordAuthenticatedUse
     public function getPassword(): string
     {
         return $this->password;
-    }
-
-    public function setPassword(string $password): self
-    {
-        $this->password = $password;
-
-        return $this;
     }
 
     public function getSalt()

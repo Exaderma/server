@@ -53,6 +53,8 @@ services:
         arguments:
             $doctrine: '@doctrine'
             $database: '@App\Entity\PatientTableEntity'
+            $hashPassword: '@Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface'
+            $jwtManager: '@lexik_jwt_authentication.jwt_manager'
 
     App\Controller\PatientAuthentification\Login:
         public: true
@@ -75,7 +77,3 @@ services:
         arguments:
             $doctrine: '@doctrine'
             $database: '@App\Entity\ProfessionalTableEntity'
-
-    # App\Utils\Env\LoadKeys:
-    #     tags:
-    #         - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }

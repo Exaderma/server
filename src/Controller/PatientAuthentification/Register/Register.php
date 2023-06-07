@@ -3,7 +3,6 @@
 namespace App\Controller\PatientAuthentification\Register;
 
 use App\Entity\PatientTableEntity;
-use App\Utils\Authentification\hashPassword\hashPassword;
 
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -12,6 +11,10 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** 
  * @Route("/patient/register", name="register", methods={"POST"})
@@ -23,7 +26,20 @@ use Symfony\Component\HttpFoundation\Response;
  * 
  * @OA\Response(
  *      response=201,
- *      description="Register successful",
+ *      content={
+ *         @OA\MediaType(
+ *              mediaType="application/json",
+ *              @OA\Schema(
+ *                  type="object",
+ *                  @OA\Property(
+ *                      property="token",
+ *                      type="string",
+ *                      description="The token of the user"
+ *                  )
+ *              )
+ *          )
+ *      },
+ *      description="Register successful, returns the newly made token of the user",
  * )
  * @OA\Response(
  *      response=400,
@@ -75,12 +91,14 @@ class Register
     private $entityManager;
     private $database;
     private $hashPassword;
+    private $jwtManager;
 
-    public function __construct(ManagerRegistry $doctrine, PatientTableEntity $database)
+    public function __construct(ManagerRegistry $doctrine, PatientTableEntity $database, UserPasswordHasherInterface $hashPassword, JWTTokenManagerInterface $jwtManager)
     {
         $this->entityManager = $doctrine->getManager();
         $this->database = $database;
-        $this->hashPassword = new hashPassword();
+        $this->hashPassword = $hashPassword;
+        $this->jwtManager = $jwtManager;
     }
 
     function requestParametersValid($body): void
@@ -130,11 +148,20 @@ class Register
         $this->database->setFirstName($body['firstName']);
         $this->database->setLastName($body['lastName']);
         $this->database->setEmail($body['email']);
-        $this->database->setPassword($this->hashPassword->hashPassword($body['password']));
+
+        $hashedPassword = $this->hashPassword->hashPassword(
+            $this->database,
+            $body['password']
+        );
+
+        $this->database->setPassword($hashedPassword);
         $this->database->setAdmin(false);
         $this->database->setCreatedAt(new \DateTime());
         $this->entityManager->persist($this->database);
         $this->entityManager->flush();
-        return new Response("Patient created", Response::HTTP_CREATED);
+
+        $token = $this->jwtManager->create($this->database);
+
+        return new JsonResponse(['token' => $token], Response::HTTP_CREATED);
     }
 }
