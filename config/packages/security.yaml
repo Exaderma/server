@@ -11,24 +11,26 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        patient_login:
-            pattern: ^/patient/login
-            stateless: true
-            json_login:
-                username_path: email
-                password_path: password
-                check_path: /patient/login
-                success_handler: lexik_jwt_authentication.handler.authentication_success
-                failure_handler: lexik_jwt_authentication.handler.authentication_failure
-        professional_login:
-            pattern: ^/professional/login
-            stateless: true
-            json_login:
-                username_path: email
-                password_path: password
-                check_path: /professional/login
-                success_handler: lexik_jwt_authentication.handler.authentication_success
-                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        # patient_login:
+        #     pattern: ^/patient/login
+        #     stateless: true
+        #     provider: patients
+        #     json_login:
+        #         username_path: email
+        #         password_path: password
+        #         check_path: /patient/login
+        #         success_handler: lexik_jwt_authentication.handler.authentication_success
+        #         failure_handler: lexik_jwt_authentication.handler.authentication_failure
+        # professional_login:
+        #     pattern: ^/professional/login
+        #     stateless: true
+        #     provider: professionals
+        #     json_login:
+        #         username_path: email
+        #         password_path: password
+        #         check_path: /professional/login
+        #         success_handler: lexik_jwt_authentication.handler.authentication_success
+        #         failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
             # main:
             #     lazy: true

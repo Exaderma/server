@@ -76,4 +76,3 @@ services:
         class: App\Controller\ProfessionalAuthentification\Login\Login
         arguments:
             $doctrine: '@doctrine'
-            $database: '@App\Entity\ProfessionalTableEntity'

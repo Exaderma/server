@@ -3,7 +3,6 @@
 namespace App\Controller\PatientAuthentification\Login;
 
 use App\Entity\PatientTableEntity;
-use App\Utils\Authentification\hashPassword\hashPassword;
 
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -12,6 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /** 
  * @Route("/patient/login", name="patient_login", methods={"POST"})
@@ -62,10 +62,10 @@ class Login
     private $entityManager;
     private $hashPassword;
 
-    public function __construct(ManagerRegistry $doctrine)
+    public function __construct(ManagerRegistry $doctrine, UserPasswordHasherInterface $passwordHasher)
     {
         $this->entityManager = $doctrine->getManager();
-        $this->hashPassword = new hashPassword();
+        $this->hashPassword = $passwordHasher;
     }
 
     function requestParametersValid($body): void
@@ -88,8 +88,8 @@ class Login
         $userData = $this->entityManager->getRepository(PatientTableEntity::class)->findBy(['email' => $email]);
 
         if ($userData) {
-            $hashedPassword = $userData[0]->getPassword();
-            if ($this->hashPassword->verifyPassword($password, $hashedPassword)) {
+            $user = $userData[0];
+            if ($this->hashPassword->isPasswordValid($user, $password)) {
                 return true;
             }
         }

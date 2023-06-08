@@ -60,13 +60,11 @@ class Login
 {
 
     private $entityManager;
-    private $database;
     private $hashPassword;
 
-    public function __construct(ManagerRegistry $doctrine, ProfessionalTableEntity $database, UserPasswordHasherInterface $passwordHasher)
+    public function __construct(ManagerRegistry $doctrine, UserPasswordHasherInterface $passwordHasher)
     {
         $this->entityManager = $doctrine->getManager();
-        $this->database = $database;
         $this->hashPassword = $passwordHasher;
     }
 
@@ -90,7 +88,8 @@ class Login
         $userData = $this->entityManager->getRepository(ProfessionalTableEntity::class)->findBy(['email' => $email]);
 
         if ($userData) {
-            if ($this->hashPassword->isPasswordValid($this->database, $password)) {
+            $user = $userData[0];
+            if ($this->hashPassword->isPasswordValid($user, $password)) {
                 return true;
             }
         }
