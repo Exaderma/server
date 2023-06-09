@@ -53,12 +53,16 @@ services:
         arguments:
             $doctrine: '@doctrine'
             $database: '@App\Entity\PatientTableEntity'
+            $hashPassword: '@Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface'
+            $jwtManager: '@lexik_jwt_authentication.jwt_manager'
 
     App\Controller\PatientAuthentification\Login:
         public: true
         class: App\Controller\PatientAuthentification\Login\Login
         arguments:
             $doctrine: '@doctrine'
+            $database: '@App\Entity\PatientTableEntity'
+            $jwtManager: '@lexik_jwt_authentication.jwt_manager'
 
     App\Controller\ProfessionalAuthentification\Register:
         public: true
@@ -66,13 +70,13 @@ services:
         arguments:
             $doctrine: '@doctrine'
             $database: '@App\Entity\ProfessionalTableEntity'
+            $hashPassword: '@Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface'
+            $jwtManager: '@lexik_jwt_authentication.jwt_manager'
 
     App\Controller\ProfessionalAuthentification\Login:
         public: true
         class: App\Controller\ProfessionalAuthentification\Login\Login
         arguments:
             $doctrine: '@doctrine'
-    
-    App\Utils\Authentication\PasswordHash:
-        public: true
-        class: App\Utils\Authentication\hashPassword
+            $database: '@App\Entity\ProfessionalTableEntity'
+            $jwtManager: '@lexik_jwt_authentication.jwt_manager'

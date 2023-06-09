@@ -3,7 +3,6 @@
 namespace App\Controller\ProfessionalAuthentification\Login;
 
 use App\Entity\ProfessionalTableEntity;
-use App\Utils\Authentification\hashPassword\hashPassword;
 
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -12,6 +11,10 @@ use Symfony\Component\Routing\Annotation\Route;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /** 
  * @Route("/Professional/login", name="Professional_login", methods={"POST"})
@@ -23,7 +26,20 @@ use Symfony\Component\HttpFoundation\Response;
  * 
  * @OA\Response(
  *      response=200,
- *      description="Login successful",
+ *      content={
+ *         @OA\MediaType(
+ *              mediaType="application/json",
+ *              @OA\Schema(
+ *                  type="object",
+ *                  @OA\Property(
+ *                      property="token",
+ *                      type="string",
+ *                      description="The token of the user"
+ *                  )
+ *              )
+ *          )
+ *      },
+ *      description="Register successful, returns the newly made token of the user",
  * )
  * @OA\Response(
  *      response=400,
@@ -61,11 +77,15 @@ class Login
 
     private $entityManager;
     private $hashPassword;
+    private $database;
+    private $jwtManager;
 
-    public function __construct(ManagerRegistry $doctrine)
+    public function __construct(ManagerRegistry $doctrine, ProfessionalTableEntity $database, UserPasswordHasherInterface $passwordHasher, JWTTokenManagerInterface $jwtManager)
     {
         $this->entityManager = $doctrine->getManager();
-        $this->hashPassword = new hashPassword();
+        $this->hashPassword = $passwordHasher;
+        $this->database = $database;
+        $this->jwtManager = $jwtManager;
     }
 
     function requestParametersValid($body): void
@@ -88,8 +108,8 @@ class Login
         $userData = $this->entityManager->getRepository(ProfessionalTableEntity::class)->findBy(['email' => $email]);
 
         if ($userData) {
-            $hashedPassword = $userData[0]->getPassword();
-            if ($this->hashPassword->verifyPassword($password, $hashedPassword)) {
+            $user = $userData[0];
+            if ($this->hashPassword->isPasswordValid($user, $password)) {
                 return true;
             }
         }
@@ -116,9 +136,10 @@ class Login
         $password = $body['password'];
 
         if ($this->validateAuthentification($email, $password)) {
-            return new Response("Login successful", Response::HTTP_OK);
+            $token = $this->jwtManager->create($this->database);
+            return new JsonResponse(['token' => $token], Response::HTTP_OK);
         } else {
-            return new Response("Login failed", Response::HTTP_UNAUTHORIZED);
+            return new Response("Login failed: the user credentials are invalid", Response::HTTP_UNAUTHORIZED);
         }
     }
 }

@@ -22,6 +22,8 @@ getProfessional:
     path: /getProfessional
     controller: App\Controller\TestController::getProfessional
 
+# Patient routes
+
 registerPatient:
     path: /patient/register
     controller: App\Controller\PatientAuthentification\Register::register
@@ -32,6 +34,8 @@ loginPatient:
     controller: App\Controller\PatientAuthentification\Login::login
     methods: [POST]
 
+# Professional routes
+
 registerProfessional:
     path: /professional/register
     controller: App\Controller\ProfessionalAuthentification\Register::register
@@ -41,6 +45,8 @@ loginProfessional:
     path: /professional/login
     controller: App\Controller\ProfessionalAuthentification\Login::login
     methods: [POST]
+
+# Swagger routes
 
 app.swagger.ui:
     path: /api/doc

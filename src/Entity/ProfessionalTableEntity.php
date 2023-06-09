@@ -4,11 +4,14 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+
 /**
  * @ORM\Entity
  * @ORM\Table(name="professional")
  */
-class ProfessionalTableEntity
+class ProfessionalTableEntity implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Id
@@ -31,6 +34,11 @@ class ProfessionalTableEntity
      * @ORM\Column(type="string", length=255, name="email")
      */
     protected $email;
+
+    /**
+     * @ORM\Column(type="json", name="roles")
+     */
+    private array $roles = [];
 
     /**
      * @ORM\Column(type="string", length=255, name="password")
@@ -82,12 +90,8 @@ class ProfessionalTableEntity
         return $this->email;
     }
 
-    public function setPassword($password) {
+    public function setPassword($password): void {
         $this->password = $password;
-    }
-
-    public function getPassword() {
-        return $this->password;
     }
 
     public function setAdmin($admin) {
@@ -104,5 +108,44 @@ class ProfessionalTableEntity
 
     public function getCreatedAt() {
         return $this->created_at;
+    }
+
+    # UserInterface methods
+
+    public function getUserIdentifier(): string
+    {
+        return $this->email;
+    }
+
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_PROFESSIONAL
+        $roles[] = 'ROLE_PROFESSIONAL';
+
+        return array_unique($roles);
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function getSalt()
+    {
+        // leave this method empty unless you're using a custom salt
+        // hashing strategy.
+    }
+
+    public function eraseCredentials()
+    {
+        // if you store any temporary, sensitive data on the user, clear it here
     }
 }
