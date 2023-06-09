@@ -61,6 +61,8 @@ services:
         class: App\Controller\PatientAuthentification\Login\Login
         arguments:
             $doctrine: '@doctrine'
+            $database: '@App\Entity\PatientTableEntity'
+            $jwtManager: '@lexik_jwt_authentication.jwt_manager'
 
     App\Controller\ProfessionalAuthentification\Register:
         public: true
@@ -76,3 +78,5 @@ services:
         class: App\Controller\ProfessionalAuthentification\Login\Login
         arguments:
             $doctrine: '@doctrine'
+            $database: '@App\Entity\ProfessionalTableEntity'
+            $jwtManager: '@lexik_jwt_authentication.jwt_manager'

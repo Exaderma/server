@@ -13,6 +13,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 /** 
  * @Route("/patient/login", name="patient_login", methods={"POST"})
  * 
@@ -23,7 +26,20 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
  * 
  * @OA\Response(
  *      response=200,
- *      description="Login successful",
+ *      content={
+ *         @OA\MediaType(
+ *              mediaType="application/json",
+ *              @OA\Schema(
+ *                  type="object",
+ *                  @OA\Property(
+ *                      property="token",
+ *                      type="string",
+ *                      description="The token of the user"
+ *                  )
+ *              )
+ *          )
+ *      },
+ *      description="Register successful, returns the newly made token of the user",
  * )
  * @OA\Response(
  *      response=400,
@@ -61,11 +77,15 @@ class Login
 
     private $entityManager;
     private $hashPassword;
+    private $database;
+    private $jwtManager;
 
-    public function __construct(ManagerRegistry $doctrine, UserPasswordHasherInterface $passwordHasher)
+    public function __construct(ManagerRegistry $doctrine, PatientTableEntity $database, UserPasswordHasherInterface $passwordHasher, JWTTokenManagerInterface $jwtManager)
     {
         $this->entityManager = $doctrine->getManager();
         $this->hashPassword = $passwordHasher;
+        $this->database = $database;
+        $this->jwtManager = $jwtManager;
     }
 
     function requestParametersValid($body): void
@@ -116,9 +136,10 @@ class Login
         $password = $body['password'];
 
         if ($this->validateAuthentification($email, $password)) {
-            return new Response("Login successful", Response::HTTP_OK);
+            $token = $this->jwtManager->create($this->database);
+            return new JsonResponse(['token' => $token], Response::HTTP_OK);
         } else {
-            return new Response("Login failed", Response::HTTP_UNAUTHORIZED);
+            return new Response("Login failed: the user credentials are invalid", Response::HTTP_UNAUTHORIZED);
         }
     }
 }
