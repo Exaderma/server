@@ -63,7 +63,7 @@ class LinkUser
         return new Response(json_encode($code), Response::HTTP_OK);
     }
 
-    public function getLinkDoctor(ManagerRegistry $doctrine): Response
+    public function getLinkedDoctor(ManagerRegistry $doctrine): Response
     {
         $decodedJwtToken = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
         $entityManager = $doctrine->getManager();
@@ -82,7 +82,7 @@ class LinkUser
         return new Response(json_encode($response), Response::HTTP_OK);
     }
 
-    public function getLinkPatient(ManagerRegistry $doctrine): Response
+    public function getLinkedPatient(ManagerRegistry $doctrine): Response
     {
         $decodedJwtToken = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
         $entityManager = $doctrine->getManager();

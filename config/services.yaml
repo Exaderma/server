@@ -85,6 +85,6 @@ services:
         public: true
         class: App\Controller\link\Link\LinkUser
         arguments:
-            $uuid: '@App\Utils\UUID'
+            $uuid: '@App\Utils\UuidGenerator'
             $jwtManager: '@lexik_jwt_authentication.jwt_manager'
             $tokenStorageInterface: '@security.token_storage'
