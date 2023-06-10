@@ -129,7 +129,7 @@ class Login
                 $parameterName = $matches[1];
                 return new Response("Missing parameter: $parameterName", Response::HTTP_BAD_REQUEST);
             }
-            return new Response($e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+            return new JsonResponse(['error' => $e->getMessage(), 'parameters' => $body], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         $email = $body['email'];
