@@ -19,22 +19,23 @@ class LinkUser
     private $uuid;
     private $jwtManager;
     private $tokenStorageInterface;
-    public function __construct(UUID $uuid, JWTTokenManagerInterface $jwtManager, TokenStorageInterface $tokenStorageInterface)
+    private $entityManager;
+    public function __construct(UUID $uuid, JWTTokenManagerInterface $jwtManager, TokenStorageInterface $tokenStorageInterface, ManagerRegistry $doctrine)
     {
         $this->uuid = $uuid;
         $this->jwtManager = $jwtManager;
         $this->tokenStorageInterface = $tokenStorageInterface;
+        $this->entityManager = $doctrine->getManager();
     }
 
-    public function link(Request $request, ManagerRegistry $doctrine): Response
+    public function link(Request $request): Response
     {
-        $entityManager = $doctrine->getManager();
         $body = json_decode($request->getContent(), true);
         $decodedJwtToken = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
 
-        $patient = $entityManager->getRepository(PatientTableEntity::class)->findOneBy(['email' => $body['email']]);
-        $doctor = $entityManager->getRepository(ProfessionalTableEntity::class)->findOneBy(['code' => $body['code']]);
-        $link = $entityManager->getRepository(LinkUserTableEntity::class)->findOneBy(['patientId' => $patient->getId(), 'professionalId' => $doctor->getId()]);
+        $patient = $this->entityManager->getRepository(PatientTableEntity::class)->findOneBy(['email' => $body['email']]);
+        $doctor = $this->entityManager->getRepository(ProfessionalTableEntity::class)->findOneBy(['code' => $body['code']]);
+        $link = $this->entityManager->getRepository(LinkUserTableEntity::class)->findOneBy(['patientId' => $patient->getId(), 'professionalId' => $doctor->getId()]);
 
         if ($patient->getEmail() != $decodedJwtToken['email'] || $doctor == null || $link != null) {
             return new Response(json_encode(['error' => 'You can only link yourself']), Response::HTTP_BAD_REQUEST);
@@ -43,36 +44,35 @@ class LinkUser
         $link = new LinkUserTableEntity();
         $link->setPatientId($patient->getId());
         $link->setDoctorId($doctor->getId());
-        $entityManager->persist($link);
-        $entityManager->flush();
+        $this->entityManager->persist($link);
+        $this->entityManager->flush();
 
         return new Response(json_encode(['success' => 'You are now linked']), Response::HTTP_OK);
     }
 
-    public function generateCode(ManagerRegistry $doctrine, Request $request): Response
+    public function generateCode(): Response
     {
-        $body = json_decode($request->getContent(), true);
-        $entityManager = $doctrine->getManager();
-        $doctors = $entityManager->getRepository(ProfessionalTableEntity::class)->findOneBy(['email' => $body['email']]);
+        return new Response(json_encode($this->tokenStorageInterface->getToken()), Response::HTTP_OK);
+        $decodedJwtToken = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
+        $doctors = $this->entityManager->getRepository(ProfessionalTableEntity::class)->findOneBy(['email' => $decodedJwtToken['email']]);
 
         $code = $this->uuid->guidv4();
         $doctors->setCode($code);
-        $entityManager->persist($doctors);
-        $entityManager->flush();
+        $this->entityManager->persist($doctors);
+        $this->entityManager->flush();
 
         return new Response(json_encode($code), Response::HTTP_OK);
     }
 
-    public function getLinkedDoctor(ManagerRegistry $doctrine): Response
+    public function getLinkedDoctor(): Response
     {
         $decodedJwtToken = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
-        $entityManager = $doctrine->getManager();
-        $doctor = $entityManager->getRepository(ProfessionalTableEntity::class)->findOneBy(['email' => $decodedJwtToken['email']]);
-        $links = $entityManager->getRepository(LinkUserTableEntity::class)->findBy(['professionalId' => $doctor->getId()]);
+        $doctor = $this->entityManager->getRepository(ProfessionalTableEntity::class)->findOneBy(['email' => $decodedJwtToken['email']]);
+        $links = $this->entityManager->getRepository(LinkUserTableEntity::class)->findBy(['professionalId' => $doctor->getId()]);
 
         $response = [];
         foreach ($links as $link) {
-            $patient = $entityManager->getRepository(PatientTableEntity::class)->find($link->getPatientId());
+            $patient = $this->entityManager->getRepository(PatientTableEntity::class)->find($link->getPatientId());
             $response[] = [
                 'id' => $link->getId(),
                 'patient' => $patient->getEmail(),
@@ -82,16 +82,15 @@ class LinkUser
         return new Response(json_encode($response), Response::HTTP_OK);
     }
 
-    public function getLinkedPatient(ManagerRegistry $doctrine): Response
+    public function getLinkedPatient(): Response
     {
         $decodedJwtToken = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
-        $entityManager = $doctrine->getManager();
-        $patient = $entityManager->getRepository(PatientTableEntity::class)->findOneBy(['email' => $decodedJwtToken['email']]);
-        $links = $entityManager->getRepository(LinkUserTableEntity::class)->findBy(['patientId' => $patient->getId()]);
+        $patient = $this->entityManager->getRepository(PatientTableEntity::class)->findOneBy(['email' => $decodedJwtToken['email']]);
+        $links = $this->entityManager->getRepository(LinkUserTableEntity::class)->findBy(['patientId' => $patient->getId()]);
 
         $response = [];
         foreach ($links as $link) {
-            $doctor = $entityManager->getRepository(ProfessionalTableEntity::class)->find($link->getDoctorId());
+            $doctor = $this->entityManager->getRepository(ProfessionalTableEntity::class)->find($link->getDoctorId());
             $response[] = [
                 'id' => $link->getId(),
                 'doctor' => $doctor->getEmail(),

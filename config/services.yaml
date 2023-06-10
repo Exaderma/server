@@ -88,3 +88,4 @@ services:
             $uuid: '@App\Utils\UuidGenerator'
             $jwtManager: '@lexik_jwt_authentication.jwt_manager'
             $tokenStorageInterface: '@security.token_storage'
+            $doctrine: '@doctrine'
