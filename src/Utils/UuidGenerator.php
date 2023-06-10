@@ -2,7 +2,7 @@
 
 namespace App\Utils;
 
-class UUID
+class UuidGenerator
 {
     public function guidv4($data = null) {
         // Generate 16 bytes (128 bits) of random data or use the data passed into the function.

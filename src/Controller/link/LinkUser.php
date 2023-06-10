@@ -6,7 +6,7 @@ use App\Entity\PatientTableEntity;
 use App\Entity\ProfessionalTableEntity;
 use App\Entity\LinkUserTableEntity;
 
-use App\Utils\UUID;
+use App\Utils\UuidGenerator as UUID;
 
 use Doctrine\Persistence\ManagerRegistry;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
