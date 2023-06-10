@@ -59,7 +59,7 @@ loginProfessional:
 linkProfessional:
     path: /professional/link
     controller: App\Controller\link\LinkUser::generateCode
-    methods: [POST]
+    methods: [GET]
 
 getLinkedProfessional:
     path: /professional/getLinked

@@ -51,8 +51,7 @@ class LinkUser
     }
 
     public function generateCode(): Response
-    {
-        return new Response(json_encode($this->tokenStorageInterface->getToken()), Response::HTTP_OK);
+    {        
         $decodedJwtToken = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
         $doctors = $this->entityManager->getRepository(ProfessionalTableEntity::class)->findOneBy(['email' => $decodedJwtToken['email']]);
 
