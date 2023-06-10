@@ -81,9 +81,9 @@ services:
             $database: '@App\Entity\ProfessionalTableEntity'
             $jwtManager: '@lexik_jwt_authentication.jwt_manager'
     
-    App\Controller\link\Link:
+    App\Controller\link\LinkUser:
         public: true
-        class: App\Controller\link\Link\LinkUser
+        class: App\Controller\link\LinkUser
         arguments:
             $uuid: '@App\Utils\UuidGenerator'
             $jwtManager: '@lexik_jwt_authentication.jwt_manager'
