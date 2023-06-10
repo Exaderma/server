@@ -80,3 +80,11 @@ services:
             $doctrine: '@doctrine'
             $database: '@App\Entity\ProfessionalTableEntity'
             $jwtManager: '@lexik_jwt_authentication.jwt_manager'
+    
+    App\Controller\link\Link:
+        public: true
+        class: App\Controller\link\Link\LinkUser
+        arguments:
+            $uuid: '@App\Utils\UUID'
+            $jwtManager: '@lexik_jwt_authentication.jwt_manager'
+            $tokenStorageInterface: '@security.token_storage'
