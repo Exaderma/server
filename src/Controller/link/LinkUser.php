@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use function Symfony\Component\String\u;
 
 class LinkUser
 {
@@ -51,9 +52,18 @@ class LinkUser
         return new Response(json_encode(['success' => 'You are now linked']), Response::HTTP_OK);
     }
 
-    public function generateCode(): Response
-    {        
-        $decodedJwtToken = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
+    private function decodeToken(string $header): array
+    {
+        $token = u($header)->split(' ')[1];
+        $tokenParts = explode(".", $token);
+        $tokenPayload = base64_decode($tokenParts[1]);
+        return json_decode($tokenPayload, true);
+    }
+
+    public function generateCode(Request $request): Response
+    {
+        $header = $request->headers->get('Authorization');
+        $decodedJwtToken = $this->decodeToken($header);
         $doctors = $this->entityManager->getRepository(ProfessionalTableEntity::class)->findOneBy(['email' => $decodedJwtToken['email']]);
 
         $code = $this->uuid->guidv4();
