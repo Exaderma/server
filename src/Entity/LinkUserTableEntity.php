@@ -20,12 +20,12 @@ class LinkUserTableEntity
     /**
      * @ORM\Column(type="integer", name="patient_id")
      */
-    protected $patientId;
+    protected $patient_id;
 
     /**
      * @ORM\Column(type="integer", name="doctor_id")
      */
-    protected $doctorId;
+    protected $doctor_id;
 
     public function __construct() {
     }
@@ -39,18 +39,18 @@ class LinkUserTableEntity
     }
 
     public function setPatientId($patientId) {
-        $this->patientId = $patientId;
+        $this->patient_id = $patientId;
     }
 
     public function getPatientId() {
-        return $this->patientId;
+        return $this->patient_id;
     }
 
     public function setDoctorId($doctorId) {
-        $this->doctorId = $doctorId;
+        $this->doctor_id = $doctorId;
     }
 
     public function getDoctorId() {
-        return $this->doctorId;
+        return $this->doctor_id;
     }
 }

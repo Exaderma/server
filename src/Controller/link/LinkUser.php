@@ -33,11 +33,18 @@ class LinkUser
     public function link(Request $request): Response
     {
         $body = json_decode($request->getContent(), true);
-        $decodedJwtToken = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
+        $header = $request->headers->get('Authorization');
+        $decodedJwtToken = $this->decodeToken($header);
 
-        $patient = $this->entityManager->getRepository(PatientTableEntity::class)->findOneBy(['email' => $body['email']]);
+        $patient = $this->entityManager->getRepository(PatientTableEntity::class)->findOneBy(['email' => $decodedJwtToken['email']]);
+        if ($patient == null) {
+            return new Response(json_encode(['error' => 'You are not a patient']), Response::HTTP_BAD_REQUEST);
+        }
         $doctor = $this->entityManager->getRepository(ProfessionalTableEntity::class)->findOneBy(['code' => $body['code']]);
-        $link = $this->entityManager->getRepository(LinkUserTableEntity::class)->findOneBy(['patientId' => $patient->getId(), 'professionalId' => $doctor->getId()]);
+        if ($doctor == null) {
+            return new Response(json_encode(['error' => 'Doctor not found']), Response::HTTP_BAD_REQUEST);
+        }
+        $link = $this->entityManager->getRepository(LinkUserTableEntity::class)->findOneBy(['patient_id' => $patient->getId(), 'doctor_id' => $doctor->getId()]);
 
         if ($patient->getEmail() != $decodedJwtToken['email'] || $doctor == null || $link != null) {
             return new Response(json_encode(['error' => 'You can only link yourself']), Response::HTTP_BAD_REQUEST);
@@ -64,11 +71,14 @@ class LinkUser
     {
         $header = $request->headers->get('Authorization');
         $decodedJwtToken = $this->decodeToken($header);
-        $doctors = $this->entityManager->getRepository(ProfessionalTableEntity::class)->findOneBy(['email' => $decodedJwtToken['email']]);
+        $doctor = $this->entityManager->getRepository(ProfessionalTableEntity::class)->findOneBy(['email' => $decodedJwtToken['email']]);
 
+        if ($doctor == null) {
+            return new Response(json_encode(['error' => 'You are not a doctor']), Response::HTTP_BAD_REQUEST);
+        }
         $code = $this->uuid->guidv4();
-        $doctors->setCode($code);
-        $this->entityManager->persist($doctors);
+        $doctor->setCode($code);
+        $this->entityManager->persist($doctor);
         $this->entityManager->flush();
 
         return new Response(json_encode($code), Response::HTTP_OK);
