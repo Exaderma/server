@@ -49,9 +49,13 @@ security:
         - { path: ^/patient/register, roles: PUBLIC_ACCESS }
         - { path: ^/professional/login, roles: PUBLIC_ACCESS }
         - { path: ^/professional/register, roles: PUBLIC_ACCESS }
-        - {path: ^/api/doc, roles: PUBLIC_ACCESS}
-        - {path: ^/api/doc.json, roles: PUBLIC_ACCESS}
+        - { path: ^/api/doc, roles: PUBLIC_ACCESS }
+        - { path: ^/api/doc.json, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/patient/getLinked, roles: PUBLIC_ACCESS }
+        - { path: ^/patient/link, roles: PUBLIC_ACCESS }
+        - { path: ^/professional/link, roles: PUBLIC_ACCESS }
+        - { path: ^/professional/getLinkedProfessional, roles: PUBLIC_ACCESS }
         # - { path: ^/admin, roles: ROLE_ADMIN }
         # - { path: ^/profile, roles: ROLE_USER }
 

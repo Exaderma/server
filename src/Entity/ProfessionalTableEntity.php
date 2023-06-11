@@ -55,6 +55,11 @@ class ProfessionalTableEntity implements UserInterface, PasswordAuthenticatedUse
      */
     protected $created_at;
 
+    /**
+     * @ORM\Column(type="string", length=255, name="code")
+     */
+    protected $code;
+
     public function __construct() {
     }
 
@@ -147,5 +152,15 @@ class ProfessionalTableEntity implements UserInterface, PasswordAuthenticatedUse
     public function eraseCredentials()
     {
         // if you store any temporary, sensitive data on the user, clear it here
+    }
+
+    public function getCode(): string
+    {
+        return $this->code;
+    }
+
+    public function setCode($code): void
+    {
+        $this->code = $code;
     }
 }

@@ -34,6 +34,16 @@ loginPatient:
     controller: App\Controller\PatientAuthentification\Login::login
     methods: [POST]
 
+linkPatient:
+    path: /patient/link
+    controller: App\Controller\link\LinkUser::link
+    methods: [POST]
+
+getLinkedPatient:
+    path: /patient/getLinked
+    controller: App\Controller\link\LinkUser::getLinkedPatient
+    methods: [GET]
+
 # Professional routes
 
 registerProfessional:
@@ -45,6 +55,16 @@ loginProfessional:
     path: /professional/login
     controller: App\Controller\ProfessionalAuthentification\Login::login
     methods: [POST]
+
+linkProfessional:
+    path: /professional/link
+    controller: App\Controller\link\LinkUser::generateCode
+    methods: [GET]
+
+getLinkedProfessional:
+    path: /professional/getLinked
+    controller: App\Controller\link\LinkUser::getLinkedDoctor
+    methods: [GET]
 
 # Swagger routes
 
