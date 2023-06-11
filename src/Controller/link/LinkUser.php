@@ -249,7 +249,7 @@ class LinkUser
         $decodedJwtToken = $this->decodeToken($header);
         $patient = $this->entityManager->getRepository(PatientTableEntity::class)->findOneBy(['email' => $decodedJwtToken['email']]);
         if ($patient == null) {
-            return new Response(json_encode(['error' => 'You are not a patient']), Response::405);
+            return new Response(json_encode(['error' => 'You are not a patient']), Response::METHOD_NOT_ALLOWED);
         }
         $links = $this->entityManager->getRepository(LinkUserTableEntity::class)->findBy(['patient_id' => $patient->getId()]);
         if ($links == null) {
