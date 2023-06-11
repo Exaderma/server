@@ -13,6 +13,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 class LinkUser
 {
@@ -63,9 +64,9 @@ class LinkUser
         return new Response(json_encode($code), Response::HTTP_OK);
     }
 
-    public function getLinkedDoctor(): Response
+    public function getLinkedDoctor(TokenInterface $token): Response
     {
-        $decodedJwtToken = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
+        $decodedJwtToken = $this->jwtManager->decode($token);
         $doctor = $this->entityManager->getRepository(ProfessionalTableEntity::class)->findOneBy(['email' => $decodedJwtToken['email']]);
         $links = $this->entityManager->getRepository(LinkUserTableEntity::class)->findBy(['professionalId' => $doctor->getId()]);
 
