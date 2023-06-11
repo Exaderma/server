@@ -84,11 +84,18 @@ class LinkUser
         return new Response(json_encode($code), Response::HTTP_OK);
     }
 
-    public function getLinkedDoctor(TokenInterface $token): Response
+    public function getLinkedDoctor(Request $request): Response
     {
-        $decodedJwtToken = $this->jwtManager->decode($token);
+        $header = $request->headers->get('Authorization');
+        $decodedJwtToken = $this->decodeToken($header);
         $doctor = $this->entityManager->getRepository(ProfessionalTableEntity::class)->findOneBy(['email' => $decodedJwtToken['email']]);
-        $links = $this->entityManager->getRepository(LinkUserTableEntity::class)->findBy(['professionalId' => $doctor->getId()]);
+        if ($doctor == null) {
+            return new Response(json_encode(['error' => 'You are not a doctor']), Response::HTTP_BAD_REQUEST);
+        }
+        $links = $this->entityManager->getRepository(LinkUserTableEntity::class)->findBy(['doctor_id' => $doctor->getId()]);
+        if ($links == null) {
+            return new Response(json_encode(['error' => 'You are not linked to any patient']), Response::HTTP_BAD_REQUEST);
+        }
 
         $response = [];
         foreach ($links as $link) {
@@ -102,11 +109,18 @@ class LinkUser
         return new Response(json_encode($response), Response::HTTP_OK);
     }
 
-    public function getLinkedPatient(): Response
+    public function getLinkedPatient(Request $request): Response
     {
-        $decodedJwtToken = $this->jwtManager->decode($this->tokenStorageInterface->getToken());
+        $header = $request->headers->get('Authorization');
+        $decodedJwtToken = $this->decodeToken($header);
         $patient = $this->entityManager->getRepository(PatientTableEntity::class)->findOneBy(['email' => $decodedJwtToken['email']]);
-        $links = $this->entityManager->getRepository(LinkUserTableEntity::class)->findBy(['patientId' => $patient->getId()]);
+        if ($patient == null) {
+            return new Response(json_encode(['error' => 'You are not a patient']), Response::HTTP_BAD_REQUEST);
+        }
+        $links = $this->entityManager->getRepository(LinkUserTableEntity::class)->findBy(['patient_id' => $patient->getId()]);
+        if ($links == null) {
+            return new Response(json_encode(['error' => 'You are not linked to any doctor']), Response::HTTP_BAD_REQUEST);
+        }
 
         $response = [];
         foreach ($links as $link) {

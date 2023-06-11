@@ -63,7 +63,7 @@ linkProfessional:
 
 getLinkedProfessional:
     path: /professional/getLinked
-    controller: App\Controller\link\LinkUser::getLinkedProfessional
+    controller: App\Controller\link\LinkUser::getLinkedDoctor
     methods: [POST]
 
 # Swagger routes
