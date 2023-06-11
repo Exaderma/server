@@ -42,7 +42,7 @@ linkPatient:
 getLinkedPatient:
     path: /patient/getLinked
     controller: App\Controller\link\LinkUser::getLinkedPatient
-    methods: [POST]
+    methods: [GET]
 
 # Professional routes
 
@@ -64,7 +64,7 @@ linkProfessional:
 getLinkedProfessional:
     path: /professional/getLinked
     controller: App\Controller\link\LinkUser::getLinkedDoctor
-    methods: [POST]
+    methods: [GET]
 
 # Swagger routes
 

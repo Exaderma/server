@@ -16,6 +16,128 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use function Symfony\Component\String\u;
 
+use OpenApi\Annotations as OA;
+use Symfony\Component\Routing\Annotation\Route;
+
+/**
+ * @Route("/patient/link", name="link", methods={"POST"})
+ * 
+ * @OA\Post(
+ *     summary="Link a doctor to a patient",
+ *    description="Link a doctor to a patient",
+ * )
+ * 
+ * @OA\Response(
+ *    response=201,
+ *   description="Link successful",
+ * )
+ * @OA\Response(
+ *   response=400,
+ *  description="Link failed: invalid JSON or missing parameters in the body"
+ * )
+ * 
+ * @OA\RequestBody(
+ * required=true,
+ * description="JSON containing the user credentials",
+ * @OA\JsonContent(
+ *    type="object",
+ *   @OA\Property(
+ *     property="code",
+ *   type="string",
+ * description="The code of the doctor"
+ * ),
+ * )
+ * )
+ */
+
+/**
+ * @Route("/professional/link", name="link_code", methods={"GET"})
+ * 
+ * @OA\Get(
+ *  summary="Generate a code for a doctor",
+ * description="Generate a code for a doctor",
+ * )
+ * 
+ * @OA\Response(
+ * response=200,
+ * description="Code generated",
+ * @OA\JsonContent(
+ * type="string",
+ * description="The code of the doctor"
+ * property="code",
+ * )
+ * )
+ * @OA\Response(
+ * response=400,
+ * description="Code generation failed: invalid JSON or missing parameters in the body"
+ * )
+ */
+
+/**
+ * @Route("/patient/getLinked", name="link_doctor", methods={"GET"})
+ * 
+ * @OA\Get(
+ *   summary="Get the linked doctors of a patient",
+ * description="Get the linked doctors of a patient",
+ * )
+ * 
+ * @OA\Response(
+ * response=200,
+ * jsonContent=@OA\Schema(
+ * type="array",
+ * @OA\Items(
+ * type="object",
+ * @OA\Property(
+ * property="id",
+ * type="integer",
+ * description="The id of the link"
+ * ),
+ * @OA\Property(
+ * property="doctor",
+ * type="string",
+ * description="The email of the doctor"
+ * ),
+ * )
+ * )
+ * )
+ * @OA\Response(
+ * response=400,
+ * description="Get linked doctors failed: invalid JSON or missing parameters in the body"
+ * )
+ */
+
+/**
+ * @Route("/professional/getLinked", name="link_patient", methods={"GET"})
+ * 
+ * @OA\Get(
+ * summary="Get the linked patients of a doctor",
+ * description="Get the linked patients of a doctor",
+ * )
+ * 
+ * @OA\Response(
+ * response=200,
+ * jsonContent=@OA\Schema(
+ * type="array",
+ * @OA\Items(
+ * type="object",
+ * @OA\Property(
+ * property="id",
+ * type="integer",
+ * description="The id of the link"
+ * ),
+ * @OA\Property(
+ * property="patient",
+ * type="string",
+ * description="The email of the patient"
+ * ),
+ * )
+ * )
+ * )
+ * @OA\Response(
+ * response=400,
+ * description="Get linked patients failed: invalid JSON or missing parameters in the body"
+ * )
+ */
 class LinkUser
 {
     private $uuid;
@@ -56,7 +178,7 @@ class LinkUser
         $this->entityManager->persist($link);
         $this->entityManager->flush();
 
-        return new Response(json_encode(['success' => 'You are now linked']), Response::HTTP_OK);
+        return new Response(json_encode(['success' => 'You are now linked']), Response::HTTP_CREATED);
     }
 
     private function decodeToken(string $header): array
