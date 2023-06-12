@@ -131,9 +131,9 @@ class Login
             }
             return new JsonResponse(['error' => $e->getMessage(), 'parameters' => $body], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
         $email = $body['email'];
         $password = $body['password'];
+        $this->database->setEmail($email);
 
         if ($this->validateAuthentification($email, $password)) {
             $token = $this->jwtManager->create($this->database);

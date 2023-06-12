@@ -134,6 +134,7 @@ class Login
 
         $email = $body['email'];
         $password = $body['password'];
+        $this->database->setEmail($email);
 
         if ($this->validateAuthentification($email, $password)) {
             $token = $this->jwtManager->create($this->database);
