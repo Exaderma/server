@@ -8,14 +8,14 @@ import { DoctorEntity } from "../../entity/doctor";
 export class Link {
   private dbClient: DataSource;
   constructor() {
-    console.log(process.env.DB_HOST)
+    console.log(process.env)
     this.dbClient = new DataSource({
       type: "postgres",
-      host: process.env.DB_HOST,
+      host: process.env.DB_HOST as string,
       port: process.env.DB_PORT as unknown as number,
-      username: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
+      username: process.env.DB_USER as string,
+      password: process.env.DB_PASSWORD as string,
+      database: process.env.DB_NAME as string,
       entities: [LinkEntity, PatientEntity, DoctorEntity],
       synchronize: true,
       logging: false,
