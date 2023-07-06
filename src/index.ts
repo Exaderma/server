@@ -1,10 +1,8 @@
 import express, { Express, Request, Response } from "express";
-import dotenv from "dotenv";
+require('dotenv').config()
 
 let cors = require("cors");
 let router = require("./link/routes/routesLink");
-
-dotenv.config();
 
 const app: Express = express();
 

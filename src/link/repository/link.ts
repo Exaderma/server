@@ -8,7 +8,6 @@ import { DoctorEntity } from "../../entity/doctor";
 export class Link {
   private dbClient: DataSource;
   constructor() {
-    console.log(process.env)
     this.dbClient = new DataSource({
       type: "postgres",
       host: process.env.DB_HOST as string,
@@ -34,8 +33,8 @@ export class Link {
   // TODO: Implement this
   public async LinkPatientToDoctor(): Promise<string> {
     const link = new LinkEntity();
-    link.doctor_id = 1;
-    link.patient_id = 2;
+    link.doctorId = 1;
+    link.patientId = 2;
     await this.dbClient.manager.save(link);
     console.log("Link saved");
   
@@ -45,8 +44,8 @@ export class Link {
   // TODO: Implement this
   public async LinkDoctorToPatient(): Promise<string> {
     const link = new LinkEntity();
-    link.doctor_id = 1;
-    link.patient_id = 2;
+    link.doctorId = 1;
+    link.patientId = 2;
     await this.dbClient.manager.save(link);
     console.log("Link saved");
 

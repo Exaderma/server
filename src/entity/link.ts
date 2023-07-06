@@ -1,13 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
 
-@Entity()
+@Entity({ name: "link" }) // Spécifiez le nom de la table si nécessaire
 export class LinkEntity extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    id: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    patient_id: number
+  @Column({ name: "patient_id" })
+  patientId: number;
 
-    @Column()
-    doctor_id: number
+  @Column({ name: "doctor_id" })
+  doctorId: number;
 }

@@ -1,28 +1,28 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
 
-@Entity()
+@Entity({ name: "patient" }) // Spécifiez le nom de la table si nécessaire
 export class PatientEntity extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    id: number
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    firstName: string
+  @Column({ name: "firstName" })
+  firstName: string;
 
-    @Column()
-    lastName: string
+  @Column({ name: "lastName" })
+  lastName: string;
 
-    @Column()
-    email: string
+  @Column()
+  password: string;
 
-    @Column()
-    password: string
+  @Column({ unique: true })
+  email: string;
 
-    @Column()
-    admin: boolean
+  @Column({ default: false })
+  admin: boolean;
 
-    @Column()
-    roles: {}
+  @Column({ type: "json", default: () => "'[]'" })
+  roles: any[];
 
-    @Column()
-    created_at: Date
+  @Column({ default: () => "CURRENT_TIMESTAMP" })
+  created_at: Date;
 }
