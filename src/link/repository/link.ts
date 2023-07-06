@@ -8,6 +8,7 @@ import { DoctorEntity } from "../../entity/doctor";
 export class Link {
   private dbClient: DataSource;
   constructor() {
+    console.log(process.env.DB_HOST)
     this.dbClient = new DataSource({
       type: "postgres",
       host: process.env.DB_HOST,
