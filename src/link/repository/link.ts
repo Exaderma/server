@@ -3,7 +3,13 @@ import { DataSource } from "typeorm"
 import { LinkEntity } from "../../entity/link";
 import { PatientEntity } from "../../entity/patient";
 import { DoctorEntity } from "../../entity/doctor";
+import { Mail } from "../../mail/mail";
+import { generateRandomNumber } from "../../utils/code";
 
+let mail = new Mail({
+  username: process.env.MAIL_USERNAME as string,
+  apiKey: process.env.MAIL_API_KEY as string,
+});
 
 export class Link {
   private dbClient: DataSource;
@@ -30,25 +36,71 @@ export class Link {
     });
   }
 
-  // TODO: Implement this
-  public async LinkPatientToDoctor(): Promise<string> {
+  public async LinkPatientToDoctor(code : number, patientId : number): Promise<string> {
+    const doctor = await this.dbClient.manager.findOne(DoctorEntity, {where: {code: String(code)}});
+    if (!doctor) {
+      return "Doctor not found";
+    }
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {where: {id: patientId}});
+    if (!patient) {
+      return "Patient not found";
+    }
     const link = new LinkEntity();
-    link.doctorId = 1;
-    link.patientId = 2;
+    link.doctorId = doctor.id;
+    link.patientId = patient.id;
     await this.dbClient.manager.save(link);
     console.log("Link saved");
-  
-    return "Hello World!";
+    return "success";
   }
 
-  // TODO: Implement this
-  public async LinkDoctorToPatient(): Promise<string> {
-    const link = new LinkEntity();
-    link.doctorId = 1;
-    link.patientId = 2;
-    await this.dbClient.manager.save(link);
-    console.log("Link saved");
+  public async LinkDoctorToPatient(doctorId : number, email: string): Promise<string> {
+    const doctor = await this.dbClient.manager.findOne(DoctorEntity, {where: {id: doctorId}});
+    if (!doctor) {
+      return "Doctor not found";
+    }
 
-    return "Hello World!";
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {where: {email: email}});
+    if (!patient) {
+      return "Patient not found";
+    }
+
+    const link = await this.dbClient.manager.findOne(LinkEntity, {where: {doctorId: doctor.id, patientId: patient.id}});
+    if (link) {
+      return "Link already exists";
+    }
+
+    const newLink = new LinkEntity();
+    newLink.doctorId = doctor.id;
+    newLink.patientId = patient.id;
+    await this.dbClient.manager.save(newLink);
+
+    const generatedCode = generateRandomNumber(6);
+    doctor.code = String(generatedCode);
+    await this.dbClient.manager.save(doctor);
+    return "success";
+  }
+
+  public async getLinkPatient(patientId: number): Promise<any> {
+    const link = await this.dbClient.manager.findOne(LinkEntity, {where: {patientId: patientId}});
+    if (!link) {
+      return "Link not found";
+    }
+    const doctor = await this.dbClient.manager.findOne(DoctorEntity, {where: {id: link.doctorId}});
+    if (!doctor) {
+      return "Doctor not found";
+    }
+    return doctor;
+  }
+
+  public async getLinkDoctor(doctorId: number): Promise<any> {
+    const link = await this.dbClient.manager.findOne(LinkEntity, {where: {doctorId: doctorId}});
+    if (!link) {
+      return "Link not found";
+    }
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {where: {id: link.patientId}});
+    if (!patient) {
+      return "Patient not found";
+    }
+    return patient;
   }
 }
