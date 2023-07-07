@@ -1,7 +1,4 @@
-import {
-  resolverLinkDoctorToPatient,
-  resolverLinkPatientToDoctor,
-} from "../../src/link/api/resolver";
+import { resolverLinkDoctorToPatient, resolverLinkPatientToDoctor } from "../../../src/link/api/resolver";
 
 const templateResolverLink = {
   LinkPatientToDoctor: async (patientId: string, doctorId: string) => "success",

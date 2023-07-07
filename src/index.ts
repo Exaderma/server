@@ -1,13 +1,11 @@
 import express, { Express, Request, Response } from "express";
-import dotenv from "dotenv";
+require('dotenv').config()
 
 let regiter = require("./auth/register/register");
 let login = require("./auth/login/login");
 
 let cors = require("cors");
 let router = require("./link/routes/routesLink");
-
-dotenv.config();
 
 const app: Express = express();
 
