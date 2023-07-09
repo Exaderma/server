@@ -77,6 +77,7 @@ export class Link {
     const generatedCode = generateRandomNumber(6);
     doctor.code = String(generatedCode);
     await this.dbClient.manager.save(doctor);
+    await mail.sendCode("erwan-baillon@orange.fr", doctor.email, String(generatedCode));
     return String(generatedCode);
   }
 
