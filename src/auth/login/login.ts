@@ -4,11 +4,9 @@ import { HTTP_CODES } from '../../utils/HTTP-codes';
 import { generateToken } from '../../utils/security/JWTokens';
 import { ProfessionalEntity } from '../../entity/professional';
 import { PatientEntity } from '../../entity/patient';
-import { Login } from '../repository/login'
+import { loginManager } from '../..';
 
 let router: express.Router = express.Router();
-
-const manager = new Login();
 
 router.post('/patient/login', async (req, res) => {
 
@@ -24,9 +22,9 @@ router.post('/patient/login', async (req, res) => {
       return;
   }
 
-  const token = generateToken(req.body.email);
+  const token = generateToken({email: req.body.email, type: 'patient'});
 
-  await manager.checkUserCredentials(req.body.email, req.body.password, PatientEntity).then(() => {
+  await loginManager.checkUserCredentials(req.body.email, req.body.password, PatientEntity).then(() => {
     res.send(token).status(HTTP_CODES.OK);
   }).catch((err) => {
     if (err.message === 'User not found')
@@ -52,9 +50,9 @@ router.post('/professional/login', async (req, res) => {
       return;
   }
 
-  const token = generateToken(req.body.email);
+  const token = generateToken({email: req.body.email, type: 'professional'});
 
-  await manager.checkUserCredentials(req.body.email, req.body.password, ProfessionalEntity).then(() => {
+  await loginManager.checkUserCredentials(req.body.email, req.body.password, ProfessionalEntity).then(() => {
     res.send(token).status(HTTP_CODES.OK);
   }).catch((err) => {
     if (err.message === 'User not found')

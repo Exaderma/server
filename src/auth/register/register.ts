@@ -5,11 +5,10 @@ import { HTTP_CODES } from '../../utils/HTTP-codes';
 import { ProfessionalEntity } from '../../entity/professional';
 import { PatientEntity } from '../../entity/patient';
 import { hashPassword } from '../../utils/security/hashing';
-import { Register } from '../repository/register'
+import { registerManager } from '../..';
+import { authenticateToken, userAuthenticate } from '../../utils/security/JWTokens';
 
 let router: express.Router = express.Router();
-
-const manager = new Register();
 
 router.post('/patient/register', async (req, res) => {
 
@@ -27,7 +26,7 @@ router.post('/patient/register', async (req, res) => {
       return;
   }
 
-  const token = generateToken(req.body.email);
+  const token = generateToken({email: req.body.email, type: 'patient'});
 
   const patient = new PatientEntity();
 
@@ -36,7 +35,7 @@ router.post('/patient/register', async (req, res) => {
   patient.email = req.body.email;
   patient.password = hashPassword(req.body.password);
 
-  await manager.insertUser(patient).then(() => {
+  await registerManager.insertUser(patient).then(() => {
     res.send(token).status(HTTP_CODES.CREATED);
   }).catch((err) => {
     if (err.message === 'User already exists')
@@ -61,7 +60,7 @@ router.post('/professional/register', async (req, res) => {
       res.status(HTTP_CODES.BAD_REQUEST).send("incorrect credentials format : " + result.error);
       return;
   }
-  const token = generateToken(req.body.email);
+  const token = generateToken({email: req.body.email, type: 'professional'});
 
   const professional = new ProfessionalEntity();
   
@@ -70,7 +69,7 @@ router.post('/professional/register', async (req, res) => {
   professional.email = req.body.email;
   professional.password = hashPassword(req.body.password);
 
-  await manager.insertUser(professional).then(() => {
+  await registerManager.insertUser(professional).then(() => {
     res.send(token).status(HTTP_CODES.CREATED);
   }).catch((err) => {
     if (err.message === 'User already exists')
@@ -78,7 +77,10 @@ router.post('/professional/register', async (req, res) => {
     else
       res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).send(err);
   });
+});
 
+router.get('/patient/register/middleware', authenticateToken, userAuthenticate, async (req, res) => {
+  res.status(HTTP_CODES.OK).send("User authenticated");
 });
 
 module.exports = router;
