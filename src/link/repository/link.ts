@@ -69,15 +69,15 @@ export class Link {
       return "Link already exists";
     }
 
-    const newLink = new LinkEntity();
-    newLink.doctorId = doctor.id;
-    newLink.patientId = patient.id;
-    await this.dbClient.manager.save(newLink);
+    // const newLink = new LinkEntity();
+    // newLink.doctorId = doctor.id;
+    // newLink.patientId = patient.id;
+    // await this.dbClient.manager.save(newLink);
 
     const generatedCode = generateRandomNumber(6);
     doctor.code = String(generatedCode);
     await this.dbClient.manager.save(doctor);
-    return "success";
+    return String(generatedCode);
   }
 
   public async getLinkPatient(patientId: number): Promise<any> {
