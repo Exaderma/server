@@ -1,14 +1,28 @@
-import express from "express";
-import Joi from "joi";
-import { HTTP_CODES } from "../../utils/HTTP-codes";
-import { generateToken } from "../../utils/security/JWTokens";
-import { ProfessionalEntity } from "../../entity/professional";
-import { PatientEntity } from "../../entity/patient";
-import { loginManager } from "../..";
+import express from 'express';
+import Joi from 'joi';
+import { HTTP_CODES } from '../../utils/HTTP-codes';
+import { generateToken } from '../../utils/security/JWTokens';
+import { ProfessionalEntity } from '../../entity/professional';
+import { PatientEntity } from '../../entity/patient';
+import { loginManager } from '../../';
 
 let router: express.Router = express.Router();
 
-router.post("/patient/login", async (req, res) => {
+/**
+ * @description
+ * This route is used to login a patient based on the provided credentials.
+ * 
+  * @param email the email of the patient stored in the body of the request, must be a valid email
+  * @param password the unhashed password of the patient stored in the body of the request, must be a valid string
+  * 
+  * @returns a JWT token of the user and a 200 code if the login is successful
+  * @returns a 400 code if the body of the request is not valid
+  * @returns a 404 code if the user is not found
+  * @returns a 401 code if the password is incorrect
+  * @returns a 500 code if an internal server error occurs
+ */
+router.post('/patient/login', async (req, res) => {
+
   const schema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().required(),
@@ -39,7 +53,21 @@ router.post("/patient/login", async (req, res) => {
     });
 });
 
-router.post("/professional/login", async (req, res) => {
+/**
+ * @description
+ * This route is used to login a professional based on the provided credentials.
+ * 
+  * @param email the email of the professional stored in the body of the request, must be a valid email
+  * @param password the unhashed password of the professional stored in the body of the request, must be a valid string
+  * 
+  * @returns a JWT token of the user and a 200 code if the login is successful
+  * @returns a 400 code if the body of the request is not valid
+  * @returns a 404 code if the user is not found
+  * @returns a 401 code if the password is incorrect
+  * @returns a 500 code if an internal server error occurs
+ */
+router.post('/professional/login', async (req, res) => {
+
   const schema = Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().required(),

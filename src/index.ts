@@ -7,9 +7,9 @@ require("dotenv").config();
 
 let regiter = require("./auth/register/register");
 let login = require("./auth/login/login");
+let router = require("./link/routes/routesLink");
 
 let cors = require("cors");
-let router = require("./link/routes/routesLink");
 
 export const registerManager = new Register();
 export const loginManager = new Login();
