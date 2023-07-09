@@ -1,9 +1,9 @@
 import express, { Express, Request, Response } from "express";
-import { DataManipulation } from './utils/repository/dataManipulation';
-import { Register } from './auth/repository/register'
-import { Login } from './auth/repository/login'
+import { DataManipulation } from "./utils/repository/dataManipulation";
+import { Register } from "./auth/repository/register";
+import { Login } from "./auth/repository/login";
 
-require('dotenv').config()
+require("dotenv").config();
 
 let regiter = require("./auth/register/register");
 let login = require("./auth/login/login");

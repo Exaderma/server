@@ -1,5 +1,5 @@
-import "reflect-metadata"
-import { DataSource } from "typeorm"
+import "reflect-metadata";
+import { DataSource } from "typeorm";
 import { PatientEntity } from "../../entity/patient";
 import { ProfessionalEntity } from "../../entity/professional";
 import { comparePassword } from "../../utils/security/hashing";
@@ -19,17 +19,22 @@ export class Login {
       logging: false,
     });
 
-    this.client.initialize()
-    .then(() => {
-      console.log("login repository initialized");
-    })
-    .catch((err) => {
-      console.log("login repository failed to initialize");
-      console.log(err);
-    });
+    this.client
+      .initialize()
+      .then(() => {
+        console.log("login repository initialized");
+      })
+      .catch((err) => {
+        console.log("login repository failed to initialize");
+        console.log(err);
+      });
   }
 
-  public async checkUserCredentials(email: string, password: string, entity: Function): Promise<string> {    
+  public async checkUserCredentials(
+    email: string,
+    password: string,
+    entity: Function,
+  ): Promise<string> {
     const repo = this.client.getRepository(entity);
     const foundUser = await repo.findOne({ where: { email: email } });
     if (!foundUser) {

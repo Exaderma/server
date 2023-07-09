@@ -1,5 +1,5 @@
-import "reflect-metadata"
-import { DataSource } from "typeorm"
+import "reflect-metadata";
+import { DataSource } from "typeorm";
 import { LinkEntity } from "../../entity/link";
 import { PatientEntity } from "../../entity/patient";
 import { ProfessionalEntity } from "../../entity/professional";
@@ -26,22 +26,30 @@ export class Link {
       logging: false,
     });
 
-    this.dbClient.initialize()
-    .then(() => {
-      console.log("Link repository initialized");
-    })
-    .catch((err) => {
-      console.log("Link repository failed to initialize");
-      console.log(err);
-    });
+    this.dbClient
+      .initialize()
+      .then(() => {
+        console.log("Link repository initialized");
+      })
+      .catch((err) => {
+        console.log("Link repository failed to initialize");
+        console.log(err);
+      });
   }
 
-  public async LinkPatientToDoctor(code : number, patientId : number): Promise<string> {
-    const doctor = await this.dbClient.manager.findOne(ProfessionalEntity, {where: {code: String(code)}});
+  public async LinkPatientToDoctor(
+    code: number,
+    patientId: number,
+  ): Promise<string> {
+    const doctor = await this.dbClient.manager.findOne(ProfessionalEntity, {
+      where: { code: String(code) },
+    });
     if (!doctor) {
       return "Doctor not found";
     }
-    const patient = await this.dbClient.manager.findOne(PatientEntity, {where: {id: patientId}});
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {
+      where: { id: patientId },
+    });
     if (!patient) {
       return "Patient not found";
     }
@@ -53,18 +61,27 @@ export class Link {
     return "success";
   }
 
-  public async LinkDoctorToPatient(doctorId : number, email: string): Promise<string> {
-    const doctor = await this.dbClient.manager.findOne(ProfessionalEntity, {where: {id: doctorId}});
+  public async LinkDoctorToPatient(
+    doctorId: number,
+    email: string,
+  ): Promise<string> {
+    const doctor = await this.dbClient.manager.findOne(ProfessionalEntity, {
+      where: { id: doctorId },
+    });
     if (!doctor) {
       return "Doctor not found";
     }
 
-    const patient = await this.dbClient.manager.findOne(PatientEntity, {where: {email: email}});
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {
+      where: { email: email },
+    });
     if (!patient) {
       return "Patient not found";
     }
 
-    const link = await this.dbClient.manager.findOne(LinkEntity, {where: {doctorId: doctor.id, patientId: patient.id}});
+    const link = await this.dbClient.manager.findOne(LinkEntity, {
+      where: { doctorId: doctor.id, patientId: patient.id },
+    });
     if (link) {
       return "Link already exists";
     }
@@ -77,16 +94,24 @@ export class Link {
     const generatedCode = generateRandomNumber(6);
     doctor.code = String(generatedCode);
     await this.dbClient.manager.save(doctor);
-    await mail.sendCode("erwan-baillon@orange.fr", doctor.email, String(generatedCode));
+    await mail.sendCode(
+      "erwan-baillon@orange.fr",
+      doctor.email,
+      String(generatedCode),
+    );
     return String(generatedCode);
   }
 
   public async getLinkPatient(patientId: number): Promise<any> {
-    const link = await this.dbClient.manager.findOne(LinkEntity, {where: {patientId: patientId}});
+    const link = await this.dbClient.manager.findOne(LinkEntity, {
+      where: { patientId: patientId },
+    });
     if (!link) {
       return "Link not found";
     }
-    const doctor = await this.dbClient.manager.findOne(ProfessionalEntity, {where: {id: link.doctorId}});
+    const doctor = await this.dbClient.manager.findOne(ProfessionalEntity, {
+      where: { id: link.doctorId },
+    });
     if (!doctor) {
       return "Doctor not found";
     }
@@ -94,11 +119,15 @@ export class Link {
   }
 
   public async getLinkDoctor(doctorId: number): Promise<any> {
-    const link = await this.dbClient.manager.findOne(LinkEntity, {where: {doctorId: doctorId}});
+    const link = await this.dbClient.manager.findOne(LinkEntity, {
+      where: { doctorId: doctorId },
+    });
     if (!link) {
       return "Link not found";
     }
-    const patient = await this.dbClient.manager.findOne(PatientEntity, {where: {id: link.patientId}});
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {
+      where: { id: link.patientId },
+    });
     if (!patient) {
       return "Patient not found";
     }

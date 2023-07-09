@@ -1,18 +1,22 @@
-import { resolverLinkDoctorToPatient, resolverLinkPatientToDoctor } from "../../../src/link/api/resolver";
+import {
+  resolverGetLinkDoctor,
+  resolverGetLinkPatient,
+  resolverLinkDoctorToPatient,
+  resolverLinkPatientToDoctor,
+} from "../../../src/link/api/resolver";
 
 const templateResolverLink = {
-  LinkPatientToDoctor: async (code : number, patientId : number) => ("success"),
-  LinkDoctorToPatient: async (doctorId: number, email: string) => ("success"),
-  getLinkPatient: async (patientId: number) => 'success',
-  getLinkDoctor: async (doctorId: number) => 'success',
+  LinkPatientToDoctor: async (code: number, patientId: number) => "success",
+  LinkDoctorToPatient: async (doctorId: number, email: string) => "success",
+  getLinkPatient: async (patientId: number) => "success",
+  getLinkDoctor: async (doctorId: number) => "success",
 };
 
 describe("link test", () => {
   test("link patient to doctor", async () => {
     const RepositoryLink = {
       ...templateResolverLink,
-      LinkPatientToDoctor: async (code : number, patientId : number) =>
-        "success",
+      LinkPatientToDoctor: async (code: number, patientId: number) => "success",
     };
 
     const res = await resolverLinkPatientToDoctor(RepositoryLink, 1, 1);
@@ -23,12 +27,82 @@ describe("link test", () => {
   test("link doctor to patient", async () => {
     const RepositoryLink = {
       ...templateResolverLink,
-      LinkDoctorToPatient: async (doctorId: number, email: string) =>
-        "success",
+      LinkDoctorToPatient: async (doctorId: number, email: string) => "success",
     };
 
-    const res = await resolverLinkDoctorToPatient(RepositoryLink, 1, "test@test.com");
+    const res = await resolverLinkDoctorToPatient(
+      RepositoryLink,
+      1,
+      "test@test.com",
+    );
 
     expect(res).toBe("success");
+  });
+
+  test("get link patient", async () => {
+    const RepositoryLink = {
+      ...templateResolverLink,
+      getLinkPatient: async (patientId: number) => "success",
+    };
+
+    const res = await RepositoryLink.getLinkPatient(1);
+
+    expect(res).toBe("success");
+  });
+
+  test("get link doctor", async () => {
+    const RepositoryLink = {
+      ...templateResolverLink,
+      getLinkDoctor: async (doctorId: number) => "success",
+    };
+
+    const res = await RepositoryLink.getLinkDoctor(1);
+
+    expect(res).toBe("success");
+  });
+
+  test("link patient to doctor error", async () => {
+    const RepositoryLink = {
+      ...templateResolverLink,
+      LinkPatientToDoctor: async (code: number, patientId: number) => {
+        throw new Error("error");
+      },
+    };
+
+    try {
+      await resolverLinkPatientToDoctor(RepositoryLink, 1, 1);
+    } catch (e : any) {
+      expect(e.message).toBe("error");
+    }
+  });
+
+  test("resolver get link patient", async () => {
+    const RepositoryLink = {
+      ...templateResolverLink,
+      getLinkPatient: async (patientId: number) => {
+        throw new Error("error");
+      },
+    };
+
+    try {
+      await resolverGetLinkPatient(RepositoryLink, 1);
+    } catch (e : any) {
+      expect(e.message).toBe("error");
+    }
+  });
+
+  test("resolver get link doctor", async () => {
+    const RepositoryLink = {
+      ...templateResolverLink,
+      getLinkDoctor: async (doctorId: number) => {
+        throw new Error("error");
+      },
+    };
+
+    try {
+      await resolverGetLinkDoctor(RepositoryLink, 1);
+    } catch (e : any) {
+      expect(e.message).toBe("error");
+    }
   });
 });

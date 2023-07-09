@@ -1,5 +1,5 @@
-import "reflect-metadata"
-import { DataSource } from "typeorm"
+import "reflect-metadata";
+import { DataSource } from "typeorm";
 import { PatientEntity } from "../../entity/patient";
 import { ProfessionalEntity } from "../../entity/professional";
 
@@ -18,17 +18,21 @@ export class DataManipulation {
       logging: false,
     });
 
-    this.client.initialize()
-    .then(() => {
-      console.log("DataManipulation repository initialized");
-    })
-    .catch((err) => {
-      console.log("DataManipulation repository failed to initialize");
-      console.log(err);
-    });
+    this.client
+      .initialize()
+      .then(() => {
+        console.log("DataManipulation repository initialized");
+      })
+      .catch((err) => {
+        console.log("DataManipulation repository failed to initialize");
+        console.log(err);
+      });
   }
 
-  public async doesUserExists(email: string, entity: Function): Promise<boolean> {
+  public async doesUserExists(
+    email: string,
+    entity: Function,
+  ): Promise<boolean> {
     const repo = this.client.getRepository(entity);
     const foundUser = await repo.findOne({ where: { email: email } });
     if (foundUser) {
