@@ -2,8 +2,7 @@ import "reflect-metadata"
 import { DataSource } from "typeorm"
 import { LinkEntity } from "../../entity/link";
 import { PatientEntity } from "../../entity/patient";
-import { DoctorEntity } from "../../entity/doctor";
-
+import { ProfessionalEntity } from "../../entity/professional";
 
 export class Link {
   private dbClient: DataSource;
@@ -15,7 +14,7 @@ export class Link {
       username: process.env.DB_USER as string,
       password: process.env.DB_PASSWORD as string,
       database: process.env.DB_NAME as string,
-      entities: [LinkEntity, PatientEntity, DoctorEntity],
+      entities: [LinkEntity, PatientEntity, ProfessionalEntity],
       synchronize: true,
       logging: false,
     });

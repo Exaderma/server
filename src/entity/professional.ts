@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
 
 @Entity({ name: "professional" }) // Spécifiez le nom de la table si nécessaire
-export class DoctorEntity extends BaseEntity {
+export class ProfessionalEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -26,6 +26,6 @@ export class DoctorEntity extends BaseEntity {
   @Column({ default: () => "CURRENT_TIMESTAMP" })
   created_at: Date;
 
-  @Column()
+  @Column({ default: () => "CURRENT_TIMESTAMP" })
   code: string;
 }
