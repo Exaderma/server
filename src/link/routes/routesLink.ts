@@ -22,7 +22,11 @@ router.post("/patient/link", async (req, res) => {
   }
   const { code } = req.body;
   // TODO : add jwt_decode(token) to get patientId
+<<<<<<< HEAD
   const patientId : any = jwt_decode(token);
+=======
+  const patientId = 1;
+>>>>>>> 2fb2b8dc7c49b1436dd56e507c49730be64973fe
   const result = await resolverLinkPatientToDoctor(link, code, patientId);
   res.status(201).send(result);
 });
@@ -39,7 +43,11 @@ router.get("/patient/getLink", async (req, res) => {
     return;
   }
   // TODO : add jwt_decode(token) to get patientId
+<<<<<<< HEAD
   const patientId : any = jwt_decode(token);
+=======
+  const patientId = 1;
+>>>>>>> 2fb2b8dc7c49b1436dd56e507c49730be64973fe
   res.status(200).send(await link.getLinkPatient(patientId));
 });
 
@@ -60,7 +68,11 @@ router.post("/professional/link", async (req, res) => {
     return;
   }
   // TODO : add jwt_decode(token) to get doctorId
+<<<<<<< HEAD
   const doctorId : any = jwt_decode(token);
+=======
+  const doctorId = 1;
+>>>>>>> 2fb2b8dc7c49b1436dd56e507c49730be64973fe
   res.status(200).send(await resolverLinkDoctorToPatient(link, doctorId, email));
 });
 
@@ -76,7 +88,11 @@ router.get("/professional/getLink", async (req, res) => {
     return;
   }
   // TODO : add jwt_decode(token) to get doctorId
+<<<<<<< HEAD
   const doctorId : any = jwt_decode(token);
+=======
+  const doctorId = 1;
+>>>>>>> 2fb2b8dc7c49b1436dd56e507c49730be64973fe
   res.status(200).send(await link.getLinkDoctor(doctorId));
 });
 

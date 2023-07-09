@@ -3,7 +3,13 @@ import { DataSource } from "typeorm"
 import { LinkEntity } from "../../entity/link";
 import { PatientEntity } from "../../entity/patient";
 import { DoctorEntity } from "../../entity/doctor";
+import { Mail } from "../../mail/mail";
+import { generateRandomNumber } from "../../utils/code";
 
+let mail = new Mail({
+  username: process.env.MAIL_USERNAME as string,
+  apiKey: process.env.MAIL_API_KEY as string,
+});
 
 export class Link {
   private dbClient: DataSource;
