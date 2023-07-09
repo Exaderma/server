@@ -2,7 +2,7 @@ import "reflect-metadata"
 import { DataSource } from "typeorm"
 import { LinkEntity } from "../../entity/link";
 import { PatientEntity } from "../../entity/patient";
-import { DoctorEntity } from "../../entity/doctor";
+import { ProfessionalEntity } from "../../entity/professional";
 import { Mail } from "../../mail/mail";
 import { generateRandomNumber } from "../../utils/code";
 
@@ -37,7 +37,7 @@ export class Link {
   }
 
   public async LinkPatientToDoctor(code : number, patientId : number): Promise<string> {
-    const doctor = await this.dbClient.manager.findOne(DoctorEntity, {where: {code: String(code)}});
+    const doctor = await this.dbClient.manager.findOne(ProfessionalEntity, {where: {code: String(code)}});
     if (!doctor) {
       return "Doctor not found";
     }
@@ -54,7 +54,7 @@ export class Link {
   }
 
   public async LinkDoctorToPatient(doctorId : number, email: string): Promise<string> {
-    const doctor = await this.dbClient.manager.findOne(DoctorEntity, {where: {id: doctorId}});
+    const doctor = await this.dbClient.manager.findOne(ProfessionalEntity, {where: {id: doctorId}});
     if (!doctor) {
       return "Doctor not found";
     }
@@ -85,7 +85,7 @@ export class Link {
     if (!link) {
       return "Link not found";
     }
-    const doctor = await this.dbClient.manager.findOne(DoctorEntity, {where: {id: link.doctorId}});
+    const doctor = await this.dbClient.manager.findOne(ProfessionalEntity, {where: {id: link.doctorId}});
     if (!doctor) {
       return "Doctor not found";
     }
