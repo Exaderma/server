@@ -10,6 +10,20 @@ import { authenticateToken, userAuthenticate } from '../../utils/security/JWToke
 
 let router: express.Router = express.Router();
 
+/** 
+ * @description
+ * This route is used to register a patient depending on the given credentials.
+ * 
+ * @param firstName the first name of the patient stored in the body of the request, must be a valid string
+ * @param lastName the last name of the patient stored in the body of the request, must be a valid string
+ * @param email the email of the patient stored in the body of the request, must be a valid email
+ * @param password the unhashed password of the patient stored in the body of the request, must be a valid string
+ * 
+ * @returns a JWT token of the user and a 201 code if the registration is successful
+ * @returns a 400 code if the body of the request is not valid
+ * @returns a 409 code if the user already exists
+ * @returns a 500 code if an internal server error occurs
+ */
 router.post('/patient/register', async (req, res) => {
 
   const schema = Joi.object({
@@ -45,6 +59,20 @@ router.post('/patient/register', async (req, res) => {
   });
 });
 
+/** 
+ * @description
+ * This route is used to register a professional depending on the given credentials.
+ * 
+ * @param firstName the first name of the professional stored in the body of the request, must be a valid string
+ * @param lastName the last name of the professional stored in the body of the request, must be a valid string
+ * @param email the email of the professional stored in the body of the request, must be a valid email
+ * @param password the unhashed password of the professional stored in the body of the request, must be a valid string
+ * 
+ * @returns a JWT token of the user and a 201 code if the registration is successful
+ * @returns a 400 code if the body of the request is not valid
+ * @returns a 409 code if the user already exists
+ * @returns a 500 code if an internal server error occurs
+ */
 router.post('/professional/register', async (req, res) => {
 
   const schema = Joi.object({
@@ -79,6 +107,12 @@ router.post('/professional/register', async (req, res) => {
   });
 });
 
+/**
+ * description
+ * This route is used to test the middleware authentication
+ * 
+ * @headers Authorization the JWT token of the user in the following format: Bearer <token>
+ */
 router.get('/patient/register/middleware', authenticateToken, userAuthenticate, async (req, res) => {
   res.status(HTTP_CODES.OK).send("User authenticated");
 });

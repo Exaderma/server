@@ -8,7 +8,17 @@ import { PatientEntity } from '../../entity/patient';
 import { ProfessionalEntity } from '../../entity/professional';
 
 export const tokenKey: string = String(process.env.TOKEN_KEY);
-
+/**
+ * @description
+ * This function is used to authenticate a user based on the provided token.
+ * it checks if the token is present and if the user linked to the token exists in the database.
+ * 
+ * the token must be provided in the Authorization header of the request following the Bearer schema: "Bearer <token>"
+ * 
+ * @param req the request of the user
+ * @param res the response of the server
+ * @param next the next function to call
+ */
 export async function userAuthenticate(req: express.Request, res: express.Response, next: express.NextFunction) {
     const authHeader = req.get('Authorization');
     const token = Array.isArray(authHeader) ? authHeader[0].split(' ')[1] : authHeader && authHeader.split(' ')[1];
@@ -29,7 +39,17 @@ export async function userAuthenticate(req: express.Request, res: express.Respon
     });
 }
 
-
+/**
+ * @description
+ * This function is used to authenticate a user based on the provided token.
+ * it checks if the token is valid .
+ * 
+ * the token must be provided in the Authorization header of the request following the Bearer schema: "Bearer <token>"
+ * 
+ * @param req the request of the user
+ * @param res the response of the server
+ * @param next the next function to call
+ */
 export async function authenticateToken(req: express.Request, res: express.Response, next: express.NextFunction) {
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1]
@@ -45,6 +65,10 @@ export async function authenticateToken(req: express.Request, res: express.Respo
     return next();
 }
 
+/**
+ * @description
+ * This function is used to generate a JWT token based on the provided data.
+ */
 export function generateToken(data: any): string {
     return jwt.sign({date: data, exp: Math.floor(Date.now() / 1000) + 36000}, tokenKey);
 }

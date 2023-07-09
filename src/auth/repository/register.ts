@@ -3,8 +3,17 @@ import { DataSource } from "typeorm"
 import { PatientEntity } from "../../entity/patient";
 import { ProfessionalEntity } from "../../entity/professional";
 
+/**
+ * @description
+ * This class is used to register the user on Exaderma and add it to the database. it handles all the registration process.
+ */
 export class Register {
   private client: DataSource;
+
+  /**
+   * @description
+   * This constructor initializes the database connection and allows to communicate with it.
+   */
   constructor() {
     this.client = new DataSource({
       type: "postgres",
@@ -28,6 +37,11 @@ export class Register {
     });
   }
 
+  /**
+   * @description insert a user in the database
+   * @param user the user to insert in the database
+   * @returns ok if the user is inserted, throws an error otherwise depending on the case
+   */
   public async insertUser(user: PatientEntity | ProfessionalEntity): Promise<string> {
     const repo = this.client.getRepository(user.constructor.name);
     console.log('user.constructor.name: ', user.constructor.name)
@@ -40,12 +54,18 @@ export class Register {
     return "ok";
   }
 
+  /**
+   * @returns all the patients in the database
+   */
   public async printPatients(): Promise<void> {
     const repo = this.client.getRepository(PatientEntity);
     const patients = await repo.find();
     console.log(patients);
   }
 
+  /**
+   * @returns all the professionals in the database
+   */
   public async printProfessionals(): Promise<void> {
     const repo = this.client.getRepository(ProfessionalEntity);
     const professionals = await repo.find();

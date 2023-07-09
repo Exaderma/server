@@ -1,4 +1,4 @@
-import express, { Express, Request, Response } from "express";
+import express, { Express } from "express";
 import { DataManipulation } from './utils/repository/dataManipulation';
 import { Register } from './auth/repository/register'
 import { Login } from './auth/repository/login'
@@ -7,9 +7,9 @@ require('dotenv').config()
 
 let regiter = require("./auth/register/register");
 let login = require("./auth/login/login");
+let router = require("./link/routes/routesLink");
 
 let cors = require("cors");
-let router = require("./link/routes/routesLink");
 
 export const registerManager = new Register();
 export const loginManager = new Login();
