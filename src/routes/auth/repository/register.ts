@@ -1,7 +1,7 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
-import { PatientEntity } from "../../entity/patient";
-import { ProfessionalEntity } from "../../entity/professional";
+import { PatientEntity } from "../../../entity/patient";
+import { ProfessionalEntity } from "../../../entity/professional";
 
 /**
  * @description
@@ -31,7 +31,7 @@ export class Register {
     .then(() => {
       console.log("register repository initialized");
     })
-    .catch((err) => {
+    .catch((err: any) => {
       console.log("register repository failed to initialize");
       console.log(err);
     });
@@ -51,7 +51,7 @@ export class Register {
     }
     const newUser = repo.create(user);
     await repo.save(newUser);
-    return "ok";
+    return newUser.id;
   }
 
   /**

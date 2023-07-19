@@ -1,10 +1,10 @@
 import express from 'express';
 import Joi from 'joi';
-import { HTTP_CODES } from '../../utils/HTTP-codes';
-import { generateToken } from '../../utils/security/JWTokens';
-import { ProfessionalEntity } from '../../entity/professional';
-import { PatientEntity } from '../../entity/patient';
-import { loginManager } from '../../';
+import { HTTP_CODES } from '../../../utils/HTTP-codes';
+import { generateToken } from '../../../utils/security/JWTokens';
+import { ProfessionalEntity } from '../../../entity/professional';
+import { PatientEntity } from '../../../entity/patient';
+import { loginManager } from '../../../index';
 
 let router: express.Router = express.Router();
 

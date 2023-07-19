@@ -1,12 +1,12 @@
 import express from 'express';
 import Joi from 'joi';
-import { generateToken } from '../../utils/security/JWTokens';
-import { HTTP_CODES } from '../../utils/HTTP-codes';
-import { ProfessionalEntity } from '../../entity/professional';
-import { PatientEntity } from '../../entity/patient';
-import { hashPassword } from '../../utils/security/hashing';
-import { registerManager } from '../..';
-import { authenticateToken, userAuthenticate } from '../../utils/security/JWTokens';
+import { generateToken } from '../../../utils/security/JWTokens';
+import { HTTP_CODES } from '../../../utils/HTTP-codes';
+import { ProfessionalEntity } from '../../../entity/professional';
+import { PatientEntity } from '../../../entity/patient';
+import { hashPassword } from '../../../utils/security/hashing';
+import { registerManager } from '../../../index';
+import { authenticateToken, userAuthenticate } from '../../../utils/security/JWTokens';
 
 let router: express.Router = express.Router();
 
@@ -97,6 +97,7 @@ router.post('/professional/register', async (req, res) => {
   professional.email = req.body.email;
   professional.password = hashPassword(req.body.password);
 
+  await registerManager.printProfessionals();
   await registerManager.insertUser(professional).then(() => {
     res.send(token).status(HTTP_CODES.CREATED);
   }).catch((err) => {

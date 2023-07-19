@@ -1,8 +1,8 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
-import { PatientEntity } from "../../entity/patient";
-import { ProfessionalEntity } from "../../entity/professional";
-import { comparePassword } from "../../utils/security/hashing";
+import { PatientEntity } from "../../../entity/patient";
+import { ProfessionalEntity } from "../../../entity/professional";
+import { comparePassword } from "../../../utils/security/hashing";
 
 /**
  * @description
@@ -56,6 +56,6 @@ export class Login {
     if (!comparePassword(password, foundUser.password)) {
       throw new Error("Wrong password");
     }
-    return "ok";
+    return foundUser.id;
   }
 }
