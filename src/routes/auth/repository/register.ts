@@ -1,5 +1,5 @@
-import "reflect-metadata";
-import { DataSource } from "typeorm";
+import "reflect-metadata"
+import { DataSource } from "typeorm"
 import { PatientEntity } from "../../entity/patient";
 import { ProfessionalEntity } from "../../entity/professional";
 
@@ -27,15 +27,14 @@ export class Register {
       logging: false,
     });
 
-    this.client
-      .initialize()
-      .then(() => {
-        console.log("register repository initialized");
-      })
-      .catch((err) => {
-        console.log("register repository failed to initialize");
-        console.log(err);
-      });
+    this.client.initialize()
+    .then(() => {
+      console.log("register repository initialized");
+    })
+    .catch((err) => {
+      console.log("register repository failed to initialize");
+      console.log(err);
+    });
   }
 
   /**
@@ -45,7 +44,7 @@ export class Register {
    */
   public async insertUser(user: PatientEntity | ProfessionalEntity): Promise<string> {
     const repo = this.client.getRepository(user.constructor.name);
-    console.log("user.constructor.name: ", user.constructor.name);
+    console.log('user.constructor.name: ', user.constructor.name)
     const foundUser = await repo.findOne({ where: { email: user.email } });
     if (foundUser) {
       throw new Error("User already exists");

@@ -52,6 +52,15 @@ export class DataManipulation {
     throw new Error("User not found");
   }
 
+  public async getUserProfile(id: string, entity: Function): Promise<any> {
+    const repo = this.client.getRepository(entity);
+    const foundUser = await repo.findOne({ where: { id: id } });
+    if (foundUser) {
+      return foundUser;
+    }
+    throw new Error("User not found");
+  }
+
   /**
    * @description prints all the patients in the database
    */
