@@ -38,6 +38,13 @@ export class Link implements RepositoryLink {
       });
   }
 
+  /**
+   * Link a patient to a doctor
+   * @param doctorId
+   * @param patientId
+   * @returns success or error
+   * @memberof Link
+   */
   public async LinkPatientToDoctor(
     code: number,
     patientEmail: string,
@@ -46,13 +53,13 @@ export class Link implements RepositoryLink {
       where: { code: String(code) },
     });
     if (!doctor) {
-      return "Doctor not found";
+      throw new Error("Doctor not found");
     }
     const patient = await this.dbClient.manager.findOne(PatientEntity, {
       where: { email: patientEmail },
     });
     if (!patient) {
-      return "Patient not found";
+      throw new Error("Patient not found");
     }
     const link = new LinkEntity();
     link.doctorId = doctor.id;
@@ -61,6 +68,13 @@ export class Link implements RepositoryLink {
     return "success";
   }
 
+  /**
+   * Link a doctor to a patient
+   * @param doctorId
+   * @param patientId
+   * @returns success or error
+   * @memberof Link
+   */
   public async LinkDoctorToPatient(
     doctorEmail: string,
     email: string,
@@ -69,21 +83,21 @@ export class Link implements RepositoryLink {
       where: { email: doctorEmail },
     });
     if (!doctor) {
-      return "Doctor not found";
+      throw new Error("Doctor not found");
     }
 
     const patient = await this.dbClient.manager.findOne(PatientEntity, {
       where: { email: email },
     });
     if (!patient) {
-      return "Patient not found";
+      throw new Error("Patient not found");
     }
 
     const link = await this.dbClient.manager.findOne(LinkEntity, {
       where: { doctorId: doctor.id, patientId: patient.id },
     });
     if (link) {
-      return "Link already exists";
+      throw new Error("Link already exists");
     }
 
     const generatedCode = generateRandomNumber(6);
@@ -100,7 +114,7 @@ export class Link implements RepositoryLink {
   /**
    * Get all doctors linked to a patient
    * @param patientId
-   * @returns
+   * @returns all information about the doctors
    * @memberof Link
    */
   public async getLinkPatient(patientEmail: string): Promise<any> {
@@ -109,13 +123,13 @@ export class Link implements RepositoryLink {
     });
 
     if (!patient) {
-      return "Patient not found";
+      throw new Error("Patient not found");
     }
     const links = await this.dbClient.manager.find(LinkEntity, {
       where: { patientId: patient.id },
     });
     if (!links) {
-      return "Link not found";
+      throw new Error("Link not found");
     }
     const doctors: any[] = [];
 
@@ -128,7 +142,7 @@ export class Link implements RepositoryLink {
   }
 
   if (doctors.length === 0) {
-    return "Patient not found";
+    throw new Error("Doctor not found");
   }
 
   return doctors;
@@ -137,7 +151,7 @@ export class Link implements RepositoryLink {
   /**
    * Get all patients linked to a doctor
    * @param doctorId
-   * @returns
+   * @returns all information about the patients
    * @memberof Link
    */
   public async getLinkDoctor(doctorEmail: string): Promise<any> {
@@ -145,13 +159,13 @@ export class Link implements RepositoryLink {
       where: { email: doctorEmail },
     });
     if (!doctor) {
-      return "Doctor not found";
+      throw new Error("Doctor not found");
     }
     const links = await this.dbClient.manager.find(LinkEntity, {
       where: { doctorId: doctor.id },
     });
     if (!links) {
-      return "Link not found";
+      throw new Error("Link not found");
     }
     const patients: any[] = [];
 
@@ -164,7 +178,7 @@ export class Link implements RepositoryLink {
   }
 
   if (patients.length === 0) {
-    return "Patient not found";
+    throw new Error("Patient not found");
   }
 
   return patients;
