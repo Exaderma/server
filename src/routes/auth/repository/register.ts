@@ -1,7 +1,7 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
-import { PatientEntity } from "../../entity/patient";
-import { ProfessionalEntity } from "../../entity/professional";
+import { PatientEntity } from "../../../entity/patient";
+import { ProfessionalEntity } from "../../../entity/professional";
 
 /**
  * @description

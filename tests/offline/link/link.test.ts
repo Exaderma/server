@@ -1,6 +1,6 @@
 import {
-  // resolverGetLinkDoctor,
-  // resolverGetLinkPatient,
+  resolverGetLinkDoctor,
+  resolverGetLinkPatient,
   resolverLinkDoctorToPatient,
   resolverLinkPatientToDoctor,
 } from "../../../src/link/api/resolver";
@@ -79,13 +79,13 @@ describe("link test", () => {
   test("resolver get link patient", async () => {
     const RepositoryLink = {
       ...templateResolverLink,
-      getLinkPatient: async (patientId: number) => {
+      getLinkPatient: async (patientId: string) => {
         throw new Error("error");
       },
     };
 
     try {
-      await resolverGetLinkPatient(RepositoryLink, 1);
+      await resolverGetLinkPatient(RepositoryLink, "1");
     } catch (e : any) {
       expect(e.message).toBe("error");
     }
@@ -94,13 +94,13 @@ describe("link test", () => {
   test("resolver get link doctor", async () => {
     const RepositoryLink = {
       ...templateResolverLink,
-      getLinkDoctor: async (doctorId: number) => {
+      getLinkDoctor: async (doctorId: string) => {
         throw new Error("error");
       },
     };
 
     try {
-      await resolverGetLinkDoctor(RepositoryLink, 1);
+      await resolverGetLinkDoctor(RepositoryLink, "1");
     } catch (e : any) {
       expect(e.message).toBe("error");
     }

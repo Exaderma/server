@@ -1,7 +1,7 @@
 import express, { Express, Request, Response } from "express";
 import { DataManipulation } from "./utils/repository/dataManipulation";
-import { Register } from "./auth/repository/register";
-import { Login } from "./auth/repository/login";
+import { Register } from "./routes/auth/repository/register";
+import { Login } from "./routes/auth/repository/login";
 
 require("dotenv").config();
 
