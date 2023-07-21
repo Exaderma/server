@@ -58,7 +58,6 @@ export class Link implements RepositoryLink {
     link.doctorId = doctor.id;
     link.patientId = patient.id;
     await this.dbClient.manager.save(link);
-    console.log("Link saved");
     return "success";
   }
 
@@ -112,18 +111,27 @@ export class Link implements RepositoryLink {
     if (!patient) {
       return "Patient not found";
     }
-    const link = await this.dbClient.manager.findOne(LinkEntity, {
+    const links = await this.dbClient.manager.find(LinkEntity, {
       where: { patientId: patient.id },
     });
-    if (!link) {
+    if (!links) {
       return "Link not found";
     }
-    const doctor = await this.dbClient.manager.find(ProfessionalEntity);
-    if (!doctor) {
-      return "Doctor not found";
-    }
-    // get all patients
-    return doctor;
+    const doctors: any[] = [];
+
+  for (const link of links) {
+    const doctor = await this.dbClient.manager.findOne(PatientEntity, {
+      where: { id: link.patientId },
+    });
+
+    if (doctor) doctors.push(doctor);
+  }
+
+  if (doctors.length === 0) {
+    return "Patient not found";
+  }
+
+  return doctors;
   }
 
   /**
@@ -139,21 +147,26 @@ export class Link implements RepositoryLink {
     if (!doctor) {
       return "Doctor not found";
     }
-    const link = await this.dbClient.manager.find(LinkEntity, {
+    const links = await this.dbClient.manager.find(LinkEntity, {
       where: { doctorId: doctor.id },
     });
-    console.log(link);
-    if (!link) {
+    if (!links) {
       return "Link not found";
     }
-    const patient = link.filter(async (el) => {
-      return await this.dbClient.manager.findOne(PatientEntity, {
-        where: { id: el.patientId },
-      });
+    const patients: any[] = [];
+
+  for (const link of links) {
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {
+      where: { id: link.patientId },
     });
-    if (!patient) {
-      return "Patient not found";
-    }
-    return patient;
+
+    if (patient) patients.push(patient);
+  }
+
+  if (patients.length === 0) {
+    return "Patient not found";
+  }
+
+  return patients;
   }
 }

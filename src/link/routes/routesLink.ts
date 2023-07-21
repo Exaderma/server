@@ -1,5 +1,7 @@
 import express from "express";
 import {
+  resolverGetLinkDoctor,
+  resolverGetLinkPatient,
   resolverLinkDoctorToPatient,
   resolverLinkPatientToDoctor,
 } from "../api/resolver";
@@ -40,7 +42,7 @@ router.get("/patient/getLink", async (req, res) => {
   }
   // TODO : add jwt_decode(token) to get patientId
   const patientId: any = jwt_decode(token);
-  res.status(200).send(await link.getLinkPatient(patientId.date.email));
+  res.status(200).send(await resolverGetLinkPatient(link, patientId.date.email));
 });
 
 router.post("/professional/link", async (req, res) => {
@@ -79,7 +81,7 @@ router.get("/professional/getLink", async (req, res) => {
   }
   // TODO : add jwt_decode(token) to get doctorId
   const doctorId: any = jwt_decode(token);
-  res.status(200).send(await link.getLinkDoctor(doctorId.date.email));
+  res.status(200).send(await resolverGetLinkDoctor(link, doctorId.date.email));
 });
 
 module.exports = router;
