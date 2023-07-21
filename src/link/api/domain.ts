@@ -1,6 +1,6 @@
 export interface RepositoryLink {
-  LinkPatientToDoctor: (code: number, patientId: number) => Promise<string>;
-  LinkDoctorToPatient: (doctorId: number, email: string) => Promise<string>;
-  getLinkPatient: (patientId: number) => Promise<any>;
-  getLinkDoctor: (doctorId: number) => Promise<any>;
+  LinkPatientToDoctor: (code: number, patientEmail: string) => Promise<string>;
+  LinkDoctorToPatient: (doctorEmail: string, email: string) => Promise<string>;
+  getLinkPatient: (patientEmail: string) => Promise<any>;
+  getLinkDoctor: (doctorEmail: string) => Promise<any>;
 }

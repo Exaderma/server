@@ -3,29 +3,29 @@ import { RepositoryLink } from "./domain";
 export async function resolverLinkPatientToDoctor(
   link: RepositoryLink,
   code: number,
-  patientId: number,
+  patientEmail: string,
 ): Promise<string> {
-  return link.LinkPatientToDoctor(code, patientId);
+  return link.LinkPatientToDoctor(code, patientEmail);
 }
 
 export async function resolverLinkDoctorToPatient(
   link: RepositoryLink,
-  doctorId: number,
+  doctorEmail: string,
   email: string,
 ): Promise<string> {
-  return link.LinkDoctorToPatient(doctorId, email);
+  return link.LinkDoctorToPatient(doctorEmail, email);
 }
 
 export async function resolverGetLinkPatient(
   link: RepositoryLink,
-  patientId: number,
+  patientEmail: string,
 ): Promise<any> {
-  return link.getLinkPatient(patientId);
+  return link.getLinkPatient(patientEmail);
 }
 
 export async function resolverGetLinkDoctor(
   link: RepositoryLink,
-  doctorId: number,
+  doctorEmail: string,
 ): Promise<any> {
-  return link.getLinkDoctor(doctorId);
+  return link.getLinkDoctor(doctorEmail);
 }
