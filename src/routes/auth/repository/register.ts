@@ -44,7 +44,7 @@ export class Register {
    */
   public async insertUser(user: PatientEntity | ProfessionalEntity): Promise<string> {
     const repo = this.client.getRepository(user.constructor.name);
-    console.log('user.constructor.name: ', user.constructor.name)
+    console.log("user.constructor.name: ", user.constructor.name);
     const foundUser = await repo.findOne({ where: { email: user.email } });
     if (foundUser) {
       throw new Error("User already exists");

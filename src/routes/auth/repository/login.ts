@@ -29,14 +29,15 @@ export class Login {
       logging: false,
     });
 
-    this.client.initialize()
-    .then(() => {
-      console.log("login repository initialized");
-    })
-    .catch((err) => {
-      console.log("login repository failed to initialize");
-      console.log(err);
-    });
+    this.client
+      .initialize()
+      .then(() => {
+        console.log("login repository initialized");
+      })
+      .catch((err) => {
+        console.log("login repository failed to initialize");
+        console.log(err);
+      });
   }
 
   /**

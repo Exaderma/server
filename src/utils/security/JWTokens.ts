@@ -1,11 +1,11 @@
-require('dotenv').config();
-import jwt from 'jsonwebtoken';
+require("dotenv").config();
+import jwt from "jsonwebtoken";
 import express from "express";
-import jwt_decode from 'jwt-decode';
-import { HTTP_CODES } from '../HTTP-codes';
-import { dataManager } from '../..';
-import { PatientEntity } from '../../entity/patient';
-import { ProfessionalEntity } from '../../entity/professional';
+import jwt_decode from "jwt-decode";
+import { HTTP_CODES } from "../HTTP-codes";
+import { dataManager } from "../..";
+import { PatientEntity } from "../../entity/patient";
+import { ProfessionalEntity } from "../../entity/professional";
 
 export const tokenKey: string = String(process.env.TOKEN_KEY);
 /**
@@ -25,17 +25,25 @@ export async function userAuthenticate(req: express.Request, res: express.Respon
     const decodedToken: any = jwt_decode(token!);
     const userEmail: any =  decodedToken.email;
 
-    if (token === null) { return res.sendStatus(HTTP_CODES.FORBIDDEN) }
+  if (token === null) {
+    return res.sendStatus(HTTP_CODES.FORBIDDEN);
+  }
 
-    const table = decodedToken.type === 'patient' ? PatientEntity : ProfessionalEntity;
+  const table =
+    decodedToken.type === "patient" ? PatientEntity : ProfessionalEntity;
 
-    await dataManager.doesUserExists(userEmail, table).then((response: any) => {
-        next();
-    }).catch((error: any) => {
-        if (error === "user not found")
-            return res.status(403).send("user not found");
-        else
-            res.status(403).send("internal server error during user authentication");
+  await dataManager
+    .doesUserExists(userEmail, table)
+    .then((response: any) => {
+      next();
+    })
+    .catch((error: any) => {
+      if (error === "user not found")
+        return res.status(403).send("user not found");
+      else
+        res
+          .status(403)
+          .send("internal server error during user authentication");
     });
 }
 
@@ -56,13 +64,13 @@ export async function authenticateToken(req: express.Request, res: express.Respo
 
     if (token === null) { return res.sendStatus(HTTP_CODES.FORBIDDEN) }
 
-    jwt.verify(String(token), tokenKey, (err: any, user: any) => {
-        if (err) {
-            return res.sendStatus(HTTP_CODES.FORBIDDEN)
-        }
-        return next();
-    })
+  jwt.verify(String(token), tokenKey, (err: any, user: any) => {
+    if (err) {
+      return res.sendStatus(HTTP_CODES.FORBIDDEN);
+    }
     return next();
+  });
+  return next();
 }
 
 /**
@@ -70,5 +78,8 @@ export async function authenticateToken(req: express.Request, res: express.Respo
  * This function is used to generate a JWT token based on the provided data.
  */
 export function generateToken(data: any): string {
-    return jwt.sign({date: data, exp: Math.floor(Date.now() / 1000) + 36000}, tokenKey);
+  return jwt.sign(
+    { date: data, exp: Math.floor(Date.now() / 1000) + 36000 },
+    tokenKey,
+  );
 }

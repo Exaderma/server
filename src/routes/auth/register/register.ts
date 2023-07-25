@@ -36,11 +36,13 @@ router.post('/patient/register', async (req, res) => {
   const result = schema.validate(req.body);
 
   if (result.error) {
-      res.status(HTTP_CODES.BAD_REQUEST).send("incorrect credentials format : " + result.error);
-      return;
+    res
+      .status(HTTP_CODES.BAD_REQUEST)
+      .send("incorrect credentials format : " + result.error);
+    return;
   }
 
-  const token = generateToken({email: req.body.email, type: 'patient'});
+  const token = generateToken({ email: req.body.email, type: "patient" });
 
   const patient = new PatientEntity();
 
@@ -49,14 +51,16 @@ router.post('/patient/register', async (req, res) => {
   patient.email = req.body.email;
   patient.password = hashPassword(req.body.password);
 
-  await registerManager.insertUser(patient).then(() => {
-    res.send(token).status(HTTP_CODES.CREATED);
-  }).catch((err) => {
-    if (err.message === 'User already exists')
-      res.status(HTTP_CODES.CONFLICT).send("User already exists");
-    else
-      res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).send(err);
-  });
+  await registerManager
+    .insertUser(patient)
+    .then(() => {
+      res.send(token).status(HTTP_CODES.CREATED);
+    })
+    .catch((err) => {
+      if (err.message === "User already exists")
+        res.status(HTTP_CODES.CONFLICT).send("User already exists");
+      else res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).send(err);
+    });
 });
 
 /** 
@@ -85,13 +89,15 @@ router.post('/professional/register', async (req, res) => {
   const result = schema.validate(req.body);
 
   if (result.error) {
-      res.status(HTTP_CODES.BAD_REQUEST).send("incorrect credentials format : " + result.error);
-      return;
+    res
+      .status(HTTP_CODES.BAD_REQUEST)
+      .send("incorrect credentials format : " + result.error);
+    return;
   }
-  const token = generateToken({email: req.body.email, type: 'professional'});
+  const token = generateToken({ email: req.body.email, type: "professional" });
 
   const professional = new ProfessionalEntity();
-  
+
   professional.firstName = req.body.firstName;
   professional.lastName = req.body.lastName;
   professional.email = req.body.email;

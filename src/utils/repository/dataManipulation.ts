@@ -1,5 +1,5 @@
-import "reflect-metadata"
-import { DataSource } from "typeorm"
+import "reflect-metadata";
+import { DataSource } from "typeorm";
 import { PatientEntity } from "../../entity/patient";
 import { ProfessionalEntity } from "../../entity/professional";
 
@@ -26,14 +26,15 @@ export class DataManipulation {
       logging: false,
     });
 
-    this.client.initialize()
-    .then(() => {
-      console.log("DataManipulation repository initialized");
-    })
-    .catch((err) => {
-      console.log("DataManipulation repository failed to initialize");
-      console.log(err);
-    });
+    this.client
+      .initialize()
+      .then(() => {
+        console.log("DataManipulation repository initialized");
+      })
+      .catch((err) => {
+        console.log("DataManipulation repository failed to initialize");
+        console.log(err);
+      });
   }
 
   /**

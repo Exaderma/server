@@ -3,7 +3,7 @@ import { DataManipulation } from './utils/repository/dataManipulation';
 import { Register } from './routes/auth/repository/register'
 import { Login } from './routes/auth/repository/login'
 
-require('dotenv').config()
+require("dotenv").config();
 
 let regiter = require("./routes/auth/register/register");
 let login = require("./routes/auth/login/login");
