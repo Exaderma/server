@@ -7,7 +7,45 @@ import { PatientEntity } from '../../entity/patient';
 
 let router: express.Router = express.Router();
 
-router.get("/patient/getUserProfile", async (req, res) => {
+/**
+ * @swagger
+ * tags:
+ *   name: User Profile
+ *   description: Fetching user profile information
+ */
+
+/**
+ * @swagger
+ * /patient/getUserProfile:
+ *   get:
+ *     summary: Get patient user profile
+ *     description: Fetch and return the profile of a patient user.
+ *     tags:
+ *       - User Profile
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         description: ID of the patient user
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully fetched patient user profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *       400:
+ *         description: Bad Request - Incorrect ID format
+ *       404:
+ *         description: Not Found - User not found or invalid ID
+ *       500:
+ *         description: Internal Server Error - An error occurred while processing the request
+ */
+
+router.get("/patient/getUserProfile", async (req: express.Request, res: express.Response) => {
   const schema = Joi.object({
     id: Joi.string().required(),
   });
@@ -33,7 +71,38 @@ router.get("/patient/getUserProfile", async (req, res) => {
   });
 });
 
-router.get("/professional/getUserProfile", async (req, res) => {
+/**
+ * @swagger
+ * /professional/getUserProfile:
+ *   get:
+ *     summary: Get professional user profile
+ *     description: Fetch and return the profile of a professional user.
+ *     tags:
+ *       - User Profile
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         description: ID of the professional user
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully fetched professional user profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *       400:
+ *         description: Bad Request - Incorrect ID format
+ *       404:
+ *         description: Not Found - User not found or invalid ID
+ *       500:
+ *         description: Internal Server Error - An error occurred while processing the request
+ */
+
+router.get("/professional/getUserProfile", async (req: express.Request, res: express.Response) => {
   const schema = Joi.object({
     id: Joi.string().required(),
   });
