@@ -17,6 +17,9 @@ export class PatientEntity extends BaseEntity {
   @Column({ unique: true })
   email: string;
 
+  @Column()
+  phone: string;
+
   @Column({ default: false })
   admin: boolean;
 
