@@ -93,3 +93,5 @@ router.post("/record/update", async (req, res) => {
         res.status(404).send(err.message);
     }
 });
+
+module.exports = router;
