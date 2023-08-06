@@ -9,6 +9,7 @@ let regiter = require("./routes/auth/register/register");
 let login = require("./routes/auth/login/login");
 let profile = require("./routes/profile/profile");
 let router = require("./link/routes/routesLink");
+let record = require("./record/routes/routesRecord");
 
 let cors = require("cors");
 
@@ -25,6 +26,7 @@ app.use("/", router);
 app.use("/", regiter);
 app.use("/", profile);
 app.use("/", login);
+app.use("/", record);
 
 const port = process.env.PORT || 8080;
 
