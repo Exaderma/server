@@ -17,8 +17,8 @@ router.post("/record/new", async (req, res) => {
         res.status(401).send("Unauthorized");
         return;
     }
-    const { description, type, patientEmail, doctorEmail } = req.body;
-    const patientId: any = jwt_decode(token);
+    const { description, type, patientEmail } = req.body;
+    const professional: any = jwt_decode(token);
     try {
         res
         .status(201)
@@ -28,7 +28,7 @@ router.post("/record/new", async (req, res) => {
             description,
             type,
             patientEmail,
-            doctorEmail,
+            professional.email,
             ),
         );
     } catch (err : any) {
@@ -36,7 +36,7 @@ router.post("/record/new", async (req, res) => {
     }
 });
 
-router.get("/record/get", async (req, res) => {
+router.post("/record/get", async (req, res) => {
     const auth = req.headers["authorization"];
     if (!auth) {
         res.status(401).send("Unauthorized");
@@ -47,8 +47,8 @@ router.get("/record/get", async (req, res) => {
         res.status(401).send("Unauthorized");
         return;
     }
-    const { patientEmail, doctorEmail } = req.body;
-    const patientId: any = jwt_decode(token);
+    const { patientEmail } = req.body;
+    const professional: any = jwt_decode(token);
     try {
         res
         .status(200)
@@ -56,7 +56,7 @@ router.get("/record/get", async (req, res) => {
             await resolverGetRecord(
             record,
             patientEmail,
-            doctorEmail,
+            professional.email,
             ),
         );
     } catch (err : any) {
@@ -75,18 +75,19 @@ router.post("/record/update", async (req, res) => {
         res.status(401).send("Unauthorized");
         return;
     }
-    const { description, type, patientEmail, doctorEmail } = req.body;
-    const patientId: any = jwt_decode(token);
+    const { description, type, patientEmail, id } = req.body;
+    const professional: any = jwt_decode(token);
     try {
         res
         .status(200)
         .send(
             await resolverUpdateRecord(
+            id,
             record,
             description,
             type,
             patientEmail,
-            doctorEmail,
+            professional.email,
             ),
         );
     } catch (err : any) {

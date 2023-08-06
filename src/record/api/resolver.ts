@@ -19,11 +19,12 @@ export async function resolverGetRecord(
 }
 
 export async function resolverUpdateRecord(
+    id: number,
   record: RepositoryRecord,
   description: string,
   type: string,
   patientEmail: string,
   doctorEmail: string,
 ): Promise<string> {
-  return record.UpdateRecord(description, type, patientEmail, doctorEmail);
+  return record.UpdateRecord(id, description, type, patientEmail, doctorEmail);
 }

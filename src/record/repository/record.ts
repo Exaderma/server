@@ -54,6 +54,7 @@ export class Record implements RepositoryRecord {
         record.type = type;
         record.patientId = patient.id;
         record.doctorId = doctor.id;
+        record.date = new Date();
         await this.dbClient.manager.save(record);
         return "Success";
     }
@@ -74,7 +75,7 @@ export class Record implements RepositoryRecord {
         if (!doctor) {
             throw new Error("Doctor not found");
         }
-        const record = await this.dbClient.manager.findOne(RecordEntity, {
+        const record = await this.dbClient.manager.find(RecordEntity, {
             where: { patientId: patient.id, doctorId: doctor.id },
         });
         if (!record) {
@@ -84,6 +85,7 @@ export class Record implements RepositoryRecord {
     }
 
     public async UpdateRecord(
+        id: number,
         description: string,
         type: string,
         patientEmail: string,
@@ -102,7 +104,7 @@ export class Record implements RepositoryRecord {
             throw new Error("Doctor not found");
         }
         const record = await this.dbClient.manager.findOne(RecordEntity, {
-            where: { patientId: patient.id, doctorId: doctor.id },
+            where: { patientId: patient.id, doctorId: doctor.id, id: id },
         });
         if (!record) {
             throw new Error("Record not found");
