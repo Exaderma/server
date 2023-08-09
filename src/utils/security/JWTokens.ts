@@ -39,10 +39,10 @@ export async function userAuthenticate(req: express.Request, res: express.Respon
     })
     .catch((error: any) => {
       if (error === "user not found")
-        return res.status(403).send("user not found");
+        return res.status(HTTP_CODES.FORBIDDEN).send("user not found");
       else
         res
-          .status(403)
+          .status(HTTP_CODES.FORBIDDEN)
           .send("internal server error during user authentication");
     });
 }
@@ -62,24 +62,44 @@ export async function authenticateToken(req: express.Request, res: express.Respo
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1]
 
-    if (token === null) { return res.sendStatus(HTTP_CODES.FORBIDDEN) }
+    if (!token) {
+      return res.sendStatus(HTTP_CODES.FORBIDDEN);
+  }
 
   jwt.verify(String(token), tokenKey, (err: any, user: any) => {
-    if (err) {
-      return res.sendStatus(HTTP_CODES.FORBIDDEN);
-    }
-    return next();
+      if (err) {
+          if (err.name === 'TokenExpiredError') {
+              return res.status(HTTP_CODES.UNAUTHORIZED).send('Token has expired');
+          } else {
+              return res.status(HTTP_CODES.FORBIDDEN).send(err.message || 'Authentication failed');
+          }
+      }
+      next();
   });
-  return next();
 }
 
 /**
  * @description
  * This function is used to generate a JWT token based on the provided data.
  */
+
+//TODO : ADD + 36000 TO THE TOKEN FOR THE EXPIRATION TIME
 export function generateToken(data: any): string {
   return jwt.sign(
-    { date: data, exp: Math.floor(Date.now() / 1000) + 36000 },
+    { data: data, exp: Math.floor(Date.now() / 1000) },
     tokenKey,
   );
+}
+
+export function refreshToken(token: string): string {
+  const decodedToken: any = jwt_decode(token);
+  const userEmail: string =  decodedToken.data.email;
+  const userType: string =  decodedToken.data.type;
+  console.log(userEmail);
+  console.log(userType);
+  const newToken = jwt.sign(
+    { data: {email: userEmail, type: userType}, exp: Math.floor(Date.now() / 1000) + 36000 },
+    tokenKey,
+  );
+  return newToken;
 }

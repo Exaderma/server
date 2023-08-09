@@ -3,6 +3,14 @@ import { DataSource } from "typeorm";
 import { PatientEntity } from "../../entity/patient";
 import { ProfessionalEntity } from "../../entity/professional";
 
+type userProfileData = {
+  firstName: string,
+  lastName: string,
+  email: string,
+  admin: boolean,
+  roles: string[],
+}
+
 export class DataManipulation {
   private client: DataSource;
 
@@ -43,7 +51,14 @@ export class DataManipulation {
     const repo = this.client.getRepository(entity);
     const foundUser = await repo.findOne({ where: { id: id } });
     if (foundUser) {
-      return foundUser;
+      const returnedData: userProfileData = {
+        firstName: foundUser.firstName,
+        lastName: foundUser.lastName,
+        email: foundUser.email,
+        admin: foundUser.admin,
+        roles: foundUser.roles,
+      }
+      return returnedData;
     }
     throw new Error("User not found");
   }

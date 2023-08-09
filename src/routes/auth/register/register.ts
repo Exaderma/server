@@ -89,7 +89,7 @@ router.post('/patient/register', async (req: express.Request, res: express.Respo
   await registerManager
     .insertUser(patient)
     .then(() => {
-      res.send(token).status(HTTP_CODES.CREATED);
+      res.status(HTTP_CODES.CREATED).send(token);
     })
     .catch((err) => {
       if (err.message === "User already exists")
@@ -201,7 +201,7 @@ router.post('/professional/register', async (req: express.Request, res: express.
  *         description: Unauthorized - Invalid token or token not provided
  */
 
-router.get('/patient/register/middleware', authenticateToken, userAuthenticate, async (req: express.Request, res: express.Response) => {
+router.get('/patient/register/middleware', authenticateToken, async (req: express.Request, res: express.Response) => {
   res.status(HTTP_CODES.OK).send("User authenticated");
 });
 

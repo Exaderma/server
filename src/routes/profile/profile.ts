@@ -29,6 +29,7 @@ let router: express.Router = express.Router();
  *         description: ID of the patient user
  *         schema:
  *           type: string
+ *         example: http://localhost:8080/patient/getUserProfile?id=1
  *     responses:
  *       200:
  *         description: Successfully fetched patient user profile
@@ -37,6 +38,23 @@ let router: express.Router = express.Router();
  *             schema:
  *               type: object
  *               properties:
+ *                 firstName: 
+ *                   type: string
+ *                   description: First name of the patient
+ *                 lastName:
+ *                   type: string
+ *                   description: Last name of the patient
+ *                 email:
+ *                   type: string
+ *                   description: Email of the patient
+ *                 admin:
+ *                   type: boolean
+ *                   description: Admin status of the patient
+ *                 roles:
+ *                   type: array
+ *                   description: Roles of the patient
+ *                   items:
+ *                     type: string      
  *       400:
  *         description: Bad Request - Incorrect ID format
  *       404:
@@ -86,6 +104,8 @@ router.get("/patient/getUserProfile", async (req: express.Request, res: express.
  *         description: ID of the professional user
  *         schema:
  *           type: string
+ *         example: http://localhost:8080/professional/getUserProfile?id=1
+ *         
  *     responses:
  *       200:
  *         description: Successfully fetched professional user profile
@@ -94,6 +114,23 @@ router.get("/patient/getUserProfile", async (req: express.Request, res: express.
  *             schema:
  *               type: object
  *               properties:
+ *                 firstName: 
+ *                   type: string
+ *                   description: First name of the patient
+ *                 lastName:
+ *                   type: string
+ *                   description: Last name of the patient
+ *                 email:
+ *                   type: string
+ *                   description: Email of the patient
+ *                 admin:
+ *                   type: boolean
+ *                   description: Admin status of the patient
+ *                 roles:
+ *                   type: array
+ *                   description: Roles of the professional
+ *                   items:
+ *                     type: string   
  *       400:
  *         description: Bad Request - Incorrect ID format
  *       404:

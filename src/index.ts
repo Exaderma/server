@@ -37,6 +37,7 @@ let regiter = require("./routes/auth/register/register");
 let login = require("./routes/auth/login/login");
 let profile = require("./routes/profile/profile");
 let router = require("./link/routes/routesLink");
+let refreshToken = require("./routes/security/refreshToken");
 
 let cors = require("cors");
 
@@ -51,8 +52,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/", router);
 app.use("/", regiter);
+app.use("/", login);
 app.use("/", profile);
 app.use("/", router);
+app.use("/", refreshToken);
 
 app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec, { explorer: true }));
 
