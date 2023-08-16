@@ -4,6 +4,7 @@ import { HTTP_CODES } from "../../utils/HTTP-codes";
 import { dataManager } from "../../index";
 import { ProfessionalEntity } from '../../entity/professional';
 import { PatientEntity } from '../../entity/patient';
+import { authenticateToken, userAuthenticate } from "../../utils/security/JWTokens";
 
 let router: express.Router = express.Router();
 
@@ -63,7 +64,7 @@ let router: express.Router = express.Router();
  *         description: Internal Server Error - An error occurred while processing the request
  */
 
-router.get("/patient/getUserProfile", async (req: express.Request, res: express.Response) => {
+router.get("/patient/getUserProfile", authenticateToken, userAuthenticate, async (req: express.Request, res: express.Response) => {
   const schema = Joi.object({
     id: Joi.string().required(),
   });
@@ -139,7 +140,7 @@ router.get("/patient/getUserProfile", async (req: express.Request, res: express.
  *         description: Internal Server Error - An error occurred while processing the request
  */
 
-router.get("/professional/getUserProfile", async (req: express.Request, res: express.Response) => {
+router.get("/professional/getUserProfile", authenticateToken, userAuthenticate, async (req: express.Request, res: express.Response) => {
   const schema = Joi.object({
     id: Joi.string().required(),
   });

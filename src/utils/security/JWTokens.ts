@@ -83,10 +83,9 @@ export async function authenticateToken(req: express.Request, res: express.Respo
  * This function is used to generate a JWT token based on the provided data.
  */
 
-//TODO : ADD + 36000 TO THE TOKEN FOR THE EXPIRATION TIME
-export function generateToken(data: any): string {
+export function generateToken(data: any, time: number): string {
   return jwt.sign(
-    { data: data, exp: Math.floor(Date.now() / 1000) },
+    { data: data, exp: Math.floor(Date.now() / 1000) + time },
     tokenKey,
   );
 }
@@ -95,11 +94,6 @@ export function refreshToken(token: string): string {
   const decodedToken: any = jwt_decode(token);
   const userEmail: string =  decodedToken.data.email;
   const userType: string =  decodedToken.data.type;
-  console.log(userEmail);
-  console.log(userType);
-  const newToken = jwt.sign(
-    { data: {email: userEmail, type: userType}, exp: Math.floor(Date.now() / 1000) + 36000 },
-    tokenKey,
-  );
+  const newToken = generateToken({email: userEmail, type: userType}, 36000);
   return newToken;
 }

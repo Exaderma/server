@@ -77,7 +77,7 @@ router.post('/patient/register', async (req: express.Request, res: express.Respo
     return;
   }
 
-  const token = generateToken({ email: req.body.email, type: "patient" });
+  const token = generateToken({ email: req.body.email, type: "patient" }, 36000);
 
   const patient = new PatientEntity();
 
@@ -164,7 +164,7 @@ router.post('/professional/register', async (req: express.Request, res: express.
       .send("incorrect credentials format : " + result.error);
     return;
   }
-  const token = generateToken({ email: req.body.email, type: "professional" });
+  const token = generateToken({ email: req.body.email, type: "professional" }, 36000);
 
   const professional = new ProfessionalEntity();
 
@@ -204,5 +204,26 @@ router.post('/professional/register', async (req: express.Request, res: express.
 router.get('/patient/register/middleware', authenticateToken, async (req: express.Request, res: express.Response) => {
   res.status(HTTP_CODES.OK).send("User authenticated");
 });
+
+router.post('/refreshTokenTest', async (req: express.Request, res: express.Response) => {
+
+  const schema = Joi.object({
+    email: Joi.string().email().required(),
+  });
+
+  const result = schema.validate(req.body);
+
+  if (result.error) {
+    res
+      .status(HTTP_CODES.BAD_REQUEST)
+      .send("incorrect credentials format : " + result.error);
+    return;
+  }
+
+  const token = generateToken({ email: req.body.email, type: "patient" }, 0);
+
+  res.send(token).status(HTTP_CODES.OK);
+});
+
 
 module.exports = router;

@@ -78,7 +78,7 @@ router.post('/patient/login', async (req: express.Request, res: express.Response
     return;
   }
 
-  const token = generateToken({ email: req.body.email, type: "patient" });
+  const token = generateToken({ email: req.body.email, type: "patient" }, 36000);
 
   await loginManager
     .checkUserCredentials(req.body.email, req.body.password, PatientEntity)
@@ -155,7 +155,7 @@ router.post('/professional/login', async (req: express.Request, res: express.Res
     return;
   }
 
-  const token = generateToken({ email: req.body.email, type: "professional" });
+  const token = generateToken({ email: req.body.email, type: "professional" }, 36000);
 
   await loginManager
     .checkUserCredentials(req.body.email, req.body.password, ProfessionalEntity)
