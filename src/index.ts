@@ -11,6 +11,7 @@ let profile = require("./routes/profile/profile");
 let router = require("./link/routes/routesLink");
 let record = require("./record/routes/routesRecord");
 let updateProfile = require("./updateProfile/routes/routesUpdateProfile");
+let image = require("./image/routes/routesImage");
 
 let cors = require("cors");
 
@@ -29,6 +30,7 @@ app.use("/", profile);
 app.use("/", login);
 app.use("/", record);
 app.use("/", updateProfile);
+app.use("/", image);
 
 const port = process.env.PORT || 8080;
 

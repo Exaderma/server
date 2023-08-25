@@ -6,6 +6,42 @@ import { Record } from "../repository/record";
 let router = express.Router();
 let record = new Record();
 
+/**
+ * @swagger
+ * /record/new:
+ *   post:
+ *     summary: Crée un nouveau dossier médical
+ *     description: Crée un nouveau dossier médical en utilisant le token d'authentification
+ *     tags:
+ *       - Record
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token d'authentification JWT (Bearer token)
+ *       - in: body
+ *         name: body
+ *         schema:
+ *           type: object
+ *           properties:
+ *             description:
+ *               type: string
+ *             type:
+ *               type: string
+ *             patientEmail:
+ *               type: string
+ *         required: true
+ *         description: Détails du nouveau dossier médical
+ *     responses:
+ *       201:
+ *         description: Créé - renvoie des détails sur le nouveau dossier médical
+ *       401:
+ *         description: Non autorisé - token manquant ou invalide
+ *       404:
+ *         description: Ressource non trouvée ou autre erreur
+ */
 router.post("/record/new", async (req, res) => {
     const auth = req.headers["authorization"];
     if (!auth) {
@@ -36,6 +72,38 @@ router.post("/record/new", async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /record/get:
+ *   post:
+ *     summary: Obtient les dossiers médicaux d'un patient
+ *     description: Obtient les dossiers médicaux d'un patient en utilisant le token d'authentification
+ *     tags:
+ *       - Record
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token d'authentification JWT (Bearer token)
+ *       - in: body
+ *         name: body
+ *         schema:
+ *           type: object
+ *           properties:
+ *             patientEmail:
+ *               type: string
+ *         required: true
+ *         description: Adresse e-mail du patient pour obtenir ses dossiers médicaux
+ *     responses:
+ *       200:
+ *         description: Succès - renvoie les détails sur les dossiers médicaux du patient
+ *       401:
+ *         description: Non autorisé - token manquant ou invalide
+ *       404:
+ *         description: Ressource non trouvée ou autre erreur
+ */
 router.post("/record/get", async (req, res) => {
     const auth = req.headers["authorization"];
     if (!auth) {
@@ -64,6 +132,44 @@ router.post("/record/get", async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /record/update:
+ *   post:
+ *     summary: Met à jour un dossier médical
+ *     description: Met à jour un dossier médical en utilisant le token d'authentification
+ *     tags:
+ *       - Record
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token d'authentification JWT (Bearer token)
+ *       - in: body
+ *         name: body
+ *         schema:
+ *           type: object
+ *           properties:
+ *             description:
+ *               type: string
+ *             type:
+ *               type: string
+ *             patientEmail:
+ *               type: string
+ *             id:
+ *               type: string
+ *         required: true
+ *         description: Détails pour mettre à jour le dossier médical
+ *     responses:
+ *       200:
+ *         description: Succès - renvoie des détails sur le dossier médical mis à jour
+ *       401:
+ *         description: Non autorisé - token manquant ou invalide
+ *       404:
+ *         description: Ressource non trouvée ou autre erreur
+ */
 router.post("/record/update", async (req, res) => {
     const auth = req.headers["authorization"];
     if (!auth) {
