@@ -20,6 +20,9 @@ export class PatientEntity extends BaseEntity {
   @Column()
   phone: string;
 
+  @Column()
+  imageProfile: number;
+
   @Column({ default: false })
   admin: boolean;
 
