@@ -8,23 +8,58 @@ import { hashPassword } from '../../../utils/security/hashing';
 import { registerManager } from '../../../index';
 import { authenticateToken, userAuthenticate } from '../../../utils/security/JWTokens';
 
-let router: express.Router = express.Router();
+export let router: express.Router = express.Router();
 
-/** 
- * @description
- * This route is used to register a patient depending on the given credentials.
- * 
- * @param firstName the first name of the patient stored in the body of the request, must be a valid string
- * @param lastName the last name of the patient stored in the body of the request, must be a valid string
- * @param email the email of the patient stored in the body of the request, must be a valid email
- * @param password the unhashed password of the patient stored in the body of the request, must be a valid string
- * 
- * @returns a JWT token of the user and a 201 code if the registration is successful
- * @returns a 400 code if the body of the request is not valid
- * @returns a 409 code if the user already exists
- * @returns a 500 code if an internal server error occurs
+/**
+ * @swagger
+ * /patient/register:
+ *   post:
+ *     summary: Register a new patient and get an access token
+ *     description: Register a new patient using the provided information and receive an access token.
+ *     tags:
+ *       - Patient
+ *     requestBody:
+ *       description: Patient's registration information
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *             required:
+ *               - firstName
+ *               - lastName
+ *               - email
+ *               - password
+ *     responses:
+ *       201:
+ *         description: Successfully registered and logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: Access token for the newly registered patient, it contains the email, type and id of the user
+ *       400:
+ *         description: Bad Request - Incorrect credentials format
+ *       409:
+ *         description: Conflict - User already exists
+ *       500:
+ *         description: Internal Server Error - An error occurred while processing the request
  */
-router.post('/patient/register', async (req, res) => {
+
+router.post('/patient/register', async (req: express.Request, res: express.Response) => {
 
   const schema = Joi.object({
     firstName: Joi.string().required(),
@@ -41,8 +76,6 @@ router.post('/patient/register', async (req, res) => {
       .send("incorrect credentials format : " + result.error);
     return;
   }
-
-  const token = generateToken({ email: req.body.email, type: "patient" });
 
   const patient = new PatientEntity();
 
@@ -53,8 +86,13 @@ router.post('/patient/register', async (req, res) => {
 
   await registerManager
     .insertUser(patient)
-    .then(() => {
-      res.send(token).status(HTTP_CODES.CREATED);
+    .then(async () => {
+      const token = generateToken({
+        email: req.body.email,
+        id: await registerManager.getUserId(patient).then((id) => (id)),
+        type: "patient"
+      }, 36000);
+      res.status(HTTP_CODES.CREATED).send(token);
     })
     .catch((err) => {
       if (err.message === "User already exists")
@@ -63,21 +101,56 @@ router.post('/patient/register', async (req, res) => {
     });
 });
 
-/** 
- * @description
- * This route is used to register a professional depending on the given credentials.
- * 
- * @param firstName the first name of the professional stored in the body of the request, must be a valid string
- * @param lastName the last name of the professional stored in the body of the request, must be a valid string
- * @param email the email of the professional stored in the body of the request, must be a valid email
- * @param password the unhashed password of the professional stored in the body of the request, must be a valid string
- * 
- * @returns a JWT token of the user and a 201 code if the registration is successful
- * @returns a 400 code if the body of the request is not valid
- * @returns a 409 code if the user already exists
- * @returns a 500 code if an internal server error occurs
+/**
+ * @swagger
+ * /professional/register:
+ *   post:
+ *     summary: Register a new professional and get an access token
+ *     description: Register a new professional using the provided information and receive an access token.
+ *     tags:
+ *       - Professional
+ *     requestBody:
+ *       description: Professional's registration information
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *             required:
+ *               - firstName
+ *               - lastName
+ *               - email
+ *               - password
+ *     responses:
+ *       201:
+ *         description: Successfully registered and logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: Access token for the newly registered professional, it contains the email, type and id of the user
+ *       400:
+ *         description: Bad Request - Incorrect credentials format
+ *       409:
+ *         description: Conflict - User already exists
+ *       500:
+ *         description: Internal Server Error - An error occurred while processing the request
  */
-router.post('/professional/register', async (req, res) => {
+
+router.post('/professional/register', async (req: express.Request, res: express.Response) => {
 
   const schema = Joi.object({
     firstName: Joi.string().required(),
@@ -94,7 +167,6 @@ router.post('/professional/register', async (req, res) => {
       .send("incorrect credentials format : " + result.error);
     return;
   }
-  const token = generateToken({ email: req.body.email, type: "professional" });
 
   const professional = new ProfessionalEntity();
 
@@ -103,8 +175,12 @@ router.post('/professional/register', async (req, res) => {
   professional.email = req.body.email;
   professional.password = hashPassword(req.body.password);
 
-  await registerManager.printProfessionals();
-  await registerManager.insertUser(professional).then(() => {
+  await registerManager.insertUser(professional).then(async () => {
+    const token = generateToken({
+      email: req.body.email,
+      id: await registerManager.getUserId(professional).then((id) => (id)),
+      type: "professional"
+    }, 36000);
     res.send(token).status(HTTP_CODES.CREATED);
   }).catch((err) => {
     if (err.message === 'User already exists')
@@ -115,13 +191,45 @@ router.post('/professional/register', async (req, res) => {
 });
 
 /**
- * description
- * This route is used to test the middleware authentication
- * 
- * @headers Authorization the JWT token of the user in the following format: Bearer <token>
+ * @swagger
+ * /patient/register/middleware:
+ *   get:
+ *     summary: Test middleware authentication for patient registration
+ *     description: This route is used to test the middleware authentication.
+ *     tags:
+ *       - Patient
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User authenticated
+ *       401:
+ *         description: Unauthorized - Invalid token or token not provided
  */
-router.get('/patient/register/middleware', authenticateToken, userAuthenticate, async (req, res) => {
+
+router.get('/patient/register/middleware', authenticateToken, async (req: express.Request, res: express.Response) => {
   res.status(HTTP_CODES.OK).send("User authenticated");
 });
+
+router.post('/refreshTokenTest', async (req: express.Request, res: express.Response) => {
+
+  const schema = Joi.object({
+    email: Joi.string().email().required(),
+  });
+
+  const result = schema.validate(req.body);
+
+  if (result.error) {
+    res
+      .status(HTTP_CODES.BAD_REQUEST)
+      .send("incorrect credentials format : " + result.error);
+    return;
+  }
+
+  const token = generateToken({ email: req.body.email, type: "patient" }, 0);
+
+  res.send(token).status(HTTP_CODES.OK);
+});
+
 
 module.exports = router;

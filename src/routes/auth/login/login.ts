@@ -8,20 +8,61 @@ import { loginManager } from '../../../index';
 
 let router: express.Router = express.Router();
 
-/**
- * @description
- * This route is used to login a patient based on the provided credentials.
- * 
-  * @param email the email of the patient stored in the body of the request, must be a valid email
-  * @param password the unhashed password of the patient stored in the body of the request, must be a valid string
-  * 
-  * @returns a JWT token of the user and a 200 code if the login is successful
-  * @returns a 400 code if the body of the request is not valid
-  * @returns a 404 code if the user is not found
-  * @returns a 401 code if the password is incorrect
-  * @returns a 500 code if an internal server error occurs
+/** 
+ * @swagger
+ * tags:
+ *  name: Patient
+ *  description: Patient related documentation
+ *  name: Professional
+ *  description: Professional related documentation
  */
-router.post('/patient/login', async (req, res) => {
+
+/**
+ * @swagger
+ * /patient/login:
+ *   post:
+ *     summary: Authenticate a patient and get an access token
+ *     description: Login a patient using email and password and receive an access token.
+ *     tags:
+ *       - Patient
+ *     requestBody:
+ *       description: Patient's email and password
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *             required:
+ *               - email
+ *               - password
+ *     responses:
+ *       200:
+ *         description: Successfully logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: Access token for the authenticated patient, it contains the email, type and id of the user
+ *       400:
+ *         description: Bad Request - Incorrect credentials format
+ *       401:
+ *         description: Unauthorized - Wrong password
+ *       404:
+ *         description: Not Found - User not found
+ *       500:
+ *         description: Internal Server Error - An error occurred while processing the request
+ */
+
+router.post('/patient/login', async (req: express.Request, res: express.Response) => {
 
   const schema = Joi.object({
     email: Joi.string().email().required(),
@@ -36,12 +77,15 @@ router.post('/patient/login', async (req, res) => {
       .send("incorrect credentials format : " + result.error);
     return;
   }
-
-  const token = generateToken({ email: req.body.email, type: "patient" });
-
+  
   await loginManager
-    .checkUserCredentials(req.body.email, req.body.password, PatientEntity)
-    .then(() => {
+  .checkUserCredentials(req.body.email, req.body.password, PatientEntity)
+  .then(async () => {
+      const token = generateToken({
+        email: req.body.email,
+        id: await loginManager.getUserId(req.body.email, PatientEntity).then((id) => (id)),
+        type: "patient"
+      }, 36000);
       res.send(token).status(HTTP_CODES.OK);
     })
     .catch((err) => {
@@ -54,19 +98,51 @@ router.post('/patient/login', async (req, res) => {
 });
 
 /**
- * @description
- * This route is used to login a professional based on the provided credentials.
- * 
-  * @param email the email of the professional stored in the body of the request, must be a valid email
-  * @param password the unhashed password of the professional stored in the body of the request, must be a valid string
-  * 
-  * @returns a JWT token of the user and a 200 code if the login is successful
-  * @returns a 400 code if the body of the request is not valid
-  * @returns a 404 code if the user is not found
-  * @returns a 401 code if the password is incorrect
-  * @returns a 500 code if an internal server error occurs
+ * @swagger
+ * /professional/login:
+ *   post:
+ *     summary: Authenticate a professional and get an access token
+ *     description: Login a professional using email and password and receive an access token.
+ *     tags:
+ *       - Professional
+ *     requestBody:
+ *       description: Professional's email and password
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *             required:
+ *               - email
+ *               - password
+ *     responses:
+ *       200:
+ *         description: Successfully logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: Access token for the authenticated professional, it contains the email, type and id of the user
+ *       400:
+ *         description: Bad Request - Incorrect credentials format
+ *       401:
+ *         description: Unauthorized - Wrong password
+ *       404:
+ *         description: Not Found - User not found
+ *       500:
+ *         description: Internal Server Error - An error occurred while processing the request
  */
-router.post('/professional/login', async (req, res) => {
+
+router.post('/professional/login', async (req: express.Request, res: express.Response) => {
 
   const schema = Joi.object({
     email: Joi.string().email().required(),
@@ -82,11 +158,14 @@ router.post('/professional/login', async (req, res) => {
     return;
   }
 
-  const token = generateToken({ email: req.body.email, type: "professional" });
-
   await loginManager
     .checkUserCredentials(req.body.email, req.body.password, ProfessionalEntity)
-    .then(() => {
+    .then(async () => {
+      const token = generateToken({
+        email: req.body.email,
+        id: await loginManager.getUserId(req.body.email, ProfessionalEntity).then((id) => (id)),
+        type: "professional"
+      }, 36000);
       res.send(token).status(HTTP_CODES.OK);
     })
     .catch((err) => {

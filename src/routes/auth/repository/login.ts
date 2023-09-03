@@ -40,6 +40,15 @@ export class Login {
       });
   }
 
+  public async getUserId(mail: string, entity: Function): Promise<number> {
+    const repo = this.client.getRepository(entity);
+    const foundUser = await repo.findOne({ where: { email: mail } });
+    if (foundUser) {
+      return foundUser.id;
+    }
+    throw new Error("User not found");
+  }
+
   /**
    * @description check the credentials of a user in the database based on the provided credentials
    * @param email email of the user

@@ -3,16 +3,17 @@ import { DataSource } from "typeorm";
 import { PatientEntity } from "../../entity/patient";
 import { ProfessionalEntity } from "../../entity/professional";
 
-/**
- * @description
- * This class is used to manipulate any kind of data regarding the users in the database.
- */ 
+type userProfileData = {
+  firstName: string,
+  lastName: string,
+  email: string,
+  admin: boolean,
+  roles: string[],
+}
+
 export class DataManipulation {
   private client: DataSource;
-  /**
-   * @description
-   * This constructor initializes the database connection and allows to communicate with it.
-   */
+
   constructor() {
     this.client = new DataSource({
       type: "postgres",
@@ -37,12 +38,6 @@ export class DataManipulation {
       });
   }
 
-  /**
-   * @description check if a user exists in the database based on the provided email
-   * @param email the email of the user to check
-   * @param entity the type of the user (patient or professional)
-   * @returns true if the user exists, throws an error otherwise
-   */
   public async doesUserExists(email: string, entity: Function): Promise<boolean> {
     const repo = this.client.getRepository(entity);
     const foundUser = await repo.findOne({ where: { email: email } });
@@ -56,23 +51,24 @@ export class DataManipulation {
     const repo = this.client.getRepository(entity);
     const foundUser = await repo.findOne({ where: { id: id } });
     if (foundUser) {
-      return foundUser;
+      const returnedData: userProfileData = {
+        firstName: foundUser.firstName,
+        lastName: foundUser.lastName,
+        email: foundUser.email,
+        admin: foundUser.admin,
+        roles: foundUser.roles,
+      }
+      return returnedData;
     }
     throw new Error("User not found");
   }
 
-  /**
-   * @description prints all the patients in the database
-   */
   public async printPatients(): Promise<void> {
     const repo = this.client.getRepository(PatientEntity);
     const patients = await repo.find();
     console.log(patients);
   }
 
-  /**
-   * @description prints all the professionals in the database
-   */
   public async printProfessionals(): Promise<void> {
     const repo = this.client.getRepository(ProfessionalEntity);
     const professionals = await repo.find();

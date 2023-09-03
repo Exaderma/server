@@ -37,6 +37,15 @@ export class Register {
     });
   }
 
+  public async getUserId(user: PatientEntity | ProfessionalEntity): Promise<number> {
+    const repo = this.client.getRepository(user.constructor.name);
+    const foundUser = await repo.findOne({ where: { email: user.email } });
+    if (foundUser) {
+      return foundUser.id;
+    }
+    throw new Error("User not found");
+  }
+
   /**
    * @description insert a user in the database
    * @param user the user to insert in the database
@@ -44,7 +53,6 @@ export class Register {
    */
   public async insertUser(user: PatientEntity | ProfessionalEntity): Promise<string> {
     const repo = this.client.getRepository(user.constructor.name);
-    console.log("user.constructor.name: ", user.constructor.name);
     const foundUser = await repo.findOne({ where: { email: user.email } });
     if (foundUser) {
       throw new Error("User already exists");

@@ -6,6 +6,35 @@ import { DataSource } from "typeorm";
 
 require("dotenv").config();
 
+
+const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerUI = require("swagger-ui-express");
+
+const options = {
+  swaggerDefinition : {
+    openapi: "3.0.0",
+    info: {
+      title: "Exaderma Backend Application",
+      version: "1.0.0",
+      description:
+        "the Exaderma Backend Application, a RESTful API for Exaderma to manage the data of the application and user requests",
+      license: {
+        name: "MIT",
+        url: "https://spdx.org/licenses/MIT.html",
+      },
+    },
+    servers: [
+      {
+        url: "http://localhost:8080",
+        description: "Local server"
+      }
+    ]
+  },
+  apis: ["src/**/*.ts"],
+};
+
+const swaggerSpec = swaggerJSDoc(options);
+
 const dbClient = new DataSource({
   type: "postgres",
   host: process.env.DB_HOST as string,
@@ -35,9 +64,13 @@ let regiter = require("./routes/auth/register/register");
 let login = require("./routes/auth/login/login");
 let profile = require("./routes/profile/profile");
 let router = require("./link/routes/routesLink");
+
+let refreshToken = require("./routes/security/refreshToken");
+
 let record = require("./record/routes/routesRecord");
 let updateProfile = require("./updateProfile/routes/routesUpdateProfile");
 let image = require("./image/routes/routesImage");
+
 
 let cors = require("cors");
 
@@ -52,11 +85,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/", router);
 app.use("/", regiter);
-app.use("/", profile);
 app.use("/", login);
+
+app.use("/", profile);
+app.use("/", router);
+app.use("/", refreshToken);
+
+app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec, { explorer: true }));
+
 app.use("/", record);
 app.use("/", updateProfile);
 app.use("/", image);
+
 
 const port = process.env.PORT || 8080;
 
