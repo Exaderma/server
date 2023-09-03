@@ -17,6 +17,15 @@ export class ProfessionalEntity extends BaseEntity {
   @Column({ unique: true })
   email: string;
 
+  @Column()
+  phone: string;
+
+  @Column()
+  department: string;
+
+  @Column()
+  address: string;
+
   @Column({ default: false })
   admin: boolean;
 
