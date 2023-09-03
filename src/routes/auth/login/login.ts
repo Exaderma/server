@@ -51,7 +51,7 @@ let router: express.Router = express.Router();
  *               properties:
  *                 token:
  *                   type: string
- *                   description: Access token for the authenticated patient
+ *                   description: Access token for the authenticated patient, it contains the email, type and id of the user
  *       400:
  *         description: Bad Request - Incorrect credentials format
  *       401:
@@ -77,12 +77,15 @@ router.post('/patient/login', async (req: express.Request, res: express.Response
       .send("incorrect credentials format : " + result.error);
     return;
   }
-
-  const token = generateToken({ email: req.body.email, type: "patient" }, 36000);
-
+  
   await loginManager
-    .checkUserCredentials(req.body.email, req.body.password, PatientEntity)
-    .then(() => {
+  .checkUserCredentials(req.body.email, req.body.password, PatientEntity)
+  .then(async () => {
+      const token = generateToken({
+        email: req.body.email,
+        id: await loginManager.getUserId(req.body.email, PatientEntity).then((id) => (id)),
+        type: "patient"
+      }, 36000);
       res.send(token).status(HTTP_CODES.OK);
     })
     .catch((err) => {
@@ -128,7 +131,7 @@ router.post('/patient/login', async (req: express.Request, res: express.Response
  *               properties:
  *                 token:
  *                   type: string
- *                   description: Access token for the authenticated professional
+ *                   description: Access token for the authenticated professional, it contains the email, type and id of the user
  *       400:
  *         description: Bad Request - Incorrect credentials format
  *       401:
@@ -155,11 +158,14 @@ router.post('/professional/login', async (req: express.Request, res: express.Res
     return;
   }
 
-  const token = generateToken({ email: req.body.email, type: "professional" }, 36000);
-
   await loginManager
     .checkUserCredentials(req.body.email, req.body.password, ProfessionalEntity)
-    .then(() => {
+    .then(async () => {
+      const token = generateToken({
+        email: req.body.email,
+        id: await loginManager.getUserId(req.body.email, ProfessionalEntity).then((id) => (id)),
+        type: "professional"
+      }, 36000);
       res.send(token).status(HTTP_CODES.OK);
     })
     .catch((err) => {

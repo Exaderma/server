@@ -50,7 +50,7 @@ export let router: express.Router = express.Router();
  *               properties:
  *                 token:
  *                   type: string
- *                   description: Access token for the newly registered patient
+ *                   description: Access token for the newly registered patient, it contains the email, type and id of the user
  *       400:
  *         description: Bad Request - Incorrect credentials format
  *       409:
@@ -77,8 +77,6 @@ router.post('/patient/register', async (req: express.Request, res: express.Respo
     return;
   }
 
-  const token = generateToken({ email: req.body.email, type: "patient" }, 36000);
-
   const patient = new PatientEntity();
 
   patient.firstName = req.body.firstName;
@@ -88,7 +86,12 @@ router.post('/patient/register', async (req: express.Request, res: express.Respo
 
   await registerManager
     .insertUser(patient)
-    .then(() => {
+    .then(async () => {
+      const token = generateToken({
+        email: req.body.email,
+        id: await registerManager.getUserId(patient).then((id) => (id)),
+        type: "patient"
+      }, 36000);
       res.status(HTTP_CODES.CREATED).send(token);
     })
     .catch((err) => {
@@ -138,7 +141,7 @@ router.post('/patient/register', async (req: express.Request, res: express.Respo
  *               properties:
  *                 token:
  *                   type: string
- *                   description: Access token for the newly registered professional
+ *                   description: Access token for the newly registered professional, it contains the email, type and id of the user
  *       400:
  *         description: Bad Request - Incorrect credentials format
  *       409:
@@ -164,7 +167,6 @@ router.post('/professional/register', async (req: express.Request, res: express.
       .send("incorrect credentials format : " + result.error);
     return;
   }
-  const token = generateToken({ email: req.body.email, type: "professional" }, 36000);
 
   const professional = new ProfessionalEntity();
 
@@ -173,8 +175,12 @@ router.post('/professional/register', async (req: express.Request, res: express.
   professional.email = req.body.email;
   professional.password = hashPassword(req.body.password);
 
-  await registerManager.printProfessionals();
-  await registerManager.insertUser(professional).then(() => {
+  await registerManager.insertUser(professional).then(async () => {
+    const token = generateToken({
+      email: req.body.email,
+      id: await registerManager.getUserId(professional).then((id) => (id)),
+      type: "professional"
+    }, 36000);
     res.send(token).status(HTTP_CODES.CREATED);
   }).catch((err) => {
     if (err.message === 'User already exists')

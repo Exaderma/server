@@ -92,8 +92,6 @@ export function generateToken(data: any, time: number): string {
 
 export function refreshToken(token: string): string {
   const decodedToken: any = jwt_decode(token);
-  const userEmail: string =  decodedToken.data.email;
-  const userType: string =  decodedToken.data.type;
-  const newToken = generateToken({email: userEmail, type: userType}, 36000);
+  const newToken = generateToken(decodedToken.data, 36000);
   return newToken;
 }
