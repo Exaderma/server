@@ -17,7 +17,8 @@ const dbClient = new DataSource({
   logging: false,
 });
 
-dbClient
+const tmp = async () => {
+await dbClient
   .initialize()
   .then(() => {
     console.log("Connection to database established")
@@ -26,6 +27,9 @@ dbClient
     console.log("Error connecting to database", err);
     process.exit(1);
   });
+}
+
+tmp();
 
 let regiter = require("./routes/auth/register/register");
 let login = require("./routes/auth/login/login");
