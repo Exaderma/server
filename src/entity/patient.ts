@@ -17,10 +17,10 @@ export class PatientEntity extends BaseEntity {
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   phone: string;
 
-  @Column()
+  @Column({ nullable: true })
   imageProfile: number;
 
   @Column({ default: false })

@@ -17,13 +17,13 @@ export class ProfessionalEntity extends BaseEntity {
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   phone: string;
 
-  @Column()
+  @Column({ nullable: true })
   department: string;
 
-  @Column()
+  @Column({ nullable: true })
   address: string;
 
   @Column({ default: false })
