@@ -3,6 +3,7 @@ import { DataSource } from "typeorm";
 import { ImageEntity } from "../../entity/image";
 import { PatientEntity } from "../../entity/patient";
 import { RepositoryImage } from "../api/domain";
+import { name_image } from "../../utils/constants";
 
 export class Image implements RepositoryImage {
     private dbClient: DataSource;
@@ -42,6 +43,9 @@ export class Image implements RepositoryImage {
         }
         const img = new ImageEntity();
         img.data = Buffer.from(image, "base64");
+        img.filename = name_image("pp");
+        img.mimetype = "image/png";
+        img.type = "pp";
         await this.dbClient.manager.save(img);
         patient.imageProfile = img.id;
         await this.dbClient.manager.save(patient);
