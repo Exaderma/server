@@ -17,6 +17,15 @@ export class ProfessionalEntity extends BaseEntity {
   @Column({ unique: true })
   email: string;
 
+  @Column({ nullable: true })
+  phone: string;
+
+  @Column({ nullable: true })
+  department: string;
+
+  @Column({ nullable: true })
+  address: string;
+
   @Column({ default: false })
   admin: boolean;
 

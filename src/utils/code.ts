@@ -5,9 +5,17 @@ export function generateUUID(): string {
 }
 
 export function generateRandomNumber(size: number = 1): number {
-  return Math.floor(Math.random() * size);
+  let number = 0;
+  for (let i = 0; i < size; i++) {
+    number += Math.floor(Math.random() * 10);
+  }
+  return number;
 }
 
 export function generateRandomString(size: number = 1): string {
-    return Math.random().toString(36).substring(size);
+  let string = "";
+  for (let i = 0; i < size; i++) {
+    string += String.fromCharCode(97 + Math.floor(Math.random() * 26));
+  }
+  return string;
 }
