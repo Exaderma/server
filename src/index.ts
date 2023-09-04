@@ -2,6 +2,7 @@ import express, { Express } from "express";
 import { DataManipulation } from './utils/repository/dataManipulation';
 import { Register } from './routes/auth/repository/register'
 import { Login } from './routes/auth/repository/login'
+import { OrganisationRepository } from './utils/repository/organisationRepository';
 import { DataSource } from "typeorm";
 
 require("dotenv").config();
@@ -71,12 +72,14 @@ let record = require("./record/routes/routesRecord");
 let updateProfile = require("./updateProfile/routes/routesUpdateProfile");
 let image = require("./image/routes/routesImage");
 
+let organisation = require("./routes/organisation/organisation");
 
 let cors = require("cors");
 
 export const registerManager = new Register();
 export const loginManager = new Login();
 export const dataManager = new DataManipulation();
+export const organisationManager = new OrganisationRepository();
 
 const app: Express = express();
 
@@ -97,6 +100,7 @@ app.use("/", record);
 app.use("/", updateProfile);
 app.use("/", image);
 
+app.use("/", organisation);
 
 const port = process.env.PORT || 8080;
 

@@ -78,8 +78,6 @@ router.get("/patient/getUserProfile", authenticateToken, userAuthenticate, async
 
   const id: string = req.query.id ? req.query.id.toString() : '';
 
-  console.log(id);
-
   await dataManager.getUserProfile(id, PatientEntity).then((user) => {
     res.send(user).status(HTTP_CODES.OK);
   }).catch((err) => {
