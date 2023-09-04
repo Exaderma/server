@@ -55,7 +55,6 @@ router.post("/record/new", async (req, res) => {
     }
     const { description, type, patientEmail } = req.body;
     const professional: any = jwt_decode(token);
-    console.log(professional);
     try {
         res
         .status(201)

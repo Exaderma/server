@@ -111,6 +111,7 @@ export class UpdateProfile implements RepositoryUpdateProfile {
                 email: email,
             },
         });
+        console.log(professional);
         if (!professional) {
             return "Professional not found";
         }

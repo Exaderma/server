@@ -128,16 +128,17 @@ export class Link implements RepositoryLink {
     const links = await this.dbClient.manager.find(LinkEntity, {
       where: { patientId: patient.id },
     });
+    console.log(links);
     if (!links) {
       throw new Error("Link not found");
     }
     const doctors: any[] = [];
 
   for (const link of links) {
-    const doctor = await this.dbClient.manager.findOne(PatientEntity, {
-      where: { id: link.patientId },
+    const doctor = await this.dbClient.manager.findOne(ProfessionalEntity, {
+      where: { id: link.doctorId },
     });
-
+    console.log(doctor);
     if (doctor) doctors.push(doctor);
   }
 

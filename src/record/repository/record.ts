@@ -63,6 +63,8 @@ export class Record implements RepositoryRecord {
         patientEmail: string,
         doctorEmail: string,
     ): Promise<any> {
+        console.log(patientEmail);
+        console.log(doctorEmail);
         const patient = await this.dbClient.manager.findOne(PatientEntity, {
             where: { email: patientEmail },
         });
