@@ -60,7 +60,7 @@ router.post("/patient/link", async (req, res) => {
     res
       .status(201)
       .send(
-        await resolverLinkPatientToDoctor(link, code, patientId.date.email)
+        await resolverLinkPatientToDoctor(link, code, patientId.data.email)
       );
   }
   catch (err: any) {
@@ -102,11 +102,11 @@ router.get("/patient/getLink", async (req, res) => {
     res.status(401).send("Unauthorized");
     return;
   }
-  const patientId: any = jwt_decode(token);
+  const patientId: any = jwt_decode(token);;
   try {
     res
       .status(200)
-      .send(await resolverGetLinkPatient(link, patientId.date.email));
+      .send(await resolverGetLinkPatient(link, patientId.data.email));
   }
   catch (err: any) {
     res.status(404).send(err.message);
@@ -165,7 +165,7 @@ router.post("/professional/link", async (req, res) => {
   try {
     res
       .status(200)
-      .send(await resolverLinkDoctorToPatient(link, doctorId.date.email, email));
+      .send(await resolverLinkDoctorToPatient(link, doctorId.data.email, email));
   }
   catch (err: any) {
     res.status(404).send(err.message);
@@ -210,7 +210,7 @@ router.get("/professional/getLink", async (req, res) => {
   try {
     res
       .status(200)
-      .send(await resolverGetLinkDoctor(link, doctorId.date.email));
+      .send(await resolverGetLinkDoctor(link, doctorId.data.email));
   }
   catch (err: any) {
     res.status(404).send(err.message);

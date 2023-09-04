@@ -55,6 +55,7 @@ router.post("/record/new", async (req, res) => {
     }
     const { description, type, patientEmail } = req.body;
     const professional: any = jwt_decode(token);
+    console.log(professional);
     try {
         res
         .status(201)
@@ -64,7 +65,7 @@ router.post("/record/new", async (req, res) => {
             description,
             type,
             patientEmail,
-            professional.email,
+            professional.data.email,
             ),
         );
     } catch (err : any) {
@@ -124,7 +125,7 @@ router.post("/record/get", async (req, res) => {
             await resolverGetRecord(
             record,
             patientEmail,
-            professional.email,
+            professional.data.email,
             ),
         );
     } catch (err : any) {
@@ -193,7 +194,7 @@ router.post("/record/update", async (req, res) => {
             description,
             type,
             patientEmail,
-            professional.email,
+            professional.data.email,
             ),
         );
     } catch (err : any) {

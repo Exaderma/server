@@ -3,6 +3,7 @@ import { DataSource } from "typeorm";
 import { PatientEntity } from "../../entity/patient";
 import { ProfessionalEntity } from "../../entity/professional";
 import { RepositoryUpdateProfile } from "../api/domain";
+import { hashPassword } from "../../utils/security/hashing";
 
 export class UpdateProfile implements RepositoryUpdateProfile {
     private dbClient: DataSource;
@@ -98,7 +99,7 @@ export class UpdateProfile implements RepositoryUpdateProfile {
             return "Patient not found";
         }
         // TODO : hash password
-        patient.password = password;
+        patient.password = hashPassword(password);
         await this.dbClient.manager.save(patient);
         return "Patient password updated";
     }
@@ -156,7 +157,7 @@ export class UpdateProfile implements RepositoryUpdateProfile {
             return "Professional not found";
         }
         // TODO : hash password
-        professional.password = password;
+        professional.password = hashPassword(password);
         await this.dbClient.manager.save(professional);
         return "Professional password updated";
     }

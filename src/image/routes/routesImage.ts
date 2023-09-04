@@ -52,7 +52,7 @@ imageRouter.post("/image/setProfile/patient", async (req, res) => {
     const { data } = req.body;
     const patient: any = jwtDecode(token);
     try {
-        res.status(201).send(await resolverSetPatientImageProfile(image, data, patient.email));
+        res.status(201).send(await resolverSetPatientImageProfile(image, data, patient.data.email));
     } catch (err: any) {
         res.status(404).send(err.message);
     }
@@ -94,7 +94,7 @@ imageRouter.post("/image/getProfile/patient", async (req, res) => {
     }
     const patient: any = jwtDecode(token);
     try {
-        res.status(200).send(await resolverGetPatientImageProfile(image, patient.email));
+        res.status(200).send(await resolverGetPatientImageProfile(image, patient.data.email));
     } catch (err: any) {
         res.status(404).send(err.message);
     }

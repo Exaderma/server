@@ -54,7 +54,7 @@ router.post('/updateProfile/patient/firstName', async (req, res) => {
     const { firstName } = req.body;
     const patient: any = jwt_decode(token);
     try {
-        res.status(200).send(await resolverUpdatePatientFirstName(patient.email, firstName, updateProfile));
+        res.status(200).send(await resolverUpdatePatientFirstName(patient.data.email, firstName, updateProfile));
     } catch (err: any) {
         res.status(404).send(err.message);
     }
@@ -106,7 +106,7 @@ router.post('/updateProfile/patient/lastName', async (req, res) => {
     const { lastName } = req.body;
     const patient: any = jwt_decode(token);
     try {
-        res.status(200).send(await resolverUpdatePatientLastName(patient.email, lastName, updateProfile));
+        res.status(200).send(await resolverUpdatePatientLastName(patient.data.email, lastName, updateProfile));
     } catch (err: any) {
         res.status(404).send(err.message);
     }
@@ -158,7 +158,7 @@ router.post('/updateProfile/patient/email', async (req, res) => {
     const { newEmail } = req.body;
     const patient: any = jwt_decode(token);
     try {
-        res.status(200).send(await resolverUpdatePatientEmail(patient.email, newEmail, updateProfile));
+        res.status(200).send(await resolverUpdatePatientEmail(patient.data.email, newEmail, updateProfile));
     } catch (err: any) {
         res.status(404).send(err.message);
     }
@@ -178,7 +178,7 @@ router.post('/updateProfile/patient/password', async (req, res) => {
     const { password } = req.body;
     const patient: any = jwt_decode(token);
     try {
-        res.status(200).send(await resolverUpdatePatientPassword(patient.email, password, updateProfile));
+        res.status(200).send(await resolverUpdatePatientPassword(patient.data.email, password, updateProfile));
     } catch (err: any) {
         res.status(404).send(err.message);
     }
@@ -198,7 +198,7 @@ router.post('/updateProfile/patient/phone', async (req, res) => {
     const { phone } = req.body;
     const patient: any = jwt_decode(token);
     try {
-        res.status(200).send(await resolverUpdatePatientPhone(patient.email, phone, updateProfile));
+        res.status(200).send(await resolverUpdatePatientPhone(patient.data.email, phone, updateProfile));
     } catch (err: any) {
         res.status(404).send(err.message);
     }
@@ -253,7 +253,7 @@ router.post('/updateProfile/professional/firstName', async (req, res) => {
     const { firstName } = req.body;
     const professional: any = jwt_decode(token);
     try {
-        res.status(200).send(await resolverUpdateProfessionalFirstName(professional.email, firstName, updateProfile));
+        res.status(200).send(await resolverUpdateProfessionalFirstName(professional.data.email, firstName, updateProfile));
     } catch (err: any) {
         res.status(404).send(err.message);
     }
@@ -305,7 +305,7 @@ router.post('/updateProfile/professional/lastName', async (req, res) => {
     const { lastName } = req.body;
     const professional: any = jwt_decode(token);
     try {
-        res.status(200).send(await resolverUpdateProfessionalLastName(professional.email, lastName, updateProfile));
+        res.status(200).send(await resolverUpdateProfessionalLastName(professional.data.email, lastName, updateProfile));
     } catch (err: any) {
         res.status(404).send(err.message);
     }
@@ -357,7 +357,7 @@ router.post('/updateProfile/professional/email', async (req, res) => {
     const { newEmail } = req.body;
     const professional: any = jwt_decode(token);
     try {
-        res.status(200).send(await resolverUpdateProfessionalEmail(professional.email, newEmail, updateProfile));
+        res.status(200).send(await resolverUpdateProfessionalEmail(professional.data.email, newEmail, updateProfile));
     } catch (err: any) {
         res.status(404).send(err.message);
     }
@@ -409,7 +409,7 @@ router.post('/updateProfile/professional/password', async (req, res) => {
     const { password } = req.body;
     const professional: any = jwt_decode(token);
     try {
-        res.status(200).send(await resolverUpdateProfessionalPassword(professional.email, password, updateProfile));
+        res.status(200).send(await resolverUpdateProfessionalPassword(professional.data.email, password, updateProfile));
     } catch (err: any) {
         res.status(404).send(err.message);
     }
@@ -459,7 +459,7 @@ router.post('/updateProfile/professional/phone', async (req, res) => {
     const { phone } = req.body;
     const professional: any = jwt_decode(token);
     try {
-        res.status(200).send(await resolverUpdateProfessionalPhone(professional.email, phone, updateProfile));
+        res.status(200).send(await resolverUpdateProfessionalPhone(professional.data.email, phone, updateProfile));
     } catch (err: any) {
         res.status(404).send(err.message);
     }
@@ -509,7 +509,7 @@ router.post('/updateProfile/professional/department', async (req, res) => {
     const { department } = req.body;
     const professional: any = jwt_decode(token);
     try {
-        res.status(200).send(await resolverUpdateProfessionalDepartment(professional.email, department, updateProfile));
+        res.status(200).send(await resolverUpdateProfessionalDepartment(professional.data.email, department, updateProfile));
     } catch (err: any) {
         res.status(404).send(err.message);
     }
@@ -559,7 +559,7 @@ router.post('/updateProfile/professional/address', async (req, res) => {
     const { address } = req.body;
     const professional: any = jwt_decode(token);
     try {
-        res.status(200).send(await resolverUpdateProfessionalAddress(professional.email, address, updateProfile));
+        res.status(200).send(await resolverUpdateProfessionalAddress(professional.data.email, address, updateProfile));
     } catch (err: any) {
         res.status(404).send(err.message);
     }
