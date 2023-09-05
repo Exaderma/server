@@ -38,4 +38,22 @@ export class OrganisationRepository {
       const newOrg = repo.create(organisation);
       await repo.save(newOrg);
   }
+
+  public async deleteOrganisation(id: number): Promise<void> {
+      const repo = this.client.getRepository(OrganisationEntity);
+      const foundUser = await repo.findOne({ where: { id: id } });
+      if (!foundUser) {
+        throw new Error("Organisation does not exist");
+      }
+      await repo.remove(foundUser);
+  }
+
+  public async getOrganisationId(name: string): Promise<number> {
+    const repo = this.client.getRepository(OrganisationEntity);
+    const foundUser = await repo.findOne({ where: { name: name } });
+    if (!foundUser) {
+      throw new Error("Organisation does not exist");
+    }
+    return foundUser.id;
+  }
 }

@@ -62,13 +62,30 @@ router.post('/organisation/create', async (req: express.Request, res: express.Re
   organisation.email = req.body.email;
   organisation.phone = req.body.phone;
 
-  await organisationManager.createOrganisation(organisation).then(() => {
+  await organisationManager.createOrganisation(organisation).then(async () => {
+    await organisationManager.getOrganisationId(organisation.name).then((id) => {
+      console.log('id', id);
+    })
     res.status(HTTP_CODES.CREATED).send('Organisation created');
   }).catch((err) => {
     if (err.message === 'Organisation already exists')
       res.status(HTTP_CODES.CONFLICT).send("Organisation already exists");
     else 
       res.send(err).status(HTTP_CODES.INTERNAL_SERVER_ERROR);
+  });
+})
+
+router.delete('/organisation/delete/:id', async (req: express.Request, res: express.Response) => {
+  const id = parseInt(req.params.id);
+
+  console.log('delete', id);
+  await organisationManager.deleteOrganisation(id).then(() => {
+    res.status(HTTP_CODES.OK).send('Organisation deleted');
+  }).catch((err) => {
+    if (err.message === 'Organisation does not exist')
+      res.status(HTTP_CODES.NOT_FOUND).send("Organisation does not exist");
+    else
+      res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).send(err);
   });
 })
 
