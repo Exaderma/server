@@ -92,7 +92,7 @@ router.post('/patient/register', async (req: express.Request, res: express.Respo
         id: await registerManager.getUserId(patient).then((id) => (id)),
         type: "patient"
       }, 36000);
-      res.status(HTTP_CODES.CREATED).send(token);
+      res.status(HTTP_CODES.CREATED).send({token: token});
     })
     .catch((err) => {
       if (err.message === "User already exists")
@@ -181,7 +181,7 @@ router.post('/professional/register', async (req: express.Request, res: express.
       id: await registerManager.getUserId(professional).then((id) => (id)),
       type: "professional"
     }, 36000);
-    res.send(token).status(HTTP_CODES.CREATED);
+    res.send({token: token}).status(HTTP_CODES.CREATED);
   }).catch((err) => {
     if (err.message === 'User already exists')
       res.status(HTTP_CODES.CONFLICT).send("User already exists");

@@ -86,7 +86,7 @@ router.post('/patient/login', async (req: express.Request, res: express.Response
         id: await loginManager.getUserId(req.body.email, PatientEntity).then((id) => (id)),
         type: "patient"
       }, 36000);
-      res.send(token).status(HTTP_CODES.OK);
+      res.send({token: token}).status(HTTP_CODES.OK);
     })
     .catch((err) => {
       if (err.message === "User not found")
@@ -166,7 +166,7 @@ router.post('/professional/login', async (req: express.Request, res: express.Res
         id: await loginManager.getUserId(req.body.email, ProfessionalEntity).then((id) => (id)),
         type: "professional"
       }, 36000);
-      res.send(token).status(HTTP_CODES.OK);
+      res.send({token: token}).status(HTTP_CODES.OK);
     })
     .catch((err) => {
       if (err.message === "User not found")
