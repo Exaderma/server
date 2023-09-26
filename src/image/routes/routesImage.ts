@@ -133,7 +133,7 @@ imageRouter.post("/image/getProfile/patient", async (req, res) => {
  *       404:
  *         description: Ressource non trouvée ou autre erreur
  */
-router.post("/image/setProfile/professional", async (req, res) => {
+imageRouter.post("/image/setProfile/professional", async (req, res) => {
     const auth = req.headers["authorization"];
     if (!auth) {
         res.status(401).send("Unauthorized");
@@ -176,7 +176,7 @@ router.post("/image/setProfile/professional", async (req, res) => {
  *       404:
  *         description: Ressource non trouvée ou autre erreur
  */
-router.post("/image/getProfile/professional", async (req, res) => {
+imageRouter.post("/image/getProfile/professional", async (req, res) => {
     const auth = req.headers["authorization"];
     if (!auth) {
         res.status(401).send("Unauthorized");
@@ -195,4 +195,4 @@ router.post("/image/getProfile/professional", async (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports = imageRouter;
