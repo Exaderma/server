@@ -184,4 +184,70 @@ export class Link implements RepositoryLink {
 
   return patients;
   }
+
+  /**
+   * Remove a link between a patient and a doctor
+   * @param patientId
+   * @param doctorId
+   * @returns success or error
+   * @memberof Link
+   */
+  public async removeLinkPatient(
+    patientEmail: string,
+    professionalEmail : string
+  ): Promise<any> {
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {
+      where: { email: patientEmail },
+    });
+    if (!patient) {
+      throw new Error("Patient not found");
+    }
+    const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
+      where: { email: professionalEmail },
+    });
+    if (!professional) {
+      throw new Error("Professional not found");
+    }
+    const link = await this.dbClient.manager.findOne(LinkEntity, {
+      where: { patientId: patient.id, doctorId: professional.id },
+    });
+    if (!link) {
+      throw new Error("Link not found");
+    }
+    await this.dbClient.manager.remove(link);
+    return "success";
+  }
+
+  /**
+   * Remove a link between a doctor and a patient
+   * @param patientId
+   * @param doctorId
+   * @returns success or error
+   * @memberof Link
+   */
+  public async removeLinkDoctor(
+    doctorEmail: string,
+    patientEmail : string
+  ): Promise<any> {
+    const doctor = await this.dbClient.manager.findOne(ProfessionalEntity, {
+      where: { email: doctorEmail },
+    });
+    if (!doctor) {
+      throw new Error("Doctor not found");
+    }
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {
+      where: { email: patientEmail },
+    });
+    if (!patient) {
+      throw new Error("Patient not found");
+    }
+    const link = await this.dbClient.manager.findOne(LinkEntity, {
+      where: { doctorId: doctor.id, patientId: patient.id },
+    });
+    if (!link) {
+      throw new Error("Link not found");
+    }
+    await this.dbClient.manager.remove(link);
+    return "success";
+  }
 }

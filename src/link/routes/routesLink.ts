@@ -217,4 +217,118 @@ router.get("/professional/getLink", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /patient/removeLink:
+ *   post:
+ *     summary: Supprime le lien entre un patient et un professionnel de santé
+ *     description: Supprime le lien entre un patient et un professionnel de santé en utilisant le token d'authentification du patient
+ *     tags:
+ *       - Patient
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token d'authentification JWT (Bearer token) du patient
+ *       - in: body
+ *         name: body
+ *         schema:
+ *           type: object
+ *           properties:
+ *             professionalEmail:
+ *               type: string
+ *         required: true
+ *         description: Adresse e-mail du professionnel de santé à délier du patient
+ *     responses:
+ *       200:
+ *         description: Succès - le lien a été supprimé avec succès
+ *       401:
+ *         description: Non autorisé - token manquant ou invalide
+ *       404:
+ *         description: Ressource non trouvée ou autre erreur
+ */
+router.post("/patient/removeLink", async (req, res) => {
+  const auth = req.headers["authorization"];
+  if (!auth) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  const token = auth.split(" ")[1];
+  if (!token) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  const { professionalEmail } = req.body;
+  const patientId: any = jwt_decode(token);
+  try {
+    res
+      .status(200)
+      .send(
+        await link.removeLinkPatient(patientId.data.email, professionalEmail)
+      );
+  }
+  catch (err: any) {
+    res.status(404).send(err.message);
+  }
+});
+
+/**
+ * @swagger
+ * /professional/removeLink:
+ *   post:
+ *     summary: Supprime le lien entre un professionnel de santé et un patient
+ *     description: Supprime le lien entre un professionnel de santé et un patient en utilisant le token d'authentification du professionnel de santé
+ *     tags:
+ *       - Professional
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token d'authentification JWT (Bearer token) du professionnel de santé
+ *       - in: body
+ *         name: body
+ *         schema:
+ *           type: object
+ *           properties:
+ *             patientEmail:
+ *               type: string
+ *         required: true
+ *         description: Adresse e-mail du patient à délier du professionnel de santé
+ *     responses:
+ *       200:
+ *         description: Succès - le lien a été supprimé avec succès
+ *       401:
+ *         description: Non autorisé - token manquant ou invalide
+ *       404:
+ *         description: Ressource non trouvée ou autre erreur
+ */
+router.post("/professional/removeLink", async (req, res) => {
+  const auth = req.headers["authorization"];
+  if (!auth) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  const token = auth.split(" ")[1];
+  if (!token) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  const { patientEmail } = req.body;
+  const doctorId: any = jwt_decode(token);
+  try {
+    res
+      .status(200)
+      .send(
+        await link.removeLinkDoctor(doctorId.data.email, patientEmail)
+      );
+  }
+  catch (err: any) {
+    res.status(404).send(err.message);
+  }
+});
+
 module.exports = router;

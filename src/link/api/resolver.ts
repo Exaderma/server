@@ -29,3 +29,19 @@ export async function resolverGetLinkDoctor(
 ): Promise<any> {
   return link.getLinkDoctor(doctorEmail);
 }
+
+export async function resolverRemoveLinkPatient(
+  link: RepositoryLink,
+  patientEmail: string,
+  professionalEmail : string
+): Promise<any> {
+  return link.removeLinkPatient(patientEmail, professionalEmail);
+}
+
+export async function resolverRemoveLinkDoctor(
+  link: RepositoryLink,
+  doctorEmail: string,
+  patientEmail : string
+): Promise<any> {
+  return link.removeLinkDoctor(doctorEmail, patientEmail);
+}
