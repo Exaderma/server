@@ -1,36 +1,40 @@
 import {
-  resolverGetLinkDoctor,
+  resolverGetLinkprofessionnal,
   resolverGetLinkPatient,
-  resolverLinkDoctorToPatient,
-  resolverLinkPatientToDoctor,
+  resolverLinkprofessionnalToPatient,
+  resolverLinkPatientToprofessionnal,
+  resolverRemoveLinkprofessionnal,
+  resolverRemoveLinkPatient,
 } from "../../../src/link/api/resolver";
 
 const templateResolverLink = {
-  LinkPatientToDoctor: async (code: number, patientId: string) => "success",
-  LinkDoctorToPatient: async (doctorId: string, email: string) => "success",
+  LinkPatientToprofessionnal: async (code: number, patientId: string) => "success",
+  LinkprofessionnalToPatient: async (professionnalId: string, email: string) => "success",
   getLinkPatient: async (patientId: string) => "success",
-  getLinkDoctor: async (doctorId: string) => "success",
+  getLinkprofessionnal: async (professionnalId: string) => "success",
+  removeLinkPatient: async (patientEmail: string, professionalEmail : string) => "success",
+  removeLinkprofessionnal: async (professionnalEmail: string, patientEmail : string) => "success",
 };
 
 describe("link test", () => {
-  test("link patient to doctor", async () => {
+  test("link patient to professionnal", async () => {
     const RepositoryLink = {
       ...templateResolverLink,
-      LinkPatientToDoctor: async (code: number, patientId: string) => "success",
+      LinkPatientToprofessionnal: async (code: number, patientId: string) => "success",
     };
 
-    const res = await resolverLinkPatientToDoctor(RepositoryLink, 1, "email");
+    const res = await resolverLinkPatientToprofessionnal(RepositoryLink, 1, "email");
 
     expect(res).toBe("success");
   });
 
-  test("link doctor to patient", async () => {
+  test("link professionnal to patient", async () => {
     const RepositoryLink = {
       ...templateResolverLink,
-      LinkDoctorToPatient: async (doctorId: string, email: string) => "success",
+      LinkprofessionnalToPatient: async (professionnalId: string, email: string) => "success",
     };
 
-    const res = await resolverLinkDoctorToPatient(
+    const res = await resolverLinkprofessionnalToPatient(
       RepositoryLink,
       "email@email.co",
       "test@test.com",
@@ -50,27 +54,27 @@ describe("link test", () => {
     expect(res).toBe("success");
   });
 
-  test("get link doctor", async () => {
+  test("get link professionnal", async () => {
     const RepositoryLink = {
       ...templateResolverLink,
-      getLinkDoctor: async (doctorId: number) => "success",
+      getLinkprofessionnal: async (professionnalId: number) => "success",
     };
 
-    const res = await RepositoryLink.getLinkDoctor(1);
+    const res = await RepositoryLink.getLinkprofessionnal(1);
 
     expect(res).toBe("success");
   });
 
-  test("link patient to doctor error", async () => {
+  test("link patient to professionnal error", async () => {
     const RepositoryLink = {
       ...templateResolverLink,
-      LinkPatientToDoctor: async (code: number, patientId: string) => {
+      LinkPatientToprofessionnal: async (code: number, patientId: string) => {
         throw new Error("error");
       },
     };
 
     try {
-      await resolverLinkPatientToDoctor(RepositoryLink, 1, "a@a");
+      await resolverLinkPatientToprofessionnal(RepositoryLink, 1, "a@a");
     } catch (e : any) {
       expect(e.message).toBe("error");
     }
@@ -91,16 +95,46 @@ describe("link test", () => {
     }
   });
 
-  test("resolver get link doctor", async () => {
+  test("resolver get link professionnal", async () => {
     const RepositoryLink = {
       ...templateResolverLink,
-      getLinkDoctor: async (doctorId: string) => {
+      getLinkprofessionnal: async (professionnalId: string) => {
         throw new Error("error");
       },
     };
 
     try {
-      await resolverGetLinkDoctor(RepositoryLink, "1");
+      await resolverGetLinkprofessionnal(RepositoryLink, "1");
+    } catch (e : any) {
+      expect(e.message).toBe("error");
+    }
+  });
+
+  test("resolver remove link patient", async () => {
+    const RepositoryLink = {
+      ...templateResolverLink,
+      removeLinkPatient: async (patientEmail: string, professionalEmail : string) => {
+        throw new Error("error");
+      },
+    };
+
+    try {
+      await resolverRemoveLinkPatient(RepositoryLink, "1", "2");
+    } catch (e : any) {
+      expect(e.message).toBe("error");
+    }
+  });
+
+  test("resolver remove link professionnal", async () => {
+    const RepositoryLink = {
+      ...templateResolverLink,
+      removeLinkprofessionnal: async (professionnalEmail: string, patientEmail : string) => {
+        throw new Error("error");
+      },
+    };
+
+    try {
+      await resolverRemoveLinkprofessionnal(RepositoryLink, "1", "2");
     } catch (e : any) {
       expect(e.message).toBe("error");
     }
