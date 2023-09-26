@@ -1,19 +1,19 @@
 import { RepositoryLink } from "./domain";
 
-export async function resolverLinkPatientToDoctor(
+export async function resolverLinkPatientToprofessionnal(
   link: RepositoryLink,
   code: number,
   patientEmail: string,
 ): Promise<string> {
-  return link.LinkPatientToDoctor(code, patientEmail);
+  return link.LinkPatientToprofessionnal(code, patientEmail);
 }
 
-export async function resolverLinkDoctorToPatient(
+export async function resolverLinkprofessionnalToPatient(
   link: RepositoryLink,
-  doctorEmail: string,
+  professionnalEmail: string,
   email: string,
 ): Promise<string> {
-  return link.LinkDoctorToPatient(doctorEmail, email);
+  return link.LinkprofessionnalToPatient(professionnalEmail, email);
 }
 
 export async function resolverGetLinkPatient(
@@ -23,11 +23,11 @@ export async function resolverGetLinkPatient(
   return link.getLinkPatient(patientEmail);
 }
 
-export async function resolverGetLinkDoctor(
+export async function resolverGetLinkprofessionnal(
   link: RepositoryLink,
-  doctorEmail: string,
+  professionnalEmail: string,
 ): Promise<any> {
-  return link.getLinkDoctor(doctorEmail);
+  return link.getLinkprofessionnal(professionnalEmail);
 }
 
 export async function resolverRemoveLinkPatient(
@@ -38,10 +38,10 @@ export async function resolverRemoveLinkPatient(
   return link.removeLinkPatient(patientEmail, professionalEmail);
 }
 
-export async function resolverRemoveLinkDoctor(
+export async function resolverRemoveLinkprofessionnal(
   link: RepositoryLink,
-  doctorEmail: string,
+  professionnalEmail: string,
   patientEmail : string
 ): Promise<any> {
-  return link.removeLinkDoctor(doctorEmail, patientEmail);
+  return link.removeLinkprofessionnal(professionnalEmail, patientEmail);
 }

@@ -39,21 +39,21 @@ export class Link implements RepositoryLink {
   }
 
   /**
-   * Link a patient to a doctor
-   * @param doctorId
+   * Link a patient to a professional
+   * @param professionnalId
    * @param patientId
    * @returns success or error
    * @memberof Link
    */
-  public async LinkPatientToDoctor(
+  public async LinkPatientToprofessionnal(
     code: number,
     patientEmail: string,
   ): Promise<string> {
-    const doctor = await this.dbClient.manager.findOne(ProfessionalEntity, {
+    const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
       where: { code: String(code) },
     });
-    if (!doctor) {
-      throw new Error("Doctor not found");
+    if (!professional) {
+      throw new Error("professional not found");
     }
     const patient = await this.dbClient.manager.findOne(PatientEntity, {
       where: { email: patientEmail },
@@ -62,28 +62,28 @@ export class Link implements RepositoryLink {
       throw new Error("Patient not found");
     }
     const link = new LinkEntity();
-    link.doctorId = doctor.id;
+    link.doctorId = professional.id;
     link.patientId = patient.id;
     await this.dbClient.manager.save(link);
     return "success";
   }
 
   /**
-   * Link a doctor to a patient
-   * @param doctorId
+   * Link a professional to a patient
+   * @param professionnalId
    * @param patientId
    * @returns success or error
    * @memberof Link
    */
-  public async LinkDoctorToPatient(
-    doctorEmail: string,
+  public async LinkprofessionnalToPatient(
+    professionnalEmail: string,
     email: string,
   ): Promise<string> {
-    const doctor = await this.dbClient.manager.findOne(ProfessionalEntity, {
-      where: { email: doctorEmail },
+    const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
+      where: { email: professionnalEmail },
     });
-    if (!doctor) {
-      throw new Error("Doctor not found");
+    if (!professional) {
+      throw new Error("professional not found");
     }
 
     const patient = await this.dbClient.manager.findOne(PatientEntity, {
@@ -94,27 +94,27 @@ export class Link implements RepositoryLink {
     }
 
     const link = await this.dbClient.manager.findOne(LinkEntity, {
-      where: { doctorId: doctor.id, patientId: patient.id },
+      where: { doctorId: professional.id, patientId: patient.id },
     });
     if (link) {
       throw new Error("Link already exists");
     }
 
     const generatedCode = generateRandomNumber(6);
-    doctor.code = String(generatedCode);
-    await this.dbClient.manager.save(doctor);
+    professional.code = String(generatedCode);
+    await this.dbClient.manager.save(professional);
     await mail.sendCode(
       "erwan-baillon@orange.fr",
-      doctor.email,
+      professional.email,
       String(generatedCode),
     );
     return String(generatedCode);
   }
 
   /**
-   * Get all doctors linked to a patient
+   * Get all professionnals linked to a patient
    * @param patientId
-   * @returns all information about the doctors
+   * @returns all information about the professionnals
    * @memberof Link
    */
   public async getLinkPatient(patientEmail: string): Promise<any> {
@@ -132,38 +132,38 @@ export class Link implements RepositoryLink {
     if (!links) {
       throw new Error("Link not found");
     }
-    const doctors: any[] = [];
+    const professionnals: any[] = [];
 
   for (const link of links) {
-    const doctor = await this.dbClient.manager.findOne(ProfessionalEntity, {
+    const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
       where: { id: link.doctorId },
     });
-    console.log(doctor);
-    if (doctor) doctors.push(doctor);
+    console.log(professional);
+    if (professional) professionnals.push(professional);
   }
 
-  if (doctors.length === 0) {
-    throw new Error("Doctor not found");
+  if (professionnals.length === 0) {
+    throw new Error("professional not found");
   }
 
-  return doctors;
+  return professionnals;
   }
 
   /**
-   * Get all patients linked to a doctor
-   * @param doctorId
+   * Get all patients linked to a professional
+   * @param professionnalId
    * @returns all information about the patients
    * @memberof Link
    */
-  public async getLinkDoctor(doctorEmail: string): Promise<any> {
-    const doctor = await this.dbClient.manager.findOne(ProfessionalEntity, {
-      where: { email: doctorEmail },
+  public async getLinkprofessionnal(professionnalEmail: string): Promise<any> {
+    const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
+      where: { email: professionnalEmail },
     });
-    if (!doctor) {
-      throw new Error("Doctor not found");
+    if (!professional) {
+      throw new Error("professional not found");
     }
     const links = await this.dbClient.manager.find(LinkEntity, {
-      where: { doctorId: doctor.id },
+      where: { doctorId: professional.id },
     });
     if (!links) {
       throw new Error("Link not found");
@@ -186,9 +186,9 @@ export class Link implements RepositoryLink {
   }
 
   /**
-   * Remove a link between a patient and a doctor
+   * Remove a link between a patient and a professional
    * @param patientId
-   * @param doctorId
+   * @param professionnalId
    * @returns success or error
    * @memberof Link
    */
@@ -219,21 +219,21 @@ export class Link implements RepositoryLink {
   }
 
   /**
-   * Remove a link between a doctor and a patient
+   * Remove a link between a professional and a patient
    * @param patientId
-   * @param doctorId
+   * @param professionnalId
    * @returns success or error
    * @memberof Link
    */
-  public async removeLinkDoctor(
-    doctorEmail: string,
+  public async removeLinkprofessionnal(
+    professionnalEmail: string,
     patientEmail : string
   ): Promise<any> {
-    const doctor = await this.dbClient.manager.findOne(ProfessionalEntity, {
-      where: { email: doctorEmail },
+    const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
+      where: { email: professionnalEmail },
     });
-    if (!doctor) {
-      throw new Error("Doctor not found");
+    if (!professional) {
+      throw new Error("professional not found");
     }
     const patient = await this.dbClient.manager.findOne(PatientEntity, {
       where: { email: patientEmail },
@@ -242,7 +242,7 @@ export class Link implements RepositoryLink {
       throw new Error("Patient not found");
     }
     const link = await this.dbClient.manager.findOne(LinkEntity, {
-      where: { doctorId: doctor.id, patientId: patient.id },
+      where: { doctorId: professional.id, patientId: patient.id },
     });
     if (!link) {
       throw new Error("Link not found");

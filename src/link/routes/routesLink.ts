@@ -1,9 +1,9 @@
 import express from "express";
 import {
-  resolverGetLinkDoctor,
+  resolverGetLinkprofessionnal,
   resolverGetLinkPatient,
-  resolverLinkDoctorToPatient,
-  resolverLinkPatientToDoctor,
+  resolverLinkprofessionnalToPatient,
+  resolverLinkPatientToprofessionnal,
 } from "../api/resolver";
 import { Link } from "../repository/link";
 import jwt_decode from "jwt-decode";
@@ -60,7 +60,7 @@ router.post("/patient/link", async (req, res) => {
     res
       .status(201)
       .send(
-        await resolverLinkPatientToDoctor(link, code, patientId.data.email)
+        await resolverLinkPatientToprofessionnal(link, code, patientId.data.email)
       );
   }
   catch (err: any) {
@@ -161,11 +161,11 @@ router.post("/professional/link", async (req, res) => {
     res.status(404).send("Email not found");
     return;
   }
-  const doctorId: any = jwt_decode(token);
+  const professionnalId: any = jwt_decode(token);
   try {
     res
       .status(200)
-      .send(await resolverLinkDoctorToPatient(link, doctorId.data.email, email));
+      .send(await resolverLinkprofessionnalToPatient(link, professionnalId.data.email, email));
   }
   catch (err: any) {
     res.status(404).send(err.message);
@@ -206,11 +206,11 @@ router.get("/professional/getLink", async (req, res) => {
     res.status(401).send("Unauthorized");
     return;
   }
-  const doctorId: any = jwt_decode(token);
+  const professionnalId: any = jwt_decode(token);
   try {
     res
       .status(200)
-      .send(await resolverGetLinkDoctor(link, doctorId.data.email));
+      .send(await resolverGetLinkprofessionnal(link, professionnalId.data.email));
   }
   catch (err: any) {
     res.status(404).send(err.message);
@@ -318,12 +318,12 @@ router.post("/professional/removeLink", async (req, res) => {
     return;
   }
   const { patientEmail } = req.body;
-  const doctorId: any = jwt_decode(token);
+  const professionnalId: any = jwt_decode(token);
   try {
     res
       .status(200)
       .send(
-        await link.removeLinkDoctor(doctorId.data.email, patientEmail)
+        await link.removeLinkprofessionnal(professionnalId.data.email, patientEmail)
       );
   }
   catch (err: any) {
