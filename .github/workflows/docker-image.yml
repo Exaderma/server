@@ -25,5 +25,5 @@ jobs:
         DOCKER_REGISTRY: docker.io
       run: |
         docker buildx create --use
-        docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
         docker buildx build . --file Dockerfile --tag $DOCKER_REGISTRY/my-image-name:$(date +%s) --push
