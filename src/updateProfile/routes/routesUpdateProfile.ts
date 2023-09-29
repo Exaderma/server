@@ -164,6 +164,38 @@ router.post('/updateProfile/patient/email', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /updateProfile/patient/password:
+ *   post:
+ *     summary: Met à jour le mot de passe d'un patient
+ *     description: Met à jour le mot de passe d'un patient en utilisant le token d'authentification
+ *     tags:
+ *       - Patient
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token d'authentification JWT (Bearer token)
+ *       - in: body
+ *         name: body
+ *         schema:
+ *           type: object
+ *           properties:
+ *             password:
+ *               type: string
+ *         required: true
+ *         description: Nouveau mot de passe du patient
+ *     responses:
+ *       200:
+ *         description: Succès - renvoie des détails sur la mise à jour du mot de passe du patient
+ *       401:
+ *         description: Non autorisé - token manquant ou invalide
+ *       404:
+ *         description: Ressource non trouvée ou autre erreur
+ */
 router.post('/updateProfile/patient/password', async (req, res) => {
     const auth = req.headers['authorization'];
     if (!auth) {
@@ -184,6 +216,38 @@ router.post('/updateProfile/patient/password', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /updateProfile/patient/phone:
+ *   post:
+ *     summary: Met à jour le numéro de téléphone d'un patient
+ *     description: Met à jour le numéro de téléphone d'un patient en utilisant le token d'authentification
+ *     tags:
+ *       - Patient
+ *     parameters:
+ *       - in: header
+ *         name: Authorization
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token d'authentification JWT (Bearer token)
+ *       - in: body
+ *         name: body
+ *         schema:
+ *           type: object
+ *           properties:
+ *             phone:
+ *               type: string
+ *         required: true
+ *         description: Nouveau numéro de téléphone du patient
+ *     responses:
+ *       200:
+ *         description: Succès - renvoie des détails sur la mise à jour du numéro de téléphone du patient
+ *       401:
+ *         description: Non autorisé - token manquant ou invalide
+ *       404:
+ *         description: Ressource non trouvée ou autre erreur
+ */
 router.post('/updateProfile/patient/phone', async (req, res) => {
     const auth = req.headers['authorization'];
     if (!auth) {

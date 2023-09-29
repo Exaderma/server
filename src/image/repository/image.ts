@@ -69,4 +69,43 @@ export class Image implements RepositoryImage {
         }
         return img.data.toString("base64");
     };
+
+    public async GetProfessionalImageProfile(
+        professionalEmail: string,
+    ): Promise<string> {
+        const professional = await this.dbClient.manager.findOne(PatientEntity, {
+            where: { email: professionalEmail },
+        });
+        if (!professional) {
+            throw new Error("Professional not found");
+        }
+        const img = await this.dbClient.manager.findOne(ImageEntity, {
+            where: { id: professional.imageProfile },
+        });
+        if (!img) {
+            throw new Error("Image not found");
+        }
+        return img.data.toString("base64");
+    }
+
+    public async SetProfessionalImageProfile(
+        image: string,
+        professionalEmail: string,
+    ): Promise<string> {
+        const professional = await this.dbClient.manager.findOne(PatientEntity, {
+            where: { email: professionalEmail },
+        });
+        if (!professional) {
+            throw new Error("Professional not found");
+        }
+        const img = new ImageEntity();
+        img.data = Buffer.from(image, "base64");
+        img.filename = name_image("pp");
+        img.mimetype = "image/png";
+        img.type = "pp";
+        await this.dbClient.manager.save(img);
+        professional.imageProfile = img.id;
+        await this.dbClient.manager.save(professional);
+        return "Success";
+    }
 }

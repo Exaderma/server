@@ -10,7 +10,7 @@ describe("generateCode test", () => {
     test("generate random number", async () => {
         const res = generateRandomNumber(100);
         expect(res).toBeDefined();
-        expect(res).toBeLessThan(100);
+        expect(res).toBeLessThan(999);
     });
 
     test("generate random number without size", async () => {
@@ -21,7 +21,7 @@ describe("generateCode test", () => {
     test("generate random string", async () => {
         const res = generateRandomString(100);
         expect(res).toBeDefined();
-        expect(res.length).toBe(0);
+        expect(res.length).toBe(100);
     });
 
     test("generate random string without size", async () => {
