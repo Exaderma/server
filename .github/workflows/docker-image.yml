@@ -24,11 +24,6 @@ jobs:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_REGISTRY: docker.io
       run: |
-        if [ -n "$DOCKER_USERNAME" ]; then
-          echo "La variable d'environnement DOCKER_USERNAME n'est pas vide : $DOCKER_USERNAME"
-        else
-          echo "La variable d'environnement DOCKER_USERNAME est vide ou non définie."
-        fi
-        # docker buildx create --use
-        # echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
-        # docker buildx build . --file Dockerfile --tag $DOCKER_REGISTRY/my-image-name:$(date +%s) --push
+        docker buildx create --use
+        echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
+        docker buildx build . --file Dockerfile --tag $DOCKER_REGISTRY/my-image-name:$(date +%s) --push
