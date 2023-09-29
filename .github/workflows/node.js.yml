@@ -1,10 +1,12 @@
-name: Node.js CI
+name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   build-and-test:
@@ -28,10 +30,10 @@ jobs:
       - name: Run tests
         run: npm run test
 
-    # Ajoutez cette étape pour calculer la couverture et vérifier si elle est supérieure à 90%
-    - name: Calculer la couverture et vérifier
-      run: |
-        COVERAGE_THRESHOLD=90  # Couverture minimale souhaitée
+      # Étape pour vérifier la couverture des tests Jest
+      - name: Check Jest coverage
+        run: |
+          COVERAGE_THRESHOLD=90  # Couverture minimale souhaitée
         lines=$(cat coverage/lcov-report/index.html | grep 'class="pct high"')
         total_coverage=0
         count=0
@@ -48,3 +50,5 @@ jobs:
           echo "La moyenne de couverture n'atteint pas 90%."
           exit 1
         fi
+        env:
+          CI: true
