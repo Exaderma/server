@@ -24,6 +24,7 @@ jobs:
         DOCKER_PASSWORD: ${{ secrets.ORG_DOCKER_PASSWORD }}
         DOCKER_REGISTRY: docker.io
       run: |
+        echo $secrets
         docker buildx create --use
         docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         docker buildx build . --file Dockerfile --tag $DOCKER_REGISTRY/my-image-name:$(date +%s) --push
