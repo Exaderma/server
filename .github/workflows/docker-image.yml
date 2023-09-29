@@ -20,11 +20,10 @@ jobs:
 
     - name: Build and push Docker image
       env:
-        DOCKER_USERNAME: ${{ secrets.ORG_DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.ORG_DOCKER_PASSWORD }}
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         DOCKER_REGISTRY: docker.io
       run: |
-        echo $secrets
         docker buildx create --use
         docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         docker buildx build . --file Dockerfile --tag $DOCKER_REGISTRY/my-image-name:$(date +%s) --push
