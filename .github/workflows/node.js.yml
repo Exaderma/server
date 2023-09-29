@@ -29,3 +29,17 @@ jobs:
 
       - name: Run tests
         run: npm run test
+
+      # Étape pour vérifier la couverture des tests Jest
+      - name: Check Jest coverage
+        run: |
+          COVERAGE_THRESHOLD=90  # Couverture minimale souhaitée
+          JEST_COVERAGE=$(cat coverage/lcov-report/index.html | grep -oP "data-covered=\"\K[^\"]+")
+          if (( $(echo "$JEST_COVERAGE >= $COVERAGE_THRESHOLD" | bc -l) )); then
+            echo "La couverture des tests Jest est suffisante ($JEST_COVERAGE%)."
+          else
+            echo "La couverture des tests Jest ($JEST_COVERAGE%) ne satisfait pas la condition minimale de $COVERAGE_THRESHOLD%."
+            exit 1
+          fi
+        env:
+          CI: true
