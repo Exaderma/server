@@ -37,4 +37,7 @@ export class ProfessionalEntity extends BaseEntity {
 
   @Column({ default: () => "CURRENT_TIMESTAMP" })
   code: string;
+
+  @Column({ nullable: true })
+  imageProfile: number;
 }

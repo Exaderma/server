@@ -2,6 +2,7 @@ import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { ImageEntity } from "../../entity/image";
 import { PatientEntity } from "../../entity/patient";
+import { ProfessionalEntity } from "../../entity/professional";
 import { RepositoryImage } from "../api/domain";
 import { name_image } from "../../utils/constants";
 
@@ -58,8 +59,12 @@ export class Image implements RepositoryImage {
         const patient = await this.dbClient.manager.findOne(PatientEntity, {
             where: { email: patientEmail },
         });
+        console.log(patient);
         if (!patient) {
             throw new Error("Patient not found");
+        }
+        if (!patient.imageProfile) {
+            throw new Error("Patient does not have image");
         }
         const img = await this.dbClient.manager.findOne(ImageEntity, {
             where: { id: patient.imageProfile },
@@ -67,17 +72,22 @@ export class Image implements RepositoryImage {
         if (!img) {
             throw new Error("Image not found");
         }
+        console.log(img);
         return img.data.toString("base64");
     };
 
     public async GetProfessionalImageProfile(
         professionalEmail: string,
     ): Promise<string> {
-        const professional = await this.dbClient.manager.findOne(PatientEntity, {
+        const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
             where: { email: professionalEmail },
         });
         if (!professional) {
             throw new Error("Professional not found");
+        }
+        console.log(professional);
+        if (!professional.imageProfile) {
+            throw new Error("Professional does not have image");
         }
         const img = await this.dbClient.manager.findOne(ImageEntity, {
             where: { id: professional.imageProfile },
@@ -92,7 +102,7 @@ export class Image implements RepositoryImage {
         image: string,
         professionalEmail: string,
     ): Promise<string> {
-        const professional = await this.dbClient.manager.findOne(PatientEntity, {
+        const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
             where: { email: professionalEmail },
         });
         if (!professional) {

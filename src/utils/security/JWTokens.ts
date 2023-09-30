@@ -23,14 +23,14 @@ export async function userAuthenticate(req: express.Request, res: express.Respon
     const authHeader = req.get('Authorization');
     const token = Array.isArray(authHeader) ? authHeader[0].split(' ')[1] : authHeader && authHeader.split(' ')[1];
     const decodedToken: any = jwt_decode(token!);
-    const userEmail: any =  decodedToken.email;
+    const userEmail: any =  decodedToken.data.email;
 
   if (token === null) {
     return res.sendStatus(HTTP_CODES.FORBIDDEN);
   }
 
   const table =
-    decodedToken.type === "patient" ? PatientEntity : ProfessionalEntity;
+    decodedToken.data.type === "patient" ? PatientEntity : ProfessionalEntity;
 
   await dataManager
     .doesUserExists(userEmail, table)
