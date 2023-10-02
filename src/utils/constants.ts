@@ -8,3 +8,20 @@ export const ERROR_REQUEST = {
 export const name_image = (type: "pp" | "") => {
   return `exaderma_${type}_${generateRandomNumber(10)}.png`;
 }
+
+export const BASIC_ROLES = {
+  patient : [
+    'admin',
+    'patient',
+  ],
+  professional : [
+    'secrétaire',
+    'responsable',
+    'assistant',
+    'dermatologue',
+    'medecin',
+    'infirmier',
+    'interne',
+    'admin',
+  ]
+}

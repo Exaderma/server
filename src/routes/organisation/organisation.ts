@@ -5,6 +5,7 @@ import { HTTP_CODES } from "../../utils/HTTP-codes";
 import { authenticateToken, userAuthenticate } from "../../utils/security/JWTokens";
 import { OrganisationEntity } from "../../entity/organisation";
 import { organisationManager, dataManager } from "../../index";
+import { BASIC_ROLES } from "../../utils/constants";
 
 let router: express.Router = express.Router();
 
@@ -142,26 +143,28 @@ router.post('/organisation/addMember', authenticateToken, userAuthenticate, asyn
     return;
   }
 
+  if (req.body.userType !== 'patient' && req.body.userType !== 'professional') {
+    res.status(HTTP_CODES.BAD_REQUEST).send("incorrect user type");
+    return;
+  }
+
   const authHeader = req.get('Authorization');
   const token = Array.isArray(authHeader) ? authHeader[0].split(' ')[1] : authHeader && authHeader.split(' ')[1];
   const decodedToken: any = jwt_decode(token!); 
 
   const organisationId = await organisationManager.getOrganisationId(req.body.organisationName)
-  console.log('orga id', organisationId);
   if (organisationId === -1) {
     res.status(HTTP_CODES.NOT_FOUND).send("Organisation not found");
     return
   }
 
-  const canAddMember: boolean = await organisationManager.canAddMember(decodedToken.data.id, organisationId)
-  console.log('can add memeber', canAddMember);
-  if (!canAddMember) {
+  const isAdmin: boolean = await organisationManager.isAdmin(decodedToken.data.id, organisationId)
+  if (!isAdmin) {
     res.status(HTTP_CODES.FORBIDDEN).send("You do not have the permission to add a member to this organisation OR you are not a member of this organisation");
     return
   }
   
   const memberId = await dataManager.getUserId(req.body.userEmail, req.body.userType)
-  console.log('member id', memberId);
   if (memberId === -1) {
     res.status(HTTP_CODES.NOT_FOUND).send("User not found");
     return;
@@ -176,6 +179,68 @@ router.post('/organisation/addMember', authenticateToken, userAuthenticate, asyn
     else
       res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).send('error when adding user');
   });
+})
+
+router.post('/organisation/addRole', authenticateToken, userAuthenticate, async (req: express.Request, res: express.Response) => {
+  const schema = Joi.object({
+    organisationName: Joi.string().required(),
+    userEmail: Joi.string().email().required(),
+    userType: Joi.string().required(),
+    role: Joi.string().required(),
+  });
+
+  const result = schema.validate(req.body);
+  
+  if (result.error) {
+    res
+      .status(HTTP_CODES.BAD_REQUEST)
+      .send("incorrect json data format : " + result.error);
+    return;
+  }
+
+  if (req.body.userType !== 'patient' && req.body.userType !== 'professional') {
+    res.status(HTTP_CODES.BAD_REQUEST).send("incorrect user type");
+    return;
+  }
+
+  const authHeader = req.get('Authorization');
+  const token = Array.isArray(authHeader) ? authHeader[0].split(' ')[1] : authHeader && authHeader.split(' ')[1];
+  const decodedToken: any = jwt_decode(token!); 
+
+  const organisationId = await organisationManager.getOrganisationId(req.body.organisationName)
+  if (organisationId === -1) {
+    res.status(HTTP_CODES.NOT_FOUND).send("Organisation not found");
+    return
+  }
+
+  const isAdmin: boolean = await organisationManager.isAdmin(decodedToken.data.id, organisationId)
+  if (!isAdmin) {
+    res.status(HTTP_CODES.FORBIDDEN).send("You do not have the permission to add a member to this organisation OR you are not a member of this organisation");
+    return
+  }
+  
+  const memberId = await dataManager.getUserId(req.body.userEmail, req.body.userType)
+  if (memberId === -1) {
+    res.status(HTTP_CODES.NOT_FOUND).send("User not found");
+    return;
+  }
+
+  const type = req.body.userType === 'patient' ? 'patient' : 'professional'
+  const doesExist = BASIC_ROLES[type].some((role) => role === req.body.role)
+  if (!doesExist) {
+    res.status(HTTP_CODES.BAD_REQUEST).send("Role does not exist");
+    return;
+  }
+
+  organisationManager.setRole(organisationId, {id: memberId, type: req.body.userType}, req.body.role)
+  .then(() => {
+    res.status(HTTP_CODES.OK).send('Role added');
+  }).catch((err) => {
+    if (err === "User not in organisation")
+      res.status(HTTP_CODES.NOT_FOUND).send("User not in organisation");
+    else
+      res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).send('error when adding role to user');
+  })
 })
 
 module.exports = router;

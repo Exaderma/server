@@ -68,7 +68,7 @@ export class OrganisationRepository {
     return foundUser.id;
   }
 
-  public async canAddMember(userId: number, organisationId: number): Promise<boolean> {
+  public async isAdmin(userId: number, organisationId: number): Promise<boolean> {
     const repo = this.client.getRepository(OrganisationMember);
     const foundUser = await repo.findOne({ where: { userId: userId, organisationId: organisationId } });
     if (!foundUser) {
@@ -92,5 +92,17 @@ export class OrganisationRepository {
       role: 'member'
     })
     await repo.save(newMember);
+    console.log('new member', newMember);
+  }
+
+  public async setRole(organisationId: number, member: {id: number, type: string}, role: string): Promise<void> {
+    const repo = this.client.getRepository(OrganisationMember);
+    const foundUser = await repo.findOne({ where: { userId: member.id, organisationId: organisationId } });
+    if (!foundUser) {
+      throw new Error("User not in organisation");
+    }
+    foundUser.role = role;
+    await repo.save(foundUser);
+    console.log('found user', foundUser);
   }
 }
