@@ -8,11 +8,22 @@ on:
 
 jobs:
 
-  build:
+  build-and-push:
 
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    - uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Build and push Docker image
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_REGISTRY: docker.io
+      run: |
+        docker buildx create --use
+        echo "$DOCKER_PASSWORD" | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
+        docker buildx build . --file Dockerfile --tag $DOCKER_REGISTRY/exaderma/backend:$(date +%s) --push

@@ -1,31 +1,54 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
-name: Node.js CI
+name: CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-  build:
-
+  build-and-test:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [14.x, 16.x, 18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Run tests
+        run: npm run test
+
+      # Étape pour vérifier la couverture des tests Jest
+      - name: Check Jest coverage
+        run: |
+          COVERAGE_THRESHOLD=90  # Couverture minimale souhaitée
+          lines=$(cat coverage/lcov-report/index.html | grep 'class="pct high"')
+          total_coverage=0
+          count=0
+          while read -r line; do
+            coverage=$(echo "$line" | sed -n 's/.*>\(.*\)<\/td>/\1/p')
+            total_coverage=$((total_coverage + ${coverage%%%}))
+            count=$((count + 1))
+          done <<< "$lines"
+          average_coverage=$((total_coverage / count))
+          echo "Moyenne de couverture : $average_coverage%"
+          if [ $average_coverage -gt $COVERAGE_THRESHOLD ]; then
+            echo "La moyenne de couverture est supérieure à 90%."
+          else
+            echo "La moyenne de couverture n'atteint pas 90%."
+            exit 1
+          fi
+        env:
+          CI: true
