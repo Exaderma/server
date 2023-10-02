@@ -66,7 +66,6 @@ export class DataManipulation {
   public async getUserId(email: string, entity: Function): Promise<number> {
     const repo = this.client.getRepository(entity);
     const foundUser = await repo.findOne({ where: { email: email } });
-    console.log('found user', foundUser)
     if (!foundUser) {
       return -1;
     }
