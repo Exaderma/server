@@ -18,6 +18,13 @@ let router: express.Router = express.Router();
  *       - Organisation
  *     security:
  *       - BearerAuth: []  # Requires a valid JWT token in the Authorization header
+ *     parameters:
+ *       - in: header
+ *         name: Bearer token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token d'authentification JWT (Bearer token)
  *     requestBody:
  *       description: JSON object containing organization information
  *       required: true
@@ -96,6 +103,12 @@ router.post('/organisation/create', authenticateToken, userAuthenticate, async (
  *     security:
  *       - BearerAuth: []  # Requires a valid JWT token in the Authorization header
  *     parameters:
+ *       - in: header
+ *         name: Bearer token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token d'authentification JWT (Bearer token)
  *       - name: id
  *         in: path
  *         description: The ID of the organization to delete
@@ -126,6 +139,54 @@ router.delete('/organisation/delete/:id', authenticateToken, userAuthenticate, a
       res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).send(err);
   });
 })
+
+/**
+ * @swagger
+ * /organisation/addMember:
+ *   post:
+ *     summary: Add a member to an organization
+ *     tags:
+ *       - Organisation
+ *     security:
+ *       - BearerAuth: []  # Requires a valid JWT token in the Authorization header
+ *     parameters:
+ *       - in: header
+ *         name: Bearer token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token d'authentification JWT (Bearer token)
+ *       - name: organisationName
+ *         in: body
+ *         description: The name of the organization to which the member will be added
+ *         required: true
+ *       - name: userEmail
+ *         in: body
+ *         description: The email address of the user to be added
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: email
+ *       - name: userType
+ *         in: body
+ *         description: The type of the user to be added (patient or professional)
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Member added successfully
+ *       400:
+ *         description: Bad Request - Invalid input data or user type
+ *       401:
+ *         description: Unauthorized - Missing or invalid JWT token in the Authorization header
+ *       403:
+ *         description: Forbidden - User does not have permission to add a member or is not a member of the organization
+ *       404:
+ *         description: Not Found - Organization or user not found
+ *       409:
+ *         description: Conflict - User is already a member of the organization
+ *       500:
+ *         description: Internal Server Error - An error occurred when adding the user
+ */
 
 router.post('/organisation/addMember', authenticateToken, userAuthenticate, async (req: express.Request, res: express.Response) => {
   const schema = Joi.object({
@@ -180,6 +241,56 @@ router.post('/organisation/addMember', authenticateToken, userAuthenticate, asyn
       res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).send('error when adding user');
   });
 })
+
+/**
+ * @swagger
+ * /organisation/addRole:
+ *   post:
+ *     summary: Add a role to a member within an organization
+ *     tags:
+ *       - Organisation
+ *     parameters:
+ *       - in: header
+ *         name: Bearer token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token d'authentification JWT (Bearer token)
+ *       - name: organisationName
+ *         in: body
+ *         description: The name of the organization to which the member belongs
+ *         required: true
+ *       - name: userEmail
+ *         in: body
+ *         description: The email address of the user whose role will be updated
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: email
+ *       - name: userType
+ *         in: body
+ *         description: The type of the user whose role will be updated (patient or professional)
+ *         required: true
+ *       - name: role
+ *         in: body
+ *         description: The role to be assigned to the user within the organization
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Role added successfully
+ *       400:
+ *         description: Bad Request - Invalid input data, user type, or role
+ *       401:
+ *         description: Unauthorized - Missing or invalid JWT token in the Authorization header
+ *       403:
+ *         description: Forbidden - User does not have permission to add a role or is not a member of the organization
+ *       404:
+ *         description: Not Found - Organization, user, or user's current role not found
+ *       409:
+ *         description: Conflict - User is not a member of the organization
+ *       500:
+ *         description: Internal Server Error - An error occurred when adding the role
+ */
 
 router.post('/organisation/addRole', authenticateToken, userAuthenticate, async (req: express.Request, res: express.Response) => {
   const schema = Joi.object({
