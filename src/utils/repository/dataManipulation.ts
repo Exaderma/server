@@ -63,6 +63,16 @@ export class DataManipulation {
     throw new Error("User not found");
   }
 
+  public async getUserId(email: string, entity: Function): Promise<number> {
+    const repo = this.client.getRepository(entity);
+    const foundUser = await repo.findOne({ where: { email: email } });
+    console.log('found user', foundUser)
+    if (!foundUser) {
+      return -1;
+    }
+    return foundUser.id;
+  }
+
   public async printPatients(): Promise<void> {
     const repo = this.client.getRepository(PatientEntity);
     const patients = await repo.find();
