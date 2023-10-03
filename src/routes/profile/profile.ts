@@ -24,6 +24,12 @@ let router: express.Router = express.Router();
  *     tags:
  *       - User Profile
  *     parameters:
+ *       - in: header
+ *         name: Bearer token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token d'authentification JWT (Bearer token)
  *       - in: query
  *         name: id
  *         required: true
@@ -97,6 +103,12 @@ router.get("/patient/getUserProfile", authenticateToken, userAuthenticate, async
  *     tags:
  *       - User Profile
  *     parameters:
+ *       - in: header
+ *         name: Bearer token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Token d'authentification JWT (Bearer token)
  *       - in: query
  *         name: id
  *         required: true
