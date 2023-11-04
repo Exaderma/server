@@ -128,7 +128,6 @@ export class Link implements RepositoryLink {
     const links = await this.dbClient.manager.find(LinkEntity, {
       where: { patientId: patient.id },
     });
-    console.log(links);
     if (!links) {
       throw new Error("Link not found");
     }
@@ -138,7 +137,6 @@ export class Link implements RepositoryLink {
     const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
       where: { id: link.doctorId },
     });
-    console.log(professional);
     if (professional) professionnals.push(professional);
   }
 
