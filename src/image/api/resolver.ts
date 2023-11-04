@@ -11,15 +11,17 @@ export async function resolverSetPatientImageProfile(
 export async function resolverGetPatientImageProfile(
     image: RepositoryImage,
     patientEmail: string,
+    id_patient?: number,
     ): Promise<string> {
-        return image.GetPatientImageProfile(patientEmail);
+        return image.GetPatientImageProfile(patientEmail, id_patient);
     }
 
 export async function resolverGetProfessionalImageProfile(
     image: RepositoryImage,
     professionalEmail: string,
+    id_professional?: number,
     ): Promise<string> {
-        return image.GetProfessionalImageProfile(professionalEmail);
+        return image.GetProfessionalImageProfile(professionalEmail, id_professional);
     }
 
 export async function resolverSetProfessionalImageProfile(

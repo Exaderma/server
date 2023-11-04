@@ -5,6 +5,8 @@ import { PatientEntity } from "../../entity/patient";
 import { ProfessionalEntity } from "../../entity/professional";
 import { RepositoryImage } from "../api/domain";
 import { name_image } from "../../utils/constants";
+import { convertToJPEG } from "../../utils/convert";
+import { CryptData } from "../../utils/encryption";
 
 export class Image implements RepositoryImage {
     private dbClient: DataSource;
@@ -16,7 +18,7 @@ export class Image implements RepositoryImage {
             username: process.env.DB_USER as string,
             password: process.env.DB_PASSWORD as string,
             database: process.env.DB_NAME as string,
-            entities: [ImageEntity, PatientEntity],
+            entities: [ImageEntity, PatientEntity, ProfessionalEntity],
             synchronize: true,
             logging: false,
         });
@@ -49,12 +51,12 @@ export class Image implements RepositoryImage {
             if (!img) {
                 throw new Error("Image not found");
             }
-            img.data = Buffer.from(image, "base64");
+            img.data = Buffer.from(await CryptData.encrypt(await convertToJPEG(image)), "base64");
             img.filename = name_image("pp");
             await this.dbClient.manager.save(img);
         } else {
             const img = new ImageEntity();
-            img.data = Buffer.from(image, "base64");
+            img.data = Buffer.from(await CryptData.encrypt(await convertToJPEG(image)) as string, "base64");
             img.filename = name_image("pp");
             img.mimetype = "image/png";
             img.type = "pp";
@@ -65,13 +67,12 @@ export class Image implements RepositoryImage {
         return "Success";
     }
 
-    public async GetPatientImageProfile(
-        patientEmail: string,
+    private async GetPatientImageProfileById(
+        id_patient: number,
     ): Promise<string> {
         const patient = await this.dbClient.manager.findOne(PatientEntity, {
-            where: { email: patientEmail },
+            where: { id: id_patient },
         });
-        console.log(patient);
         if (!patient) {
             throw new Error("Patient not found");
         }
@@ -84,20 +85,18 @@ export class Image implements RepositoryImage {
         if (!img) {
             throw new Error("Image not found");
         }
-        console.log(img);
-        return img.data.toString("base64");
-    };
+        return await CryptData.decrypt(img.data.toString("base64"));
+    }
 
-    public async GetProfessionalImageProfile(
-        professionalEmail: string,
+    private async GetProfessionalImageProfileById(
+        id_professional: number,
     ): Promise<string> {
         const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
-            where: { email: professionalEmail },
+            where: { id: id_professional },
         });
         if (!professional) {
             throw new Error("Professional not found");
         }
-        console.log(professional);
         if (!professional.imageProfile) {
             throw new Error("Professional does not have image");
         }
@@ -107,7 +106,71 @@ export class Image implements RepositoryImage {
         if (!img) {
             throw new Error("Image not found");
         }
-        return img.data.toString("base64");
+        return await CryptData.decrypt(img.data.toString("base64"));
+    }
+
+    public async GetPatientImageProfile(
+        patientEmail: string,
+        id_patient?: number,
+    ): Promise<string> {
+        if (id_patient) {
+            const token_professional: string = patientEmail; // patientEmail is actually the token of the professional
+            const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
+                where: { email: token_professional },
+            });
+            if (!professional) {
+                throw new Error("Professional not found");
+            }
+            return this.GetPatientImageProfileById(id_patient);
+        }
+        const patient = await this.dbClient.manager.findOne(PatientEntity, {
+            where: { email: patientEmail },
+        });
+        if (!patient) {
+            throw new Error("Patient not found");
+        }
+        if (!patient.imageProfile) {
+            throw new Error("Patient does not have image");
+        }
+        const img = await this.dbClient.manager.findOne(ImageEntity, {
+            where: { id: patient.imageProfile },
+        });
+        if (!img) {
+            throw new Error("Image not found");
+        }
+        return await CryptData.decrypt(img.data.toString("base64"));
+    };
+
+    public async GetProfessionalImageProfile(
+        professionalEmail: string,
+        id_professional?: number,
+    ): Promise<string> {
+        if (id_professional) {
+            const token_professional: string = professionalEmail; // professionalEmail is actually the token of the patient
+            const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
+                where: { email: token_professional },
+            });
+            if (!professional) {
+                throw new Error("Professional not found");
+            }
+            return this.GetProfessionalImageProfileById(id_professional);
+        }
+        const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
+            where: { email: professionalEmail },
+        });
+        if (!professional) {
+            throw new Error("Professional not found");
+        }
+        if (!professional.imageProfile) {
+            throw new Error("Professional does not have image");
+        }
+        const img = await this.dbClient.manager.findOne(ImageEntity, {
+            where: { id: professional.imageProfile },
+        });
+        if (!img) {
+            throw new Error("Image not found");
+        }
+        return await CryptData.decrypt(img.data.toString("base64") as string);
     }
 
     public async SetProfessionalImageProfile(
@@ -127,12 +190,12 @@ export class Image implements RepositoryImage {
             if (!img) {
                 throw new Error("Image not found");
             }
-            img.data = Buffer.from(image, "base64");
+            img.data = Buffer.from(await CryptData.encrypt(await convertToJPEG(image)), "base64");
             img.filename = name_image("pp");
             await this.dbClient.manager.save(img);
         } else {
             const img = new ImageEntity();
-            img.data = Buffer.from(image, "base64");
+            img.data = Buffer.from(await CryptData.encrypt(await convertToJPEG(image)), "base64");
             img.filename = name_image("pp");
             img.mimetype = "image/png";
             img.type = "pp";
