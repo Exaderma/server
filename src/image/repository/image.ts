@@ -42,14 +42,26 @@ export class Image implements RepositoryImage {
         if (!patient) {
             throw new Error("Patient not found");
         }
-        const img = new ImageEntity();
-        img.data = Buffer.from(image, "base64");
-        img.filename = name_image("pp");
-        img.mimetype = "image/png";
-        img.type = "pp";
-        await this.dbClient.manager.save(img);
-        patient.imageProfile = img.id;
-        await this.dbClient.manager.save(patient);
+        if (patient.imageProfile) {
+            const img = await this.dbClient.manager.findOne(ImageEntity, {
+                where: { id: patient.imageProfile },
+            });
+            if (!img) {
+                throw new Error("Image not found");
+            }
+            img.data = Buffer.from(image, "base64");
+            img.filename = name_image("pp");
+            await this.dbClient.manager.save(img);
+        } else {
+            const img = new ImageEntity();
+            img.data = Buffer.from(image, "base64");
+            img.filename = name_image("pp");
+            img.mimetype = "image/png";
+            img.type = "pp";
+            await this.dbClient.manager.save(img);
+            patient.imageProfile = img.id;
+            await this.dbClient.manager.save(patient);
+        }
         return "Success";
     }
 
@@ -108,14 +120,26 @@ export class Image implements RepositoryImage {
         if (!professional) {
             throw new Error("Professional not found");
         }
-        const img = new ImageEntity();
-        img.data = Buffer.from(image, "base64");
-        img.filename = name_image("pp");
-        img.mimetype = "image/png";
-        img.type = "pp";
-        await this.dbClient.manager.save(img);
-        professional.imageProfile = img.id;
-        await this.dbClient.manager.save(professional);
+        if (professional.imageProfile) {
+            const img = await this.dbClient.manager.findOne(ImageEntity, {
+                where: { id: professional.imageProfile },
+            });
+            if (!img) {
+                throw new Error("Image not found");
+            }
+            img.data = Buffer.from(image, "base64");
+            img.filename = name_image("pp");
+            await this.dbClient.manager.save(img);
+        } else {
+            const img = new ImageEntity();
+            img.data = Buffer.from(image, "base64");
+            img.filename = name_image("pp");
+            img.mimetype = "image/png";
+            img.type = "pp";
+            await this.dbClient.manager.save(img);
+            professional.imageProfile = img.id;
+            await this.dbClient.manager.save(professional);
+        }
         return "Success";
     }
 }

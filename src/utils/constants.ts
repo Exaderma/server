@@ -6,7 +6,7 @@ export const ERROR_REQUEST = {
 };
 
 export const name_image = (type: "pp" | "") => {
-  return `exaderma_${type}_${generateRandomNumber(10)}.png`;
+  return `exaderma_${type}_${generateRandomNumber(100)}.png`;
 }
 
 export const BASIC_ROLES = {

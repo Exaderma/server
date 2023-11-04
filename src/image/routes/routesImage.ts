@@ -62,7 +62,7 @@ imageRouter.post("/image/setProfile/patient", async (req, res) => {
 /**
  * @swagger
  * /image/getProfile/patient:
- *   post:
+ *   get:
  *     summary: Obtient l'image de profil d'un patient
  *     description: Obtient l'image de profil d'un patient en utilisant le token d'authentification
  *     tags:
@@ -82,7 +82,7 @@ imageRouter.post("/image/setProfile/patient", async (req, res) => {
  *       404:
  *         description: Ressource non trouvée ou autre erreur
  */
-imageRouter.post("/image/getProfile/patient", async (req, res) => {
+imageRouter.get("/image/getProfile/patient", async (req, res) => {
     const auth = req.headers["authorization"];
     if (!auth) {
         res.status(401).send("Unauthorized");
