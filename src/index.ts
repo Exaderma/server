@@ -1,18 +1,17 @@
 import express, { Express } from "express";
-import { DataManipulation } from './utils/repository/dataManipulation';
-import { Register } from './routes/auth/repository/register'
-import { Login } from './routes/auth/repository/login'
-import { OrganisationRepository } from './utils/repository/organisationRepository';
+import { DataManipulation } from "./utils/repository/dataManipulation";
+import { Register } from "./routes/auth/repository/register";
+import { Login } from "./routes/auth/repository/login";
+import { OrganisationRepository } from "./utils/repository/organisationRepository";
 import { DataSource } from "typeorm";
 
 require("dotenv").config();
 
-
-const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerJSDoc = require("swagger-jsdoc");
 const swaggerUI = require("swagger-ui-express");
 
 const options = {
-  swaggerDefinition : {
+  swaggerDefinition: {
     openapi: "3.0.0",
     info: {
       title: "Exaderma Backend Application",
@@ -27,9 +26,9 @@ const options = {
     servers: [
       {
         url: "http://localhost:8080",
-        description: "Local server"
-      }
-    ]
+        description: "Local server",
+      },
+    ],
   },
   apis: ["src/**/*.ts"],
 };
@@ -48,16 +47,16 @@ const dbClient = new DataSource({
 });
 
 const tmp = async () => {
-await dbClient
-  .initialize()
-  .then(() => {
-    console.log("Connection to database established")
-  })
-  .catch((err) => {
-    console.log("Error connecting to database", err);
-    process.exit(1);
-  });
-}
+  await dbClient
+    .initialize()
+    .then(() => {
+      console.log("Connection to database established");
+    })
+    .catch((err) => {
+      console.log("Error connecting to database", err);
+      process.exit(1);
+    });
+};
 
 tmp();
 
@@ -94,7 +93,11 @@ app.use("/", profile);
 app.use("/", router);
 app.use("/", refreshToken);
 
-app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerSpec, { explorer: true }));
+app.use(
+  "/docs",
+  swaggerUI.serve,
+  swaggerUI.setup(swaggerSpec, { explorer: true }),
+);
 
 app.use("/", record);
 app.use("/", updateProfile);

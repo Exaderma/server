@@ -1,12 +1,15 @@
-import express from 'express';
-import Joi from 'joi';
-import { generateToken } from '../../../utils/security/JWTokens';
-import { HTTP_CODES } from '../../../utils/HTTP-codes';
-import { ProfessionalEntity } from '../../../entity/professional';
-import { PatientEntity } from '../../../entity/patient';
-import { hashPassword } from '../../../utils/security/hashing';
-import { registerManager } from '../../../index';
-import { authenticateToken, userAuthenticate } from '../../../utils/security/JWTokens';
+import express from "express";
+import Joi from "joi";
+import { generateToken } from "../../../utils/security/JWTokens";
+import { HTTP_CODES } from "../../../utils/HTTP-codes";
+import { ProfessionalEntity } from "../../../entity/professional";
+import { PatientEntity } from "../../../entity/patient";
+import { hashPassword } from "../../../utils/security/hashing";
+import { registerManager } from "../../../index";
+import {
+  authenticateToken,
+  userAuthenticate,
+} from "../../../utils/security/JWTokens";
 
 export let router: express.Router = express.Router();
 
@@ -59,47 +62,52 @@ export let router: express.Router = express.Router();
  *         description: Internal Server Error - An error occurred while processing the request
  */
 
-router.post('/patient/register', async (req: express.Request, res: express.Response) => {
-
-  const schema = Joi.object({
-    firstName: Joi.string().required(),
-    lastName: Joi.string().required(),
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
-  });
-
-  const result = schema.validate(req.body);
-
-  if (result.error) {
-    res
-      .status(HTTP_CODES.BAD_REQUEST)
-      .send("incorrect credentials format : " + result.error);
-    return;
-  }
-
-  const patient = new PatientEntity();
-
-  patient.firstName = req.body.firstName;
-  patient.lastName = req.body.lastName;
-  patient.email = req.body.email;
-  patient.password = hashPassword(req.body.password);
-
-  await registerManager
-    .insertUser(patient)
-    .then(async () => {
-      const token = generateToken({
-        email: req.body.email,
-        id: await registerManager.getUserId(patient).then((id) => (id)),
-        type: "patient"
-      }, 36000);
-      res.status(HTTP_CODES.CREATED).send({token: token});
-    })
-    .catch((err) => {
-      if (err.message === "User already exists")
-        res.status(HTTP_CODES.CONFLICT).send("User already exists");
-      else res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).send(err);
+router.post(
+  "/patient/register",
+  async (req: express.Request, res: express.Response) => {
+    const schema = Joi.object({
+      firstName: Joi.string().required(),
+      lastName: Joi.string().required(),
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),
     });
-});
+
+    const result = schema.validate(req.body);
+
+    if (result.error) {
+      res
+        .status(HTTP_CODES.BAD_REQUEST)
+        .send("incorrect credentials format : " + result.error);
+      return;
+    }
+
+    const patient = new PatientEntity();
+
+    patient.firstName = req.body.firstName;
+    patient.lastName = req.body.lastName;
+    patient.email = req.body.email;
+    patient.password = hashPassword(req.body.password);
+
+    await registerManager
+      .insertUser(patient)
+      .then(async () => {
+        const token = generateToken(
+          {
+            email: req.body.email,
+            id: await registerManager.getUserId(patient).then((id) => id),
+            type: "patient",
+          },
+          36000,
+        );
+        res.status(HTTP_CODES.CREATED).send({ token: token });
+      })
+      .catch((err) => {
+        if (err.message === "User already exists")
+          res.status(HTTP_CODES.CONFLICT).send("User already exists");
+        else res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).send(err);
+      });
+  },
+);
 
 /**
  * @swagger
@@ -150,45 +158,52 @@ router.post('/patient/register', async (req: express.Request, res: express.Respo
  *         description: Internal Server Error - An error occurred while processing the request
  */
 
-router.post('/professional/register', async (req: express.Request, res: express.Response) => {
+router.post(
+  "/professional/register",
+  async (req: express.Request, res: express.Response) => {
+    const schema = Joi.object({
+      firstName: Joi.string().required(),
+      lastName: Joi.string().required(),
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),
+    });
 
-  const schema = Joi.object({
-    firstName: Joi.string().required(),
-    lastName: Joi.string().required(),
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
-  });
+    const result = schema.validate(req.body);
 
-  const result = schema.validate(req.body);
+    if (result.error) {
+      res
+        .status(HTTP_CODES.BAD_REQUEST)
+        .send("incorrect credentials format : " + result.error);
+      return;
+    }
 
-  if (result.error) {
-    res
-      .status(HTTP_CODES.BAD_REQUEST)
-      .send("incorrect credentials format : " + result.error);
-    return;
-  }
+    const professional = new ProfessionalEntity();
 
-  const professional = new ProfessionalEntity();
+    professional.firstName = req.body.firstName;
+    professional.lastName = req.body.lastName;
+    professional.email = req.body.email;
+    professional.password = hashPassword(req.body.password);
 
-  professional.firstName = req.body.firstName;
-  professional.lastName = req.body.lastName;
-  professional.email = req.body.email;
-  professional.password = hashPassword(req.body.password);
-
-  await registerManager.insertUser(professional).then(async () => {
-    const token = generateToken({
-      email: req.body.email,
-      id: await registerManager.getUserId(professional).then((id) => (id)),
-      type: "professional"
-    }, 36000);
-    res.send({token: token}).status(HTTP_CODES.CREATED);
-  }).catch((err) => {
-    if (err.message === 'User already exists')
-      res.status(HTTP_CODES.CONFLICT).send("User already exists");
-    else
-      res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).send(err);
-  });
-});
+    await registerManager
+      .insertUser(professional)
+      .then(async () => {
+        const token = generateToken(
+          {
+            email: req.body.email,
+            id: await registerManager.getUserId(professional).then((id) => id),
+            type: "professional",
+          },
+          36000,
+        );
+        res.send({ token: token }).status(HTTP_CODES.CREATED);
+      })
+      .catch((err) => {
+        if (err.message === "User already exists")
+          res.status(HTTP_CODES.CONFLICT).send("User already exists");
+        else res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).send(err);
+      });
+  },
+);
 
 /**
  * @swagger
@@ -207,29 +222,34 @@ router.post('/professional/register', async (req: express.Request, res: express.
  *         description: Unauthorized - Invalid token or token not provided
  */
 
-router.get('/patient/register/middleware', authenticateToken, async (req: express.Request, res: express.Response) => {
-  res.status(HTTP_CODES.OK).send("User authenticated");
-});
+router.get(
+  "/patient/register/middleware",
+  authenticateToken,
+  async (req: express.Request, res: express.Response) => {
+    res.status(HTTP_CODES.OK).send("User authenticated");
+  },
+);
 
-router.post('/refreshTokenTest', async (req: express.Request, res: express.Response) => {
+router.post(
+  "/refreshTokenTest",
+  async (req: express.Request, res: express.Response) => {
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
+    });
 
-  const schema = Joi.object({
-    email: Joi.string().email().required(),
-  });
+    const result = schema.validate(req.body);
 
-  const result = schema.validate(req.body);
+    if (result.error) {
+      res
+        .status(HTTP_CODES.BAD_REQUEST)
+        .send("incorrect credentials format : " + result.error);
+      return;
+    }
 
-  if (result.error) {
-    res
-      .status(HTTP_CODES.BAD_REQUEST)
-      .send("incorrect credentials format : " + result.error);
-    return;
-  }
+    const token = generateToken({ email: req.body.email, type: "patient" }, 0);
 
-  const token = generateToken({ email: req.body.email, type: "patient" }, 0);
-
-  res.send(token).status(HTTP_CODES.OK);
-});
-
+    res.send(token).status(HTTP_CODES.OK);
+  },
+);
 
 module.exports = router;

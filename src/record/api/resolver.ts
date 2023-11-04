@@ -19,7 +19,7 @@ export async function resolverGetRecord(
 }
 
 export async function resolverUpdateRecord(
-    id: number,
+  id: number,
   record: RepositoryRecord,
   description: string,
   type: string,

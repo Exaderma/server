@@ -33,7 +33,7 @@ export async function resolverGetLinkprofessionnal(
 export async function resolverRemoveLinkPatient(
   link: RepositoryLink,
   patientEmail: string,
-  professionalEmail : string
+  professionalEmail: string,
 ): Promise<any> {
   return link.removeLinkPatient(patientEmail, professionalEmail);
 }
@@ -41,7 +41,7 @@ export async function resolverRemoveLinkPatient(
 export async function resolverRemoveLinkprofessionnal(
   link: RepositoryLink,
   professionnalEmail: string,
-  patientEmail : string
+  patientEmail: string,
 ): Promise<any> {
   return link.removeLinkprofessionnal(professionnalEmail, patientEmail);
 }

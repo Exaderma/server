@@ -1,5 +1,5 @@
-import "reflect-metadata"
-import { DataSource } from "typeorm"
+import "reflect-metadata";
+import { DataSource } from "typeorm";
 import { PatientEntity } from "../../../entity/patient";
 import { ProfessionalEntity } from "../../../entity/professional";
 import { comparePassword } from "../../../utils/security/hashing";
@@ -55,9 +55,13 @@ export class Login {
    * @param password password of the user
    * @param entity the type of the user (patient or professional)
    * @returns ok if the user is found and the password is correct, throws an error otherwise depending on the case
-   * 
+   *
    */
-  public async checkUserCredentials(email: string, password: string, entity: Function): Promise<string> {    
+  public async checkUserCredentials(
+    email: string,
+    password: string,
+    entity: Function,
+  ): Promise<string> {
     const repo = this.client.getRepository(entity);
     const foundUser = await repo.findOne({ where: { email: email } });
     if (!foundUser) {

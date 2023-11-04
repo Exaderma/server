@@ -1,5 +1,5 @@
-import "reflect-metadata"
-import { DataSource } from "typeorm"
+import "reflect-metadata";
+import { DataSource } from "typeorm";
 import { PatientEntity } from "../../../entity/patient";
 import { ProfessionalEntity } from "../../../entity/professional";
 
@@ -27,17 +27,20 @@ export class Register {
       logging: false,
     });
 
-    this.client.initialize()
-    .then(() => {
-      console.log("register repository initialized");
-    })
-    .catch((err: any) => {
-      console.log("register repository failed to initialize");
-      console.log(err);
-    });
+    this.client
+      .initialize()
+      .then(() => {
+        console.log("register repository initialized");
+      })
+      .catch((err: any) => {
+        console.log("register repository failed to initialize");
+        console.log(err);
+      });
   }
 
-  public async getUserId(user: PatientEntity | ProfessionalEntity): Promise<number> {
+  public async getUserId(
+    user: PatientEntity | ProfessionalEntity,
+  ): Promise<number> {
     const repo = this.client.getRepository(user.constructor.name);
     const foundUser = await repo.findOne({ where: { email: user.email } });
     if (foundUser) {
@@ -51,7 +54,9 @@ export class Register {
    * @param user the user to insert in the database
    * @returns ok if the user is inserted, throws an error otherwise depending on the case
    */
-  public async insertUser(user: PatientEntity | ProfessionalEntity): Promise<string> {
+  public async insertUser(
+    user: PatientEntity | ProfessionalEntity,
+  ): Promise<string> {
     const repo = this.client.getRepository(user.constructor.name);
     const foundUser = await repo.findOne({ where: { email: user.email } });
     if (foundUser) {

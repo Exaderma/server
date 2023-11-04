@@ -1,6 +1,11 @@
 import express from "express";
 import jwtDecode from "jwt-decode";
-import { resolverSetPatientImageProfile, resolverGetPatientImageProfile, resolverGetProfessionalImageProfile, resolverSetProfessionalImageProfile } from "../api/resolver";
+import {
+  resolverSetPatientImageProfile,
+  resolverGetPatientImageProfile,
+  resolverGetProfessionalImageProfile,
+  resolverSetProfessionalImageProfile,
+} from "../api/resolver";
 import { Image } from "../repository/image";
 import { router } from "../../routes/auth/register/register";
 
@@ -40,23 +45,27 @@ const image = new Image();
  *         description: Ressource non trouvée ou autre erreur
  */
 imageRouter.post("/image/setProfile/patient", async (req, res) => {
-    const auth = req.headers["authorization"];
-    if (!auth) {
-        res.status(401).send("Unauthorized");
-        return;
-    }
-    const token = auth.split(" ")[1];
-    if (!token) {
-        res.status(401).send("Unauthorized");
-        return;
-    }
-    const { data } = req.body;
-    const patient: any = jwtDecode(token);
-    try {
-        res.status(201).send(await resolverSetPatientImageProfile(image, data, patient.data.email));
-    } catch (err: any) {
-        res.status(404).send(err.message);
-    }
+  const auth = req.headers["authorization"];
+  if (!auth) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  const token = auth.split(" ")[1];
+  if (!token) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  const { data } = req.body;
+  const patient: any = jwtDecode(token);
+  try {
+    res
+      .status(201)
+      .send(
+        await resolverSetPatientImageProfile(image, data, patient.data.email),
+      );
+  } catch (err: any) {
+    res.status(404).send(err.message);
+  }
 });
 
 /**
@@ -89,27 +98,37 @@ imageRouter.post("/image/setProfile/patient", async (req, res) => {
  *         description: Ressource non trouvée ou autre erreur
  */
 imageRouter.post("/image/getProfile/patient", async (req, res) => {
-    const auth = req.headers["authorization"];
-    if (!auth) {
-        res.status(401).send("Unauthorized");
-        return;
+  const auth = req.headers["authorization"];
+  if (!auth) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  const token = auth.split(" ")[1];
+  if (!token) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  const { id_patient } = req.body;
+  const patient: any = jwtDecode(token);
+  try {
+    if (id_patient) {
+      res
+        .status(200)
+        .send(
+          await resolverGetPatientImageProfile(
+            image,
+            patient.data.email,
+            id_patient,
+          ),
+        );
+    } else {
+      res
+        .status(200)
+        .send(await resolverGetPatientImageProfile(image, patient.data.email));
     }
-    const token = auth.split(" ")[1];
-    if (!token) {
-        res.status(401).send("Unauthorized");
-        return;
-    }
-    const { id_patient } = req.body;
-    const patient: any = jwtDecode(token);
-    try {
-        if (id_patient) {
-            res.status(200).send(await resolverGetPatientImageProfile(image, patient.data.email, id_patient));
-        } else {
-            res.status(200).send(await resolverGetPatientImageProfile(image, patient.data.email));
-        }
-    } catch (err: any) {
-        res.status(404).send(err.message);
-    }
+  } catch (err: any) {
+    res.status(404).send(err.message);
+  }
 });
 
 /**
@@ -145,23 +164,31 @@ imageRouter.post("/image/getProfile/patient", async (req, res) => {
  *         description: Ressource non trouvée ou autre erreur
  */
 imageRouter.post("/image/setProfile/professional", async (req, res) => {
-    const auth = req.headers["authorization"];
-    if (!auth) {
-        res.status(401).send("Unauthorized");
-        return;
-    }
-    const token = auth.split(" ")[1];
-    if (!token) {
-        res.status(401).send("Unauthorized");
-        return;
-    }
-    const { data } = req.body;
-    const professional: any = jwtDecode(token);
-    try {
-        res.status(201).send(await resolverSetProfessionalImageProfile(image, data, professional.data.email));
-    } catch (err: any) {
-        res.status(404).send(err.message);
-    }
+  const auth = req.headers["authorization"];
+  if (!auth) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  const token = auth.split(" ")[1];
+  if (!token) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  const { data } = req.body;
+  const professional: any = jwtDecode(token);
+  try {
+    res
+      .status(201)
+      .send(
+        await resolverSetProfessionalImageProfile(
+          image,
+          data,
+          professional.data.email,
+        ),
+      );
+  } catch (err: any) {
+    res.status(404).send(err.message);
+  }
 });
 
 /**
@@ -194,23 +221,31 @@ imageRouter.post("/image/setProfile/professional", async (req, res) => {
  *         description: Ressource non trouvée ou autre erreur
  */
 imageRouter.post("/image/getProfile/professional", async (req, res) => {
-    const auth = req.headers["authorization"];
-    if (!auth) {
-        res.status(401).send("Unauthorized");
-        return;
-    }
-    const token = auth.split(" ")[1];
-    if (!token) {
-        res.status(401).send("Unauthorized");
-        return;
-    }
-    const { id_professional } = req.body;
-    const professional: any = jwtDecode(token);
-    try {
-        res.status(200).send(await resolverGetProfessionalImageProfile(image, professional.data.email, id_professional));
-    } catch (err: any) {
-        res.status(404).send(err.message);
-    }
+  const auth = req.headers["authorization"];
+  if (!auth) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  const token = auth.split(" ")[1];
+  if (!token) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  const { id_professional } = req.body;
+  const professional: any = jwtDecode(token);
+  try {
+    res
+      .status(200)
+      .send(
+        await resolverGetProfessionalImageProfile(
+          image,
+          professional.data.email,
+          id_professional,
+        ),
+      );
+  } catch (err: any) {
+    res.status(404).send(err.message);
+  }
 });
 
 module.exports = imageRouter;

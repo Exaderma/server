@@ -16,7 +16,7 @@ let router: express.Router = express.Router();
  * /refreshToken:
  *   get:
  *     summary: Refresh JWT Token
- *     description: Refresh an expired JWT token. 
+ *     description: Refresh an expired JWT token.
  *       This route it to be called when the user's JWT token has expired.
  *       this can be checked whenever another route returns a 401 'Token has expired'
  *     tags:
@@ -46,16 +46,23 @@ let router: express.Router = express.Router();
  *       - BearerAuth: []
  */
 
-router.get("/refreshToken", async (req: express.Request, res: express.Response) => {
-  const authHeader = req.headers['authorization']
-  const token = authHeader && authHeader.split(' ')[1]
+router.get(
+  "/refreshToken",
+  async (req: express.Request, res: express.Response) => {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
 
-  if (token === null) { return res.sendStatus(HTTP_CODES.BAD_REQUEST) }
+    if (token === null) {
+      return res.sendStatus(HTTP_CODES.BAD_REQUEST);
+    }
 
-  const newToken = await refreshToken(token!);
+    const newToken = await refreshToken(token!);
 
-  if (newToken === null) { return res.sendStatus(HTTP_CODES.INTERNAL_SERVER_ERROR) }
-  res.send(newToken).status(HTTP_CODES.OK);
-})
+    if (newToken === null) {
+      return res.sendStatus(HTTP_CODES.INTERNAL_SERVER_ERROR);
+    }
+    res.send(newToken).status(HTTP_CODES.OK);
+  },
+);
 
 module.exports = router;
