@@ -15,7 +15,6 @@ export async function convertToJPEG(base64Image: string): Promise<string> {
 
     return base64JPEG;
   } catch (error) {
-    console.log("Erreur lors de la conversion en JPEG :", error);
     return ""; // Gérer l'erreur selon vos besoins
   }
 }
