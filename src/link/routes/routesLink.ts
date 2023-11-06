@@ -60,10 +60,13 @@ router.post("/patient/link", async (req, res) => {
     res
       .status(201)
       .send(
-        await resolverLinkPatientToprofessionnal(link, code, patientId.data.email)
+        await resolverLinkPatientToprofessionnal(
+          link,
+          code,
+          patientId.data.email,
+        ),
       );
-  }
-  catch (err: any) {
+  } catch (err: any) {
     res.status(404).send(err.message);
   }
 });
@@ -102,13 +105,12 @@ router.get("/patient/getLink", async (req, res) => {
     res.status(401).send("Unauthorized");
     return;
   }
-  const patientId: any = jwt_decode(token);;
+  const patientId: any = jwt_decode(token);
   try {
     res
       .status(200)
       .send(await resolverGetLinkPatient(link, patientId.data.email));
-  }
-  catch (err: any) {
+  } catch (err: any) {
     res.status(404).send(err.message);
   }
 });
@@ -165,9 +167,14 @@ router.post("/professional/link", async (req, res) => {
   try {
     res
       .status(200)
-      .send(await resolverLinkprofessionnalToPatient(link, professionnalId.data.email, email));
-  }
-  catch (err: any) {
+      .send(
+        await resolverLinkprofessionnalToPatient(
+          link,
+          professionnalId.data.email,
+          email,
+        ),
+      );
+  } catch (err: any) {
     res.status(404).send(err.message);
   }
 });
@@ -210,9 +217,10 @@ router.get("/professional/getLink", async (req, res) => {
   try {
     res
       .status(200)
-      .send(await resolverGetLinkprofessionnal(link, professionnalId.data.email));
-  }
-  catch (err: any) {
+      .send(
+        await resolverGetLinkprofessionnal(link, professionnalId.data.email),
+      );
+  } catch (err: any) {
     res.status(404).send(err.message);
   }
 });
@@ -266,10 +274,9 @@ router.post("/patient/removeLink", async (req, res) => {
     res
       .status(200)
       .send(
-        await link.removeLinkPatient(patientId.data.email, professionalEmail)
+        await link.removeLinkPatient(patientId.data.email, professionalEmail),
       );
-  }
-  catch (err: any) {
+  } catch (err: any) {
     res.status(404).send(err.message);
   }
 });
@@ -323,10 +330,12 @@ router.post("/professional/removeLink", async (req, res) => {
     res
       .status(200)
       .send(
-        await link.removeLinkprofessionnal(professionnalId.data.email, patientEmail)
+        await link.removeLinkprofessionnal(
+          professionnalId.data.email,
+          patientEmail,
+        ),
       );
-  }
-  catch (err: any) {
+  } catch (err: any) {
     res.status(404).send(err.message);
   }
 });

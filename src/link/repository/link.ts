@@ -6,6 +6,8 @@ import { ProfessionalEntity } from "../../entity/professional";
 import { Mail } from "../../mail/mail";
 import { generateRandomNumber } from "../../utils/code";
 import { RepositoryLink } from "../api/domain";
+import { ImageEntity } from "../../entity/image";
+import { CryptData } from "../../utils/encryption";
 
 let mail = new Mail({
   username: process.env.MAIL_USERNAME as string,
@@ -22,7 +24,7 @@ export class Link implements RepositoryLink {
       username: process.env.DB_USER as string,
       password: process.env.DB_PASSWORD as string,
       database: process.env.DB_NAME as string,
-      entities: [LinkEntity, PatientEntity, ProfessionalEntity],
+      entities: [LinkEntity, PatientEntity, ProfessionalEntity, ImageEntity],
       synchronize: true,
       logging: false,
     });
@@ -49,9 +51,12 @@ export class Link implements RepositoryLink {
     code: number,
     patientEmail: string,
   ): Promise<string> {
-    const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
-      where: { code: String(code) },
-    });
+    const professional = await this.dbClient.manager.findOne(
+      ProfessionalEntity,
+      {
+        where: { code: String(code) },
+      },
+    );
     if (!professional) {
       throw new Error("professional not found");
     }
@@ -79,9 +84,12 @@ export class Link implements RepositoryLink {
     professionnalEmail: string,
     email: string,
   ): Promise<string> {
-    const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
-      where: { email: professionnalEmail },
-    });
+    const professional = await this.dbClient.manager.findOne(
+      ProfessionalEntity,
+      {
+        where: { email: professionnalEmail },
+      },
+    );
     if (!professional) {
       throw new Error("professional not found");
     }
@@ -128,25 +136,46 @@ export class Link implements RepositoryLink {
     const links = await this.dbClient.manager.find(LinkEntity, {
       where: { patientId: patient.id },
     });
-    console.log(links);
     if (!links) {
       throw new Error("Link not found");
     }
     const professionnals: any[] = [];
 
-  for (const link of links) {
-    const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
-      where: { id: link.doctorId },
-    });
-    console.log(professional);
-    if (professional) professionnals.push(professional);
-  }
+    for (const link of links) {
+      const professional = await this.dbClient.manager.findOne(
+        ProfessionalEntity,
+        {
+          where: { id: link.doctorId },
+        },
+      );
+      if (professional) {
+        if (!professional.imageProfile) {
+          professionnals.push(professional);
+        } else {
+          const professionalWithImage = await this.dbClient.manager.findOne(
+            ImageEntity,
+            {
+              where: { id: professional.imageProfile },
+            },
+          );
+          if (professionalWithImage) {
+            professionnals.push({
+              ...professional,
+              imageProfile:
+                (await CryptData.decrypt(
+                  professionalWithImage.data.toString("base64"),
+                )) || "",
+            });
+          }
+        }
+      }
+    }
 
-  if (professionnals.length === 0) {
-    throw new Error("professional not found");
-  }
+    if (professionnals.length === 0) {
+      throw new Error("professional not found");
+    }
 
-  return professionnals;
+    return professionnals;
   }
 
   /**
@@ -156,9 +185,12 @@ export class Link implements RepositoryLink {
    * @memberof Link
    */
   public async getLinkprofessionnal(professionnalEmail: string): Promise<any> {
-    const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
-      where: { email: professionnalEmail },
-    });
+    const professional = await this.dbClient.manager.findOne(
+      ProfessionalEntity,
+      {
+        where: { email: professionnalEmail },
+      },
+    );
     if (!professional) {
       throw new Error("professional not found");
     }
@@ -170,19 +202,38 @@ export class Link implements RepositoryLink {
     }
     const patients: any[] = [];
 
-  for (const link of links) {
-    const patient = await this.dbClient.manager.findOne(PatientEntity, {
-      where: { id: link.patientId },
-    });
+    for (const link of links) {
+      const patient = await this.dbClient.manager.findOne(PatientEntity, {
+        where: { id: link.patientId },
+      });
 
-    if (patient) patients.push(patient);
-  }
+      if (patient) {
+        if (!patient.imageProfile) {
+          patients.push(patient);
+        } else {
+          const patientWithImage = await this.dbClient.manager.findOne(
+            ImageEntity,
+            {
+              where: { id: patient.imageProfile },
+            },
+          );
+          if (patientWithImage) {
+            patients.push({
+              ...patient,
+              imageProfile: await CryptData.decrypt(
+                patientWithImage.data.toString("base64"),
+              ),
+            });
+          }
+        }
+      }
+    }
 
-  if (patients.length === 0) {
-    throw new Error("Patient not found");
-  }
+    if (patients.length === 0) {
+      throw new Error("Patient not found");
+    }
 
-  return patients;
+    return patients;
   }
 
   /**
@@ -194,7 +245,7 @@ export class Link implements RepositoryLink {
    */
   public async removeLinkPatient(
     patientEmail: string,
-    professionalEmail : string
+    professionalEmail: string,
   ): Promise<any> {
     const patient = await this.dbClient.manager.findOne(PatientEntity, {
       where: { email: patientEmail },
@@ -202,9 +253,12 @@ export class Link implements RepositoryLink {
     if (!patient) {
       throw new Error("Patient not found");
     }
-    const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
-      where: { email: professionalEmail },
-    });
+    const professional = await this.dbClient.manager.findOne(
+      ProfessionalEntity,
+      {
+        where: { email: professionalEmail },
+      },
+    );
     if (!professional) {
       throw new Error("Professional not found");
     }
@@ -227,11 +281,14 @@ export class Link implements RepositoryLink {
    */
   public async removeLinkprofessionnal(
     professionnalEmail: string,
-    patientEmail : string
+    patientEmail: string,
   ): Promise<any> {
-    const professional = await this.dbClient.manager.findOne(ProfessionalEntity, {
-      where: { email: professionnalEmail },
-    });
+    const professional = await this.dbClient.manager.findOne(
+      ProfessionalEntity,
+      {
+        where: { email: professionnalEmail },
+      },
+    );
     if (!professional) {
       throw new Error("professional not found");
     }

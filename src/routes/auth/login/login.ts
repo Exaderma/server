@@ -1,14 +1,14 @@
-import express from 'express';
-import Joi from 'joi';
-import { HTTP_CODES } from '../../../utils/HTTP-codes';
-import { generateToken } from '../../../utils/security/JWTokens';
-import { ProfessionalEntity } from '../../../entity/professional';
-import { PatientEntity } from '../../../entity/patient';
-import { loginManager } from '../../../index';
+import express from "express";
+import Joi from "joi";
+import { HTTP_CODES } from "../../../utils/HTTP-codes";
+import { generateToken } from "../../../utils/security/JWTokens";
+import { ProfessionalEntity } from "../../../entity/professional";
+import { PatientEntity } from "../../../entity/patient";
+import { loginManager } from "../../../index";
 
 let router: express.Router = express.Router();
 
-/** 
+/**
  * @swagger
  * tags:
  *  name: Patient
@@ -62,40 +62,47 @@ let router: express.Router = express.Router();
  *         description: Internal Server Error - An error occurred while processing the request
  */
 
-router.post('/patient/login', async (req: express.Request, res: express.Response) => {
-
-  const schema = Joi.object({
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
-  });
-
-  const result = schema.validate(req.body);
-
-  if (result.error) {
-    res
-      .status(HTTP_CODES.BAD_REQUEST)
-      .send("incorrect credentials format : " + result.error);
-    return;
-  }
-  
-  await loginManager
-  .checkUserCredentials(req.body.email, req.body.password, PatientEntity)
-  .then(async () => {
-      const token = generateToken({
-        email: req.body.email,
-        id: await loginManager.getUserId(req.body.email, PatientEntity).then((id) => (id)),
-        type: "patient"
-      }, 36000);
-      res.send({token: token}).status(HTTP_CODES.OK);
-    })
-    .catch((err) => {
-      if (err.message === "User not found")
-        res.status(HTTP_CODES.NOT_FOUND).send("User not found");
-      if (err.message === "Wrong password")
-        res.status(HTTP_CODES.UNAUTHORIZED).send("Wrong password");
-      else res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).send(err);
+router.post(
+  "/patient/login",
+  async (req: express.Request, res: express.Response) => {
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),
     });
-});
+
+    const result = schema.validate(req.body);
+
+    if (result.error) {
+      res
+        .status(HTTP_CODES.BAD_REQUEST)
+        .send("incorrect credentials format : " + result.error);
+      return;
+    }
+
+    await loginManager
+      .checkUserCredentials(req.body.email, req.body.password, PatientEntity)
+      .then(async () => {
+        const token = generateToken(
+          {
+            email: req.body.email,
+            id: await loginManager
+              .getUserId(req.body.email, PatientEntity)
+              .then((id) => id),
+            type: "patient",
+          },
+          36000,
+        );
+        res.send({ token: token }).status(HTTP_CODES.OK);
+      })
+      .catch((err) => {
+        if (err.message === "User not found")
+          res.status(HTTP_CODES.NOT_FOUND).send("User not found");
+        if (err.message === "Wrong password")
+          res.status(HTTP_CODES.UNAUTHORIZED).send("Wrong password");
+        else res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).send(err);
+      });
+  },
+);
 
 /**
  * @swagger
@@ -142,39 +149,50 @@ router.post('/patient/login', async (req: express.Request, res: express.Response
  *         description: Internal Server Error - An error occurred while processing the request
  */
 
-router.post('/professional/login', async (req: express.Request, res: express.Response) => {
-
-  const schema = Joi.object({
-    email: Joi.string().email().required(),
-    password: Joi.string().required(),
-  });
-
-  const result = schema.validate(req.body);
-
-  if (result.error) {
-    res
-      .status(HTTP_CODES.BAD_REQUEST)
-      .send("incorrect credentials format : " + result.error);
-    return;
-  }
-
-  await loginManager
-    .checkUserCredentials(req.body.email, req.body.password, ProfessionalEntity)
-    .then(async () => {
-      const token = generateToken({
-        email: req.body.email,
-        id: await loginManager.getUserId(req.body.email, ProfessionalEntity).then((id) => (id)),
-        type: "professional"
-      }, 36000);
-      res.send({token: token}).status(HTTP_CODES.OK);
-    })
-    .catch((err) => {
-      if (err.message === "User not found")
-        res.status(HTTP_CODES.NOT_FOUND).send("User not found");
-      if (err.message === "Wrong password")
-        res.status(HTTP_CODES.UNAUTHORIZED).send("Wrong password");
-      else res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).send(err);
+router.post(
+  "/professional/login",
+  async (req: express.Request, res: express.Response) => {
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
+      password: Joi.string().required(),
     });
-});
+
+    const result = schema.validate(req.body);
+
+    if (result.error) {
+      res
+        .status(HTTP_CODES.BAD_REQUEST)
+        .send("incorrect credentials format : " + result.error);
+      return;
+    }
+
+    await loginManager
+      .checkUserCredentials(
+        req.body.email,
+        req.body.password,
+        ProfessionalEntity,
+      )
+      .then(async () => {
+        const token = generateToken(
+          {
+            email: req.body.email,
+            id: await loginManager
+              .getUserId(req.body.email, ProfessionalEntity)
+              .then((id) => id),
+            type: "professional",
+          },
+          36000,
+        );
+        res.send({ token: token }).status(HTTP_CODES.OK);
+      })
+      .catch((err) => {
+        if (err.message === "User not found")
+          res.status(HTTP_CODES.NOT_FOUND).send("User not found");
+        if (err.message === "Wrong password")
+          res.status(HTTP_CODES.UNAUTHORIZED).send("Wrong password");
+        else res.status(HTTP_CODES.INTERNAL_SERVER_ERROR).send(err);
+      });
+  },
+);
 
 module.exports = router;

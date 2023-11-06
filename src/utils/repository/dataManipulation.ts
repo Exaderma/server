@@ -4,12 +4,12 @@ import { PatientEntity } from "../../entity/patient";
 import { ProfessionalEntity } from "../../entity/professional";
 
 type userProfileData = {
-  firstName: string,
-  lastName: string,
-  email: string,
-  admin: boolean,
-  roles: string[],
-}
+  firstName: string;
+  lastName: string;
+  email: string;
+  admin: boolean;
+  roles: string[];
+};
 
 export class DataManipulation {
   private client: DataSource;
@@ -38,7 +38,10 @@ export class DataManipulation {
       });
   }
 
-  public async doesUserExists(email: string, entity: Function): Promise<boolean> {
+  public async doesUserExists(
+    email: string,
+    entity: Function,
+  ): Promise<boolean> {
     const repo = this.client.getRepository(entity);
     const foundUser = await repo.findOne({ where: { email: email } });
     if (foundUser) {
@@ -57,7 +60,7 @@ export class DataManipulation {
         email: foundUser.email,
         admin: foundUser.admin,
         roles: foundUser.roles,
-      }
+      };
       return returnedData;
     }
     throw new Error("User not found");

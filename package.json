@@ -9,7 +9,8 @@
     "start": "ts-node src/index.ts",
     "build": "tsc -p .",
     "lint-src": "npx prettier --write src",
-    "lint-test": "npx prettier --write test"
+    "lint-test": "npx prettier --write test",
+    "run": "nodemon --exec ts-node src/run.ts"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +25,7 @@
     "jwt-decode": "^3.1.2",
     "pg": "^8.11.1",
     "reflect-metadata": "^0.1.13",
+    "sharp": "^0.32.6",
     "supertest": "^6.3.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",

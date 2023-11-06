@@ -12,18 +12,24 @@ export const tokenKey: string = String(process.env.TOKEN_KEY);
  * @description
  * This function is used to authenticate a user based on the provided token.
  * it checks if the token is present and if the user linked to the token exists in the database.
- * 
+ *
  * the token must be provided in the Authorization header of the request following the Bearer schema: "Bearer <token>"
- * 
+ *
  * @param req the request of the user
  * @param res the response of the server
  * @param next the next function to call
  */
-export async function userAuthenticate(req: express.Request, res: express.Response, next: express.NextFunction) {
-    const authHeader = req.get('Authorization');
-    const token = Array.isArray(authHeader) ? authHeader[0].split(' ')[1] : authHeader && authHeader.split(' ')[1];
-    const decodedToken: any = jwt_decode(token!);
-    const userEmail: any =  decodedToken.data.email;
+export async function userAuthenticate(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) {
+  const authHeader = req.get("Authorization");
+  const token = Array.isArray(authHeader)
+    ? authHeader[0].split(" ")[1]
+    : authHeader && authHeader.split(" ")[1];
+  const decodedToken: any = jwt_decode(token!);
+  const userEmail: any = decodedToken.data.email;
 
   if (token === null) {
     return res.sendStatus(HTTP_CODES.FORBIDDEN);
@@ -51,30 +57,36 @@ export async function userAuthenticate(req: express.Request, res: express.Respon
  * @description
  * This function is used to authenticate a user based on the provided token.
  * it checks if the token is valid .
- * 
+ *
  * the token must be provided in the Authorization header of the request following the Bearer schema: "Bearer <token>"
- * 
+ *
  * @param req the request of the user
  * @param res the response of the server
  * @param next the next function to call
  */
-export async function authenticateToken(req: express.Request, res: express.Response, next: express.NextFunction) {
-    const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(' ')[1]
+export async function authenticateToken(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
 
-    if (!token) {
-      return res.sendStatus(HTTP_CODES.FORBIDDEN);
+  if (!token) {
+    return res.sendStatus(HTTP_CODES.FORBIDDEN);
   }
 
   jwt.verify(String(token), tokenKey, (err: any, user: any) => {
-      if (err) {
-          if (err.name === 'TokenExpiredError') {
-              return res.status(HTTP_CODES.UNAUTHORIZED).send('Token has expired');
-          } else {
-              return res.status(HTTP_CODES.FORBIDDEN).send(err.message || 'Authentication failed');
-          }
+    if (err) {
+      if (err.name === "TokenExpiredError") {
+        return res.status(HTTP_CODES.UNAUTHORIZED).send("Token has expired");
+      } else {
+        return res
+          .status(HTTP_CODES.FORBIDDEN)
+          .send(err.message || "Authentication failed");
       }
-      next();
+    }
+    next();
   });
 }
 
