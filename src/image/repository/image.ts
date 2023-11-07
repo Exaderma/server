@@ -160,7 +160,7 @@ export class Image implements RepositoryImage {
     if (id_professional) {
       const token_professional: string = professionalEmail; // professionalEmail is actually the token of the patient
       const professional = await this.dbClient.manager.findOne(
-        ProfessionalEntity,
+        PatientEntity,
         {
           where: { email: token_professional },
         },

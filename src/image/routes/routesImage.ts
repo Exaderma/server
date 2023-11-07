@@ -234,15 +234,26 @@ imageRouter.post("/image/getProfile/professional", async (req, res) => {
   const { id_professional } = req.body;
   const professional: any = jwtDecode(token);
   try {
-    res
-      .status(200)
-      .send(
-        await resolverGetProfessionalImageProfile(
-          image,
-          professional.data.email,
-          id_professional,
-        ),
-      );
+    if (id_professional) {
+      res
+        .status(200)
+        .send(
+          await resolverGetProfessionalImageProfile(
+            image,
+            professional.data.email,
+            id_professional,
+          ),
+        );
+    } else {
+      res
+        .status(200)
+        .send(
+          await resolverGetProfessionalImageProfile(
+            image,
+            professional.data.email,
+          ),
+        );
+    }
   } catch (err: any) {
     res.status(404).send(err.message);
   }
