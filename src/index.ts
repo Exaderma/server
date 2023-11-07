@@ -81,6 +81,24 @@ export const dataManager = new DataManipulation();
 export const organisationManager = new OrganisationRepository();
 
 const app: Express = express();
+import http from "http";
+const socketIO = require('socket.io')
+
+const webSocket = http.createServer(app); 
+const io = socketIO(webSocket, {
+  cors: {
+    origin: '*',
+  }
+});
+
+const socketPath = '/socket'
+
+io.of(socketPath).on('connection', (socket: any) => {
+  console.log('a user connected');
+  socket.on('disconnect', () => {
+    console.log('user disconnected');
+  });
+});
 
 app.use(cors());
 app.use(express.json());
