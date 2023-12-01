@@ -81,23 +81,34 @@ export const dataManager = new DataManipulation();
 export const organisationManager = new OrganisationRepository();
 
 const app: Express = express();
+
 import http from "http";
-const socketIO = require('socket.io')
+import { Server } from 'socket.io';
 
-const webSocket = http.createServer(app); 
-const io = socketIO(webSocket, {
-  cors: {
-    origin: '*',
+const server = http.createServer(app); 
+const io = new Server(server,
+  {
+    cors: {
+      origin: '*',
+    },
   }
-});
+);
 
-const socketPath = '/socket'
+io.on('connection', (socket: any) => {
+  console.log('a user connected: ' + socket.id);
 
-io.of(socketPath).on('connection', (socket: any) => {
-  console.log('a user connected');
-  socket.on('disconnect', () => {
-    console.log('user disconnected');
-  });
+  socket.on("join_room", (data: any) => {
+    socket.join(data);
+    console.log("User joined room: " + data);
+  })
+
+  socket.on("send_message", (data: any) => {
+    socket.to(data.room).emit("receive_message", data);
+  })
+}); 
+
+server.listen(3000, () => {
+  console.log('listening on *:3000');
 });
 
 app.use(cors());
