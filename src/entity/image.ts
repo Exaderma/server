@@ -1,19 +1,22 @@
 import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
 
-@Entity()
+@Entity({ name: "image" })
 export class ImageEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: "bytea", nullable: false })
+  @Column({ type: 'text', nullable: false })
+  type: string;
+
+  @Column({ type: 'bytea', nullable: false })
   data: Buffer;
 
-  @Column({ type: "text", nullable: true })
-  filename: string;
+  @Column({ type: 'text', nullable: true })
+  filename: string | null;
 
-  @Column({ type: "text", nullable: true })
-  mimetype: string;
+  @Column({ type: 'date', default: () => 'CURRENT_DATE', nullable: false, name: 'created_at' })
+  createdAt: Date;
 
-  @Column({ type: "text", nullable: false })
-  type: string;
+  @Column({ type: 'integer', nullable: true, name: 'folder_id' })
+  folderId: number | null;
 }
