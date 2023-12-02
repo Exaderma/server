@@ -24,5 +24,8 @@ export interface RepositoryImage {
   GetImageGallery(
     patientEmail: string,
     id_patient?: number,
-  ): Promise<string[]>;
+  ): Promise<{data : string}[]>;
+  GetAllFolder(
+    professionalEmail: string
+  ): Promise<{id: number, name: string, data: {image: string}[]}[]>;
 }

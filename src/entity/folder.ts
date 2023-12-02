@@ -1,7 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from 'typeorm';
 
 @Entity('folder')
-export class Folder {
+export class FolderEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -11,9 +11,6 @@ export class Folder {
   @Column({ type: 'date', default: () => 'CURRENT_DATE', nullable: false, name: 'created_at' })
   createdAt: Date;
 
-  @Column({ type: 'integer', nullable: true, name: 'image_id' })
-  imageId: number | null;
-
-  @Column({ type: 'integer', nullable: true, name: 'patient_id' })
-  patientId: number | null;
+  @Column({ type: 'integer', nullable: false, name: 'patient_id' })
+  patientId: number;
 }

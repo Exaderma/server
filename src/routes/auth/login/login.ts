@@ -11,10 +11,10 @@ let router: express.Router = express.Router();
 /**
  * @swagger
  * tags:
- *  name: Patient
- *  description: Patient related documentation
- *  name: Professional
- *  description: Professional related documentation
+ *   - name: Patient
+ *     description: Patient related documentation
+ *   - name: Professional
+ *     description: Professional related documentation
  */
 
 /**

@@ -31,3 +31,27 @@ export async function resolverSetProfessionalImageProfile(
 ): Promise<string> {
   return image.SetProfessionalImageProfile(data, professionalEmail);
 }
+
+export async function resolverSetImageGallery(
+  image: RepositoryImage,
+  data: string,
+  patientEmail: string,
+  id_patient?: number,
+): Promise<string> {
+  return image.SetImageGallery(data, patientEmail, id_patient);
+}
+
+export async function resolverGetImageGallery(
+  image: RepositoryImage,
+  patientEmail: string,
+  id_patient?: number,
+): Promise<{data : string}[]> {
+  return image.GetImageGallery(patientEmail, id_patient);
+}
+
+export async function resolverGetAllFolder(
+  image: RepositoryImage,
+  professionalEmail: string,
+): Promise<{id: number, name: string, data: {image: string}[]}[]> {
+  return image.GetAllFolder(professionalEmail);
+}
