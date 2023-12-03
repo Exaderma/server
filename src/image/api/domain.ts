@@ -1,3 +1,7 @@
+export type addImage = {
+  data: string;
+};
+
 export interface RepositoryImage {
   SetPatientImageProfile(image: string, patientEmail: string): Promise<string>;
   GetPatientImageProfile(
@@ -12,4 +16,16 @@ export interface RepositoryImage {
     image: string,
     professionalEmail: string,
   ): Promise<string>;
+  SetImageGallery(
+    image: string,
+    patientEmail: string,
+    id_patient?: number,
+  ): Promise<string>;
+  GetImageGallery(
+    patientEmail: string,
+    id_patient?: number,
+  ): Promise<{data : string}[]>;
+  GetAllFolder(
+    professionalEmail: string
+  ): Promise<{id: number, name: string, data: {image: string}[]}[]>;
 }

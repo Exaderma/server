@@ -5,7 +5,7 @@ export const ERROR_REQUEST = {
   message: "Request error, certain fields are missing",
 };
 
-export const name_image = (type: "pp" | "") => {
+export const name_image = (type: "pp" | "gallery" | "") => {
   return `exaderma_${type}_${generateRandomNumber(100)}.png`;
 };
 

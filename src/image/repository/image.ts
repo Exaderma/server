@@ -7,6 +7,8 @@ import { RepositoryImage } from "../api/domain";
 import { name_image } from "../../utils/constants";
 import { convertToJPEG } from "../../utils/convert";
 import { CryptData } from "../../utils/encryption";
+import { FolderEntity } from "../../entity/folder";
+import { LinkEntity } from "../../entity/link";
 
 export class Image implements RepositoryImage {
   private dbClient: DataSource;
@@ -18,7 +20,7 @@ export class Image implements RepositoryImage {
       username: process.env.DB_USER as string,
       password: process.env.DB_PASSWORD as string,
       database: process.env.DB_NAME as string,
-      entities: [ImageEntity, PatientEntity, ProfessionalEntity],
+      entities: [ImageEntity, PatientEntity, ProfessionalEntity, FolderEntity, LinkEntity],
       synchronize: true,
       logging: false,
     });
@@ -64,7 +66,6 @@ export class Image implements RepositoryImage {
         "base64",
       );
       img.filename = name_image("pp");
-      img.mimetype = "image/png";
       img.type = "pp";
       await this.dbClient.manager.save(img);
       patient.imageProfile = img.id;
@@ -160,7 +161,7 @@ export class Image implements RepositoryImage {
     if (id_professional) {
       const token_professional: string = professionalEmail; // professionalEmail is actually the token of the patient
       const professional = await this.dbClient.manager.findOne(
-        ProfessionalEntity,
+        PatientEntity,
         {
           where: { email: token_professional },
         },
@@ -224,12 +225,170 @@ export class Image implements RepositoryImage {
         "base64",
       );
       img.filename = name_image("pp");
-      img.mimetype = "image/png";
       img.type = "pp";
       await this.dbClient.manager.save(img);
       professional.imageProfile = img.id;
       await this.dbClient.manager.save(professional);
     }
     return "Success";
+  }
+
+  public async SetImageGallery(
+    image: string,
+    patientEmail: string,
+    id_patient?: number,
+  ): Promise<string> {
+    let idFolder: number | null = null;
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {
+      where: { email: patientEmail },
+    });
+    if (!patient) {
+      throw new Error("Patient not found");
+    }
+    const folder = await this.dbClient.manager.findOne(FolderEntity, {
+      where: { patientId: patient.id },
+    });
+
+    if (!folder) {
+      const newFolder = new FolderEntity();
+      newFolder.name = "Default";
+      newFolder.patientId = patient.id;
+      await this.dbClient.manager.save(newFolder);
+      idFolder = newFolder.id;
+    }
+    const img = new ImageEntity();
+    img.data = Buffer.from(
+      await CryptData.encrypt(await convertToJPEG(image)),
+      "base64",
+    );
+    img.filename = name_image("gallery");
+    img.type = "gallery";
+    img.folderId = folder?.id || idFolder;
+    await this.dbClient.manager.save(img);
+    return "Success";
+  }
+
+  private async GetImageGalleryById(
+    id_patient: number,
+  ): Promise<{data: string}[]> {
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {
+      where: { id: id_patient },
+    });
+    if (!patient) {
+      throw new Error("Patient not found");
+    }
+    const folder = await this.dbClient.manager.findOne(FolderEntity, {
+      where: { patientId: patient.id },
+    });
+    if (!folder) {
+      throw new Error("Folder not found");
+    }
+    const images = await this.dbClient.manager.find(ImageEntity, {
+      where: { folderId: folder.id },
+    });
+    if (!images) {
+      throw new Error("Images not found");
+    }
+    const imagesData: { data: string }[] = [];
+    for (const image of images) {
+      imagesData.push({ data: await CryptData.decrypt(image.data.toString("base64")) });
+    }
+    return imagesData
+  }
+
+  public async GetImageGallery(
+    patientEmail: string,
+    id_patient?: number,
+  ): Promise<{data: string}[]> {
+    let idFolder: number | null = null;
+    if (id_patient) {
+      const token_professional: string = patientEmail;
+      const professional = await this.dbClient.manager.findOne(
+        ProfessionalEntity,
+        {
+          where: { email: token_professional },
+        },
+      );
+      if (!professional) {
+        throw new Error("Professional not found");
+      }
+      return this.GetImageGalleryById(id_patient);
+    }
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {
+      where: { email: patientEmail },
+    });
+    if (!patient) {
+      throw new Error("Patient not found");
+    }
+    const folder = await this.dbClient.manager.findOne(FolderEntity, {
+      where: { patientId: patient.id },
+    });
+
+    if (!folder) {
+      const newFolder = new FolderEntity();
+      newFolder.name = "Default";
+      newFolder.patientId = patient.id;
+      await this.dbClient.manager.save(newFolder);
+      idFolder = newFolder.id;
+    }
+    const images = await this.dbClient.manager.find(ImageEntity, {
+      where: { folderId: idFolder || folder?.id },
+    });
+    if (!images) {
+      throw new Error("Images not found");
+    }
+    const imagesData: { data: string }[] = [];
+    for (const image of images) {
+      imagesData.push({ data: await CryptData.decrypt(image.data.toString("base64")) });
+    }
+    return imagesData
+  }
+
+  public async GetAllFolder(
+    professionalEmail: string
+  ): Promise<{id: number, name: string, data: {image: string}[]}[]> {
+    const professional = await this.dbClient.manager.findOne(
+      ProfessionalEntity,
+      {
+        where: { email: professionalEmail },
+      },
+    );
+    if (!professional) {
+      throw new Error("Professional not found");
+    }
+    const links = await this.dbClient.manager.find(LinkEntity, {
+      where: { doctorId: professional.id },
+    });
+    if (!links) {
+      throw new Error("Links not found");
+    }
+    const folders: {id: number, name: string, data: {image: string}[]}[] = [];
+    for (const link of links) {
+      const patient = await this.dbClient.manager.findOne(PatientEntity, {
+        where: { id: link.patientId },
+      });
+      if (!patient) {
+        throw new Error("Patient not found");
+      }
+      const folder = await this.dbClient.manager.findOne(FolderEntity, {
+        where: { patientId: patient.id },
+      });
+      if (folder) {
+        const images = await this.dbClient.manager.find(ImageEntity, {
+          where: { folderId: folder.id },
+        });
+        if (!images) {
+          throw new Error("Images not found");
+        }
+        const imagesData: { image: string }[] = [];
+        for (let i = 0; i < 3; i++) {
+          if (images[i]) {
+            imagesData.push({ image: await CryptData.decrypt(images[i].data.toString("base64")) });
+          }
+        }
+        folders.push({id: folder.id, name: folder.name + " - " + patient.lastName, data: imagesData});
+      }
+    }
+    return folders;
   }
 }
