@@ -3,6 +3,7 @@ import { DataManipulation } from "./utils/repository/dataManipulation";
 import { Register } from "./routes/auth/repository/register";
 import { Login } from "./routes/auth/repository/login";
 import { OrganisationRepository } from "./utils/repository/organisationRepository";
+import { MessageRepository } from "./utils/repository/messages";
 import { DataSource } from "typeorm";
 
 require("dotenv").config();
@@ -79,6 +80,7 @@ export const registerManager = new Register();
 export const loginManager = new Login();
 export const dataManager = new DataManipulation();
 export const organisationManager = new OrganisationRepository();
+export const messageManager = new MessageRepository();
 
 const app: Express = express();
 
@@ -98,12 +100,24 @@ io.on('connection', (socket: any) => {
   console.log('a user connected: ' + socket.id);
 
   socket.on("join_room", (data: any) => {
-    socket.join(data);
-    console.log("User joined room: " + data);
+    console.log(data)
+    socket.join(data.room);
+    console.log("User joined room: ");
   })
 
-  socket.on("send_message", (data: any) => {
-    socket.to(data.room).emit("receive_message", data);
+  socket.on("send_message", async (data: any) => {
+    console.log(data)
+    await messageManager.storeMessage({
+      sender_id: data.sender_id,
+      sender_email: data.sender_email,
+      receiver_id: data.receiver_id,
+      receiver_email: data.receiver_email,
+      room_id: data.room,
+      message: data.message,
+    });
+    socket.to(data.room).emit("receive_message", data.message);
+    console.log('---print---')
+    messageManager.printMessages();
   })
 }); 
 
