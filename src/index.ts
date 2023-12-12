@@ -3,6 +3,7 @@ import { DataManipulation } from "./utils/repository/dataManipulation";
 import { Register } from "./routes/auth/repository/register";
 import { Login } from "./routes/auth/repository/login";
 import { OrganisationRepository } from "./utils/repository/organisationRepository";
+import { MessageRepository } from "./utils/repository/messages";
 import { DataSource } from "typeorm";
 import * as bodyParser from 'body-parser';
 
@@ -80,8 +81,50 @@ export const registerManager = new Register();
 export const loginManager = new Login();
 export const dataManager = new DataManipulation();
 export const organisationManager = new OrganisationRepository();
+export const messageManager = new MessageRepository();
 
 const app: Express = express();
+
+import http from "http";
+import { Server } from 'socket.io';
+
+const server = http.createServer(app); 
+const io = new Server(server,
+  {
+    cors: {
+      origin: '*',
+    },
+  }
+);
+
+io.on('connection', (socket: any) => {
+  console.log('a user connected: ' + socket.id);
+
+  socket.on("join_room", (data: any) => {
+    console.log(data)
+    socket.join(data.room);
+    console.log("User joined room: ");
+  })
+
+  socket.on("send_message", async (data: any) => {
+    console.log(data)
+    await messageManager.storeMessage({
+      sender_id: data.sender_id,
+      sender_email: data.sender_email,
+      receiver_id: data.receiver_id,
+      receiver_email: data.receiver_email,
+      room_id: data.room,
+      message: data.message,
+    });
+    socket.to(data.room).emit("receive_message", data.message);
+    console.log('---print---')
+    messageManager.printMessages();
+  })
+}); 
+
+server.listen(3000, () => {
+  console.log('listening on *:3000');
+});
 
 app.use(cors());
 app.use(express.json({
