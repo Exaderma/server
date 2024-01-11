@@ -6,6 +6,15 @@ import { OrganisationRepository } from "./utils/repository/organisationRepositor
 import { MessageRepository } from "./utils/repository/messages";
 import { DataSource } from "typeorm";
 import * as bodyParser from 'body-parser';
+import * as admin from 'firebase-admin';
+
+const serviceAccount = require('../exaderma-df2b6-firebase-adminsdk-bmijm-e554eab675.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
+const messaging = admin.messaging();
 
 require("dotenv").config();
 
@@ -88,7 +97,7 @@ const app: Express = express();
 import http from "http";
 import { Server } from 'socket.io';
 
-const server = http.createServer(app); 
+const server = http.createServer(app);
 const io = new Server(server,
   {
     cors: {
@@ -120,7 +129,7 @@ io.on('connection', (socket: any) => {
     console.log('---print---')
     messageManager.printMessages();
   })
-}); 
+});
 
 server.listen(3000, () => {
   console.log('listening on *:3000');
@@ -157,6 +166,26 @@ app.use("/", updateProfile);
 app.use("/", image);
 
 app.use("/", organisation);
+
+app.get("/sendNotification", async (req, res) => {
+  const token: string = req.query.token as string;
+
+  await messaging.send({
+    notification: {
+      title: 'New Message',
+      body: 'You have a new message from ' + req.query.sender_email,
+    },
+    token
+  })
+    .then((response: any) => {
+      console.log('Successfully sent message:', response);
+      res.status(200).send(response);
+    })
+    .catch((error: any) => {
+      console.log('Error sending message:', error);
+      res.status(400).send(error);
+    });
+});
 
 const port = process.env.PORT || 8080;
 
