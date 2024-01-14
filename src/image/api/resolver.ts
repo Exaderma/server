@@ -45,7 +45,7 @@ export async function resolverGetImageGallery(
   image: RepositoryImage,
   patientEmail: string,
   id_patient?: number,
-): Promise<{data : string}[]> {
+): Promise<{data : string, id: number}[]> {
   return image.GetImageGallery(patientEmail, id_patient);
 }
 
@@ -54,4 +54,30 @@ export async function resolverGetAllFolder(
   professionalEmail: string,
 ): Promise<{id: number, name: string, data: {image: string}[]}[]> {
   return image.GetAllFolder(professionalEmail);
+}
+
+export async function resolverRemoveFolder(
+  image: RepositoryImage,
+  professionalEmail: string,
+  id_folder: number,
+): Promise<string> {
+  return image.removeFolder(professionalEmail, id_folder);
+}
+
+export async function resolverRemoveImages(
+  image: RepositoryImage,
+  professionalEmail: string,
+  id_folder: number,
+  id_image: number[],
+): Promise<string> {
+  return image.removeImages(professionalEmail, id_folder, id_image);
+}
+
+export async function resolverRemoveImageGallery(
+  image: RepositoryImage,
+  patientEmail: string,
+  id_image: number,
+  id_patient?: number,
+): Promise<string> {
+  return image.removeImageGallery(patientEmail, id_image, id_patient);
 }

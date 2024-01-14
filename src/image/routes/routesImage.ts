@@ -7,7 +7,10 @@ import {
   resolverSetProfessionalImageProfile,
   resolverGetAllFolder,
   resolverSetImageGallery,
-  resolverGetImageGallery
+  resolverGetImageGallery,
+  resolverRemoveFolder,
+  resolverRemoveImages,
+  resolverRemoveImageGallery
 } from "../api/resolver";
 import { Image } from "../repository/image";
 
@@ -503,6 +506,107 @@ imageRouter.get("/image/folder/get", async (req, res) => {
       .send(
         await resolverGetAllFolder(image, professional.data.email),
       );
+  } catch (err: any) {
+    res.status(404).send(err.message);
+  }
+});
+
+imageRouter.post("/image/folder/remove", async (req, res) => {
+  const auth = req.headers["authorization"];
+  if (!auth) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+
+  const token = auth.split(" ")[1];
+  if (!token) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+
+  const professional: any = jwtDecode(token);
+  const { id_folder } = req.body;
+
+  if (!id_folder) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  try {
+    res
+      .status(200)
+      .send(
+        await resolverRemoveFolder(image, professional.data.email, id_folder),
+      );
+  } catch (err: any) {
+    res.status(404).send(err.message);
+  }
+});
+
+imageRouter.post("/image/remove/several", async (req, res) => {
+  const auth = req.headers["authorization"];
+  if (!auth) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+
+  const token = auth.split(" ")[1];
+  if (!token) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+
+  const professional: any = jwtDecode(token);
+  const { id_folder, id_image } = req.body;
+
+  if (!id_folder || !id_image) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  try {
+    res
+      .status(200)
+      .send(
+        await resolverRemoveImages(image, professional.data.email, id_folder, id_image),
+      );
+  } catch (err: any) {
+    res.status(404).send(err.message);
+  }
+});
+
+imageRouter.post("/image/remove", async (req, res) => {
+  const auth = req.headers["authorization"];
+  if (!auth) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+
+  const token = auth.split(" ")[1];
+  if (!token) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+
+  const professional: any = jwtDecode(token);
+  const { id_patient, id_image } = req.body;
+
+  if (!id_image) {
+    res.status(401).send("id_image is missing");
+    return;
+  }
+  try {
+    if (id_patient) {
+      res
+        .status(200)
+        .send(
+          await resolverRemoveImageGallery(image, professional.data.email, id_image, id_patient),
+        );
+    } else {
+      res
+        .status(200)
+        .send(
+          await resolverRemoveImageGallery(image, professional.data.email, id_image),
+        );
+    }
   } catch (err: any) {
     res.status(404).send(err.message);
   }

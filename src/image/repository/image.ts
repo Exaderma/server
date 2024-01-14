@@ -270,7 +270,7 @@ export class Image implements RepositoryImage {
 
   private async GetImageGalleryById(
     id_patient: number,
-  ): Promise<{data: string}[]> {
+  ): Promise<{data: string, id: number}[]> {
     const patient = await this.dbClient.manager.findOne(PatientEntity, {
       where: { id: id_patient },
     });
@@ -289,9 +289,9 @@ export class Image implements RepositoryImage {
     if (!images) {
       throw new Error("Images not found");
     }
-    const imagesData: { data: string }[] = [];
+    const imagesData: { data: string, id: number }[] = [];
     for (const image of images) {
-      imagesData.push({ data: await CryptData.decrypt(image.data.toString("base64")) });
+      imagesData.push({ data: await CryptData.decrypt(image.data.toString("base64")), id: image.id });
     }
     return imagesData
   }
@@ -299,7 +299,7 @@ export class Image implements RepositoryImage {
   public async GetImageGallery(
     patientEmail: string,
     id_patient?: number,
-  ): Promise<{data: string}[]> {
+  ): Promise<{data: string, id: number}[]> {
     let idFolder: number | null = null;
     if (id_patient) {
       const token_professional: string = patientEmail;
@@ -337,9 +337,9 @@ export class Image implements RepositoryImage {
     if (!images) {
       throw new Error("Images not found");
     }
-    const imagesData: { data: string }[] = [];
+    const imagesData: { data: string, id: number }[] = [];
     for (const image of images) {
-      imagesData.push({ data: await CryptData.decrypt(image.data.toString("base64")) });
+      imagesData.push({ data: await CryptData.decrypt(image.data.toString("base64")), id: image.id });
     }
     return imagesData
   }
@@ -390,5 +390,142 @@ export class Image implements RepositoryImage {
       }
     }
     return folders;
+  }
+
+  private async removeImageGalleryById(
+    id_patient: number,
+    id_image: number,
+  ): Promise<string> {
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {
+      where: { id: id_patient },
+    });
+    if (!patient) {
+      throw new Error("Patient not found");
+    }
+    const folder = await this.dbClient.manager.findOne(FolderEntity, {
+      where: { patientId: patient.id },
+    });
+    if (!folder) {
+      throw new Error("Folder not found");
+    }
+    const image = await this.dbClient.manager.findOne(ImageEntity, {
+      where: { id: id_image, folderId: folder.id },
+    });
+    if (!image) {
+      throw new Error("Image not found");
+    }
+    await this.dbClient.manager.remove(image);
+    return "Success";
+  }
+
+  public async removeImageGallery(
+    patientEmail: string,
+    id_image: number,
+    id_patient?: number,
+  ): Promise<string> {
+    if (id_patient) {
+      const token_professional: string = patientEmail;
+      const professional = await this.dbClient.manager.findOne(
+        ProfessionalEntity,
+        {
+          where: { email: token_professional },
+        },
+      );
+      if (!professional) {
+        throw new Error("Professional not found");
+      }
+      return this.removeImageGalleryById(id_patient, id_image);
+    }
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {
+      where: { email: patientEmail },
+    });
+    if (!patient) {
+      throw new Error("Patient not found");
+    }
+    const folder = await this.dbClient.manager.findOne(FolderEntity, {
+      where: { patientId: patient.id },
+    });
+    if (!folder) {
+      throw new Error("Folder not found");
+    }
+    const image = await this.dbClient.manager.findOne(ImageEntity, {
+      where: { id: id_image, folderId: folder.id },
+    });
+    if (!image) {
+      throw new Error("Image not found");
+    }
+    await this.dbClient.manager.remove(image);
+    return "Success";
+  }
+
+  public async removeFolder(
+    professionalEmail: string,
+    id_folder: number,
+  ): Promise<string> {
+    const professional = await this.dbClient.manager.findOne(
+      ProfessionalEntity,
+      {
+        where: { email: professionalEmail },
+      },
+    );
+
+    if (!professional) {
+      throw new Error("Professional not found");
+    }
+
+    const folder = await this.dbClient.manager.findOne(FolderEntity, {
+      where: { id: id_folder },
+    });
+
+    if (!folder) {
+      throw new Error("Folder not found");
+    }
+
+    const images = await this.dbClient.manager.find(ImageEntity, {
+      where: { folderId: folder.id },
+    });
+
+    if (!images) {
+      throw new Error("Images not found");
+    }
+
+    for (const image of images) {
+      await this.dbClient.manager.remove(image);
+    }
+    return "Success";
+  }
+
+  public async removeImages(
+    professionalEmail: string,
+    id_folder: number,
+    id_image: number[],
+  ): Promise<string> {
+    const professional = await this.dbClient.manager.findOne(
+      ProfessionalEntity,
+      {
+        where: { email: professionalEmail },
+      },
+    );
+    if (!professional) {
+      throw new Error("Professional not found");
+    }
+    const folder = await this.dbClient.manager.findOne(FolderEntity, {
+      where: { id: id_folder },
+    });
+    if (!folder) {
+      throw new Error("Folder not found");
+    }
+    const images = await this.dbClient.manager.find(ImageEntity, {
+      where: { folderId: folder.id },
+    });
+    if (!images) {
+      throw new Error("Images not found");
+    }
+    for (const image of images) {
+      if (id_image.includes(image.id)) {
+        await this.dbClient.manager.remove(image);
+      }
+    }
+    return "Success";
   }
 }
