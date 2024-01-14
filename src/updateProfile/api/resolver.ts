@@ -99,3 +99,33 @@ export async function resolverUpdateProfessionalAddress(
 ): Promise<string> {
   return updateProfile.updateProfessionalAddress(email, address);
 }
+
+export async function resolverGetNotePatient(
+  email: string,
+  updateProfile: RepositoryUpdateProfile,
+): Promise<string> {
+  return updateProfile.getNotePatient(email);
+}
+
+export async function resolverAddNotePatient(
+  email: string,
+  note: string,
+  updateProfile: RepositoryUpdateProfile,
+): Promise<string> {
+  return updateProfile.addNotePatient(email, note);
+}
+
+export async function resolverRemoveNotePatient(
+  email: string,
+  updateProfile: RepositoryUpdateProfile,
+): Promise<string> {
+  return updateProfile.removeNotePatient(email);
+}
+
+export async function resolverUpdateNotePatient(
+  email: string,
+  note: string,
+  updateProfile: RepositoryUpdateProfile,
+): Promise<string> {
+  return updateProfile.updateNotePatient(email, note);
+}

@@ -1,6 +1,10 @@
 import express from "express";
 import jwt_decode from "jwt-decode";
 import {
+  resolverAddNotePatient,
+  resolverGetNotePatient,
+  resolverRemoveNotePatient,
+  resolverUpdateNotePatient,
   resolverUpdatePatientEmail,
   resolverUpdatePatientFirstName,
   resolverUpdatePatientLastName,
@@ -733,6 +737,265 @@ router.post("/updateProfile/professional/address", async (req, res) => {
           updateProfile,
         ),
       );
+  } catch (err: any) {
+    res.status(404).send(err.message);
+  }
+});
+
+/**
+ * @swagger
+ * /patient/note/add:
+ *   post:
+ *     summary: Ajouter une note au dossier d'un patient
+ *     description: Ajoute une note au dossier d'un patient pour un professionnel authentifié.
+ *     tags:
+ *       - Patient
+ *     parameters:
+ *       - in: header
+ *         name: authorization
+ *         description: Jeton d'authentification JWT (Bearer Token)
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: body
+ *         name: requestBody
+ *         description: Informations nécessaires pour ajouter une note au dossier du patient
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 email:
+ *                   type: string
+ *                   description: Adresse e-mail du patient
+ *                 note:
+ *                   type: string
+ *                   description: Contenu de la note à ajouter
+ *     responses:
+ *       200:
+ *         description: Note ajoutée avec succès
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Note ajoutée avec succès
+ *       401:
+ *         description: Non autorisé
+ *         content:
+ *           text/plain:
+ *             example: Unauthorized
+ *       404:
+ *         description: Patient non trouvé ou erreur lors de l'ajout de la note
+ *         content:
+ *           text/plain:
+ *             example: Erreur lors de l'ajout de la note au dossier du patient
+ */
+router.post("/patient/note/add", async (req, res) => {
+  const auth = req.headers["authorization"];
+  if (!auth) {
+    res.status(401).send("Unauthorized");
+  }
+  const token = auth?.split(" ")[1] ?? "";
+  if (!token) {
+    res.status(401).send("Unauthorized");
+  }
+  const { email, note } = req.body;
+  const patient: any = jwt_decode(token);
+  try {
+    res.status(200).send(await resolverAddNotePatient(email, note, updateProfile));
+  } catch (err: any) {
+    res.status(404).send(err.message);
+  }
+});
+
+/**
+ * @swagger
+ * /patient/note/remove:
+ *   post:
+ *     summary: Supprimer une note du dossier d'un patient
+ *     description: Supprime une note du dossier d'un patient pour un professionnel authentifié.
+ *     tags:
+ *       - Patient
+ *     parameters:
+ *       - in: header
+ *         name: authorization
+ *         description: Jeton d'authentification JWT (Bearer Token)
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: body
+ *         name: requestBody
+ *         description: Informations nécessaires pour supprimer une note du dossier du patient
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 email:
+ *                   type: string
+ *                   description: Adresse e-mail du patient
+ *     responses:
+ *       200:
+ *         description: Note supprimée avec succès
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Note supprimée avec succès
+ *       401:
+ *         description: Non autorisé
+ *         content:
+ *           text/plain:
+ *             example: Unauthorized
+ *       404:
+ *         description: Patient non trouvé ou erreur lors de la suppression de la note
+ *         content:
+ *           text/plain:
+ *             example: Erreur lors de la suppression de la note du dossier du patient
+ */
+router.post("/patient/note/remove", async (req, res) => {
+  const auth = req.headers["authorization"];
+  if (!auth) {
+    res.status(401).send("Unauthorized");
+  }
+  const token = auth?.split(" ")[1] ?? "";
+  if (!token) {
+    res.status(401).send("Unauthorized");
+  }
+  const patient: any = jwt_decode(token);
+  const { email } = req.body;
+  try {
+    res.status(200).send(await resolverRemoveNotePatient(email, updateProfile));
+  } catch (err: any) {
+    res.status(404).send(err.message);
+  }
+});
+
+/**
+ * @swagger
+ * /patient/note/update:
+ *   post:
+ *     summary: Mettre à jour une note dans le dossier d'un patient
+ *     description: Met à jour une note spécifiée dans le dossier d'un patient pour un professionnel authentifié.
+ *     tags:
+ *       - Patient
+ *     parameters:
+ *       - in: header
+ *         name: authorization
+ *         description: Jeton d'authentification JWT (Bearer Token)
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: body
+ *         name: requestBody
+ *         description: Informations nécessaires pour mettre à jour une note dans le dossier du patient
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 email:
+ *                   type: string
+ *                   description: Adresse e-mail du patient
+ *                 note:
+ *                   type: string
+ *                   description: Nouveau contenu de la note
+ *     responses:
+ *       200:
+ *         description: Note mise à jour avec succès
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Note mise à jour avec succès
+ *       401:
+ *         description: Non autorisé
+ *         content:
+ *           text/plain:
+ *             example: Unauthorized
+ *       404:
+ *         description: Patient non trouvé ou erreur lors de la mise à jour de la note
+ *         content:
+ *           text/plain:
+ *             example: Erreur lors de la mise à jour de la note dans le dossier du patient
+ */
+router.post("/patient/note/update", async (req, res) => {
+  const auth = req.headers["authorization"];
+  if (!auth) {
+    res.status(401).send("Unauthorized");
+  }
+  const token = auth?.split(" ")[1] ?? "";
+  if (!token) {
+    res.status(401).send("Unauthorized");
+  }
+  const { email, note } = req.body;
+  const patient: any = jwt_decode(token);
+  try {
+    res.status(200).send(await resolverUpdateNotePatient(email, note, updateProfile));
+  } catch (err: any) {
+    res.status(404).send(err.message);
+  }
+});
+
+/**
+ * @swagger
+ * /patient/note/get:
+ *   post:
+ *     summary: Récupérer les notes d'un patient
+ *     description: Récupère les notes du dossier d'un patient pour un professionnel authentifié.
+ *     tags:
+ *       - Patient
+ *     parameters:
+ *       - in: header
+ *         name: authorization
+ *         description: Jeton d'authentification JWT (Bearer Token)
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: body
+ *         name: requestBody
+ *         description: Informations nécessaires pour récupérer les notes du dossier du patient
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 email:
+ *                   type: string
+ *                   description: Adresse e-mail du patient
+ *     responses:
+ *       200:
+ *         description: Notes récupérées avec succès
+ *         content:
+ *           application/json:
+ *             example:
+ *               notes:
+ *                 - note
+ *       401:
+ *         description: Non autorisé
+ *         content:
+ *           text/plain:
+ *             example: Unauthorized
+ *       404:
+ *         description: Patient non trouvé ou erreur lors de la récupération des notes
+ *         content:
+ *           text/plain:
+ *             example: Erreur lors de la récupération des notes du dossier du patient
+ */
+router.post("/patient/note/get", async (req, res) => {
+  const auth = req.headers["authorization"];
+  if (!auth) {
+    res.status(401).send("Unauthorized");
+  }
+  const token = auth?.split(" ")[1] ?? "";
+  if (!token) {
+    res.status(401).send("Unauthorized");
+  }
+  const patient: any = jwt_decode(token);
+  const { email } = req.body;
+  try {
+    res.status(200).send(await resolverGetNotePatient(email, updateProfile));
   } catch (err: any) {
     res.status(404).send(err.message);
   }

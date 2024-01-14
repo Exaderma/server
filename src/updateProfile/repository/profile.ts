@@ -261,4 +261,61 @@ export class UpdateProfile implements RepositoryUpdateProfile {
     await this.dbClient.manager.save(professional);
     return "Professional address updated";
   }
+
+  public async addNotePatient(email: string, note: string): Promise<string> {
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {
+      where: {
+        email: email,
+      },
+    });
+    if (!patient) {
+      return "Patient not found";
+    }
+    patient.note = note;
+    await this.dbClient.manager.save(patient);
+    return "Note added";
+  }
+
+  public async removeNotePatient(email: string): Promise<string> {
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {
+      where: {
+        email: email,
+      },
+    });
+    if (!patient) {
+      return "Patient not found";
+    }
+    patient.note = "";
+    await this.dbClient.manager.save(patient);
+    return "Note removed";
+  }
+
+  public async updateNotePatient(
+    email: string,
+    note: string,
+  ): Promise<string> {
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {
+      where: {
+        email: email,
+      },
+    });
+    if (!patient) {
+      return "Patient not found";
+    }
+    patient.note = note;
+    await this.dbClient.manager.save(patient);
+    return "Note updated";
+  }
+
+  public async getNotePatient(email: string): Promise<string> {
+    const patient = await this.dbClient.manager.findOne(PatientEntity, {
+      where: {
+        email: email,
+      },
+    });
+    if (!patient) {
+      return "Patient not found";
+    }
+    return patient.note;
+  }
 }
