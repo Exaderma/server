@@ -1,6 +1,10 @@
 import express from "express";
 import jwt_decode from "jwt-decode";
 import {
+  resolverAddNotePatient,
+  resolverGetNotePatient,
+  resolverRemoveNotePatient,
+  resolverUpdateNotePatient,
   resolverUpdatePatientEmail,
   resolverUpdatePatientFirstName,
   resolverUpdatePatientLastName,
@@ -733,6 +737,78 @@ router.post("/updateProfile/professional/address", async (req, res) => {
           updateProfile,
         ),
       );
+  } catch (err: any) {
+    res.status(404).send(err.message);
+  }
+});
+
+router.post("/patient/note/add", async (req, res) => {
+  const auth = req.headers["authorization"];
+  if (!auth) {
+    res.status(401).send("Unauthorized");
+  }
+  const token = auth?.split(" ")[1] ?? "";
+  if (!token) {
+    res.status(401).send("Unauthorized");
+  }
+  const { email, note } = req.body;
+  const patient: any = jwt_decode(token);
+  try {
+    res.status(200).send(await resolverAddNotePatient(email, note, updateProfile));
+  } catch (err: any) {
+    res.status(404).send(err.message);
+  }
+});
+
+router.post("/patient/note/remove", async (req, res) => {
+  const auth = req.headers["authorization"];
+  if (!auth) {
+    res.status(401).send("Unauthorized");
+  }
+  const token = auth?.split(" ")[1] ?? "";
+  if (!token) {
+    res.status(401).send("Unauthorized");
+  }
+  const patient: any = jwt_decode(token);
+  const { email } = req.body;
+  try {
+    res.status(200).send(await resolverRemoveNotePatient(email, updateProfile));
+  } catch (err: any) {
+    res.status(404).send(err.message);
+  }
+});
+
+router.post("/patient/note/update", async (req, res) => {
+  const auth = req.headers["authorization"];
+  if (!auth) {
+    res.status(401).send("Unauthorized");
+  }
+  const token = auth?.split(" ")[1] ?? "";
+  if (!token) {
+    res.status(401).send("Unauthorized");
+  }
+  const { email, note } = req.body;
+  const patient: any = jwt_decode(token);
+  try {
+    res.status(200).send(await resolverUpdateNotePatient(email, note, updateProfile));
+  } catch (err: any) {
+    res.status(404).send(err.message);
+  }
+});
+
+router.post("/patient/note/get", async (req, res) => {
+  const auth = req.headers["authorization"];
+  if (!auth) {
+    res.status(401).send("Unauthorized");
+  }
+  const token = auth?.split(" ")[1] ?? "";
+  if (!token) {
+    res.status(401).send("Unauthorized");
+  }
+  const patient: any = jwt_decode(token);
+  const { email } = req.body;
+  try {
+    res.status(200).send(await resolverGetNotePatient(email, updateProfile));
   } catch (err: any) {
     res.status(404).send(err.message);
   }

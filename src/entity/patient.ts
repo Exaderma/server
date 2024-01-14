@@ -29,6 +29,9 @@ export class PatientEntity extends BaseEntity {
   @Column({ type: "json", default: () => "'[]'" })
   roles: any[];
 
+  @Column({ nullable: true })
+  note: string;
+
   @Column({ default: () => "CURRENT_TIMESTAMP" })
   created_at: Date;
 }

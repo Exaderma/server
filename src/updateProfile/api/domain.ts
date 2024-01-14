@@ -28,4 +28,8 @@ export interface RepositoryUpdateProfile {
     email: string,
     address: string,
   ) => Promise<string>;
+  addNotePatient: (email: string, note: string) => Promise<string>;
+  removeNotePatient: (email: string) => Promise<string>;
+  updateNotePatient: (email: string, note: string) => Promise<string>;
+  getNotePatient: (email: string) => Promise<string>;
 }
