@@ -511,6 +511,45 @@ imageRouter.get("/image/folder/get", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /image/folder/remove:
+ *   post:
+ *     summary: Supprimer un dossier d'images
+ *     description: Supprime un dossier d'images spécifié pour un professionnel authentifié.
+ *     tags:
+ *       - Image
+ *     parameters:
+ *       - in: header
+ *         name: authorization
+ *         description: Jeton d'authentification JWT (Bearer Token)
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: body
+ *         name: id_folder
+ *         description: ID du dossier à supprimer
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Dossier supprimé avec succès
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Dossier supprimé avec succès
+ *       401:
+ *         description: Non autorisé
+ *         content:
+ *           text/plain:
+ *             example: Unauthorized
+ *       404:
+ *         description: Le dossier spécifié n'a pas été trouvé
+ *         content:
+ *           text/plain:
+ *             example: Dossier non trouvé
+ */
 imageRouter.post("/image/folder/remove", async (req, res) => {
   const auth = req.headers["authorization"];
   if (!auth) {
@@ -542,6 +581,54 @@ imageRouter.post("/image/folder/remove", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /image/remove/several:
+ *   post:
+ *     summary: Supprimer plusieurs images
+ *     description: Supprime plusieurs images spécifiées pour un professionnel authentifié.
+ *     tags:
+ *       - Image
+ *     parameters:
+ *       - in: header
+ *         name: authorization
+ *         description: Jeton d'authentification JWT (Bearer Token)
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: body
+ *         name: requestBody
+ *         description: Informations nécessaires pour supprimer plusieurs images
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id_folder:
+ *                   type: string
+ *                   description: ID du dossier contenant les images à supprimer
+ *                 id_image:
+ *                   type: string
+ *                   description: ID des images à supprimer (peut être une liste d'IDs)
+ *     responses:
+ *       200:
+ *         description: Images supprimées avec succès
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Images supprimées avec succès
+ *       401:
+ *         description: Non autorisé
+ *         content:
+ *           text/plain:
+ *             example: Unauthorized
+ *       404:
+ *         description: Les images spécifiées n'ont pas été trouvées
+ *         content:
+ *           text/plain:
+ *             example: Images non trouvées
+ */
 imageRouter.post("/image/remove/several", async (req, res) => {
   const auth = req.headers["authorization"];
   if (!auth) {
@@ -573,6 +660,54 @@ imageRouter.post("/image/remove/several", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /image/remove:
+ *   post:
+ *     summary: Supprimer une image
+ *     description: Supprime une image spécifiée pour un professionnel authentifié.
+ *     tags:
+ *       - Image
+ *     parameters:
+ *       - in: header
+ *         name: authorization
+ *         description: Jeton d'authentification JWT (Bearer Token)
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: body
+ *         name: requestBody
+ *         description: Informations nécessaires pour supprimer une image
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id_patient:
+ *                   type: string
+ *                   description: (Facultatif) ID du patient associé à l'image
+ *                 id_image:
+ *                   type: string
+ *                   description: ID de l'image à supprimer
+ *     responses:
+ *       200:
+ *         description: Image supprimée avec succès
+ *         content:
+ *           application/json:
+ *             example:
+ *               message: Image supprimée avec succès
+ *       401:
+ *         description: Non autorisé
+ *         content:
+ *           text/plain:
+ *             example: Unauthorized
+ *       404:
+ *         description: L'image spécifiée n'a pas été trouvée
+ *         content:
+ *           text/plain:
+ *             example: Image non trouvée
+ */
 imageRouter.post("/image/remove", async (req, res) => {
   const auth = req.headers["authorization"];
   if (!auth) {
